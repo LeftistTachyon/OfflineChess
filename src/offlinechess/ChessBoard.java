@@ -100,6 +100,12 @@ public class ChessBoard {
         } else return false;
     }
     
+    /**
+     * Determines the validity of the square
+     * @param col the ABSOLUTE column
+     * @param row the ABSOLUTE row
+     * @return whether the square is valid
+     */
     public static boolean isValidSquare(int col, int row) {
         return col >= 0 && col <= 7 && row >= 0 && row <= 7;
     }
@@ -155,7 +161,7 @@ public class ChessBoard {
         if(isValidSquare(col, row)) {
             int shiftedCol = col + colShift, shiftedRow = row + rowShift;
             if(isValidSquare(shiftedCol, shiftedRow)) {
-                return "" + (char)('a' + col) + shiftedRow;
+                return toSquare(shiftedCol, shiftedRow);
             } else throw new IllegalArgumentException("Invalid shift");
         } else throw new IllegalArgumentException("Invalid square");
     }
@@ -172,8 +178,18 @@ public class ChessBoard {
             int col = getColumn(s), row = getRow(s);
             int shiftedCol = col + colShift, shiftedRow = row + rowShift;
             if(isValidSquare(shiftedCol, shiftedRow)) {
-                return "" + (char)('a' + col) + shiftedRow;
+                return toSquare(shiftedCol, shiftedRow);
             } else throw new IllegalArgumentException("Invalid shift");
         } else throw new IllegalArgumentException("Invalid square");
+    }
+    
+    /**
+     * Determines the square represented by the row and column
+     * @param column the ABSOLUTE column
+     * @param row the ABSOLUTE row
+     * @return the square that is represented by the row and column
+     */
+    public static String toSquare(int column, int row) {
+        return "" + (char)('a' + column) + (8 - row);
     }
 }

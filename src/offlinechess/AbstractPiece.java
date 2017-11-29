@@ -27,7 +27,9 @@ public abstract class AbstractPiece {
      * @param toWhere to where the piece would be moved
      * @return whether the move would be legal
      */
-    public abstract boolean isLegalMove(ChessBoard cb, String fromWhere, String toWhere);
+    public boolean isLegalMove(ChessBoard cb, String fromWhere, String toWhere) {
+        return legalMoves(cb, fromWhere).contains(toWhere);
+    }
     
     /**
      * Returns all of the legal moves this piece could make
@@ -36,4 +38,12 @@ public abstract class AbstractPiece {
      * @return all legal moves
      */
     public abstract LinkedList<String> legalMoves(ChessBoard cb, String currentPosition);
+    
+    /**
+     * Returns all of the legal captures this piece could make
+     * @param cb the current state of the chess game
+     * @param currentPosition the current place of the piece
+     * @return all legal captures
+     */
+    public abstract LinkedList<String> legalCaptures(ChessBoard cb, String currentPosition);
 }

@@ -13,13 +13,17 @@ public class King extends AbstractPiece {
     }
 
     @Override
-    public boolean isLegalMove(ChessBoard cb, String fromWhere, String toWhere) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public LinkedList<String> legalMoves(ChessBoard cb, String currentPosition) {
+        if(!ChessBoard.isValidSquare(currentPosition)) throw new IllegalArgumentException("Invalid square");
+        if(!(cb.getPiece(currentPosition) instanceof King)) throw new IllegalArgumentException("This isn\'t a king!");
+        LinkedList<String> output = new LinkedList<>();
+        String temp = ChessBoard.shiftSquare(currentPosition, 1, 0);
+        return output;
     }
 
     @Override
-    public LinkedList<String> legalMoves(ChessBoard cb, String currentPosition) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public LinkedList<String> legalCaptures(ChessBoard cb, String currentPosition) {
+        return legalMoves(cb, currentPosition);
     }
     
 }
