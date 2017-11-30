@@ -10,9 +10,15 @@ import javax.swing.JPanel;
 public class ChessPanel extends JPanel {
     
     /**
+     * The chessboard
+     */
+    ChessBoard cb;
+    
+    /**
      * Default constructor
      */
     public ChessPanel() {
+        cb = new ChessBoard();
         super.setVisible(true);
     }
 
@@ -32,6 +38,7 @@ public class ChessPanel extends JPanel {
     @Override
     public void paint(Graphics g) {
         drawBackground(g, Color.WHITE);
+        cb.draw(g);
     }
     
     /**

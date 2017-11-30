@@ -1,6 +1,11 @@
 package offlinechess;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.io.IOException;
+import java.net.URL;
+import javax.imageio.ImageIO;
 
 /**
  * A class that represents a chess board
@@ -8,12 +13,46 @@ import java.awt.Graphics;
  */
 public class ChessBoard {
     private AbstractPiece[][] board;
+    private Image blackBishop, blackKing, blackKinght, blackPawn, blackQueen, blackRook, 
+            whiteBishop, whiteKing, whiteKnight, whitePawn, whiteQueen, whiteRook;
     
     /**
-     * Default constructor
+     * Default constructor.
      */
     public ChessBoard() {
         board = new AbstractPiece[8][8];
+        String filename = "null.wtf";
+        try {
+            filename = "truePawn.png";
+            URL url = getClass().getResource("/images/" + filename);
+            whitePawn = ImageIO.read(url);
+            filename = "trueQueen.png";
+            url = getClass().getResource("/images/" + filename);
+            whiteQueen = ImageIO.read(url);
+            filename = "truePawn.png";
+            url = getClass().getResource("/images/" + filename);
+            whitePawn = ImageIO.read(url);
+            filename = "trueQueen.png";
+            url = getClass().getResource("/images/" + filename);
+            whiteQueen = ImageIO.read(url);
+            filename = "truePawn.png";
+            url = getClass().getResource("/images/" + filename);
+            whitePawn = ImageIO.read(url);
+            filename = "trueQueen.png";
+            url = getClass().getResource("/images/" + filename);
+            whiteQueen = ImageIO.read(url);
+        }
+        catch(IOException e) {
+            System.out.println("Could not find file images/" + filename);
+            System.exit(1); 
+        }
+        addPieces();
+    }
+    
+    /**
+     * Adds the starting pieces to a chessboard.
+     */
+    private void addPieces() {
         for(int i = 0;i<8;i++) {
             board[i][1] = new Pawn(false);
             board[i][6] = new Pawn(true);
@@ -43,7 +82,21 @@ public class ChessBoard {
      * @param g Graphics to draw on
      */
     public void draw(Graphics g) {
-        
+        drawCheckers(g);
+    }
+    
+    /**
+     * Draws the checkered pattern
+     * @param g Graphics to draw on
+     */
+    private void drawCheckers(Graphics g) {
+        g.setColor(Color.BLACK);
+        for(int i = 0;i<400;i+=100) {
+            for(int j = 0;j<400;j+=100) {
+                g.fillRect(i, j, 50, 50);
+                g.fillRect(i+50, j+50, 50, 50);
+            }
+        }
     }
     
     /**

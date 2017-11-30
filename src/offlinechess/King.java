@@ -18,6 +18,69 @@ public class King extends AbstractPiece {
         if(!(cb.getPiece(currentPosition) instanceof King)) throw new IllegalArgumentException("This isn\'t a king!");
         LinkedList<String> output = new LinkedList<>();
         String temp = ChessBoard.shiftSquare(currentPosition, 1, 0);
+        if(ChessBoard.isValidSquare(temp)) {
+            if(cb.isEmptySquare(temp)) {
+                output.add(temp);
+            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                output.add(temp);
+            }
+        }
+        temp = ChessBoard.shiftSquare(currentPosition, 1, 1);
+        if(ChessBoard.isValidSquare(temp)) {
+            if(cb.isEmptySquare(temp)) {
+                output.add(temp);
+            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                output.add(temp);
+            }
+        }
+        temp = ChessBoard.shiftSquare(currentPosition, 0, 1);
+        if(ChessBoard.isValidSquare(temp)) {
+            if(cb.isEmptySquare(temp)) {
+                output.add(temp);
+            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                output.add(temp);
+            }
+        }
+        temp = ChessBoard.shiftSquare(currentPosition, -1, 1);
+        if(ChessBoard.isValidSquare(temp)) {
+            if(cb.isEmptySquare(temp)) {
+                output.add(temp);
+            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                output.add(temp);
+            }
+        }
+        temp = ChessBoard.shiftSquare(currentPosition, -1, 0);
+        if(ChessBoard.isValidSquare(temp)) {
+            if(cb.isEmptySquare(temp)) {
+                output.add(temp);
+            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                output.add(temp);
+            }
+        }
+        temp = ChessBoard.shiftSquare(currentPosition, -1, -1);
+        if(ChessBoard.isValidSquare(temp)) {
+            if(cb.isEmptySquare(temp)) {
+                output.add(temp);
+            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                output.add(temp);
+            }
+        }
+        temp = ChessBoard.shiftSquare(currentPosition, 0, -1);
+        if(ChessBoard.isValidSquare(temp)) {
+            if(cb.isEmptySquare(temp)) {
+                output.add(temp);
+            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                output.add(temp);
+            }
+        }
+        temp = ChessBoard.shiftSquare(currentPosition, 1, -1);
+        if(ChessBoard.isValidSquare(temp)) {
+            if(cb.isEmptySquare(temp)) {
+                output.add(temp);
+            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                output.add(temp);
+            }
+        }
         return output;
     }
 
