@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
 import javax.imageio.ImageIO;
 
 /**
@@ -13,7 +14,7 @@ import javax.imageio.ImageIO;
  */
 public class ChessBoard {
     private AbstractPiece[][] board;
-    private Image blackBishop, blackKing, blackKinght, blackPawn, blackQueen, blackRook, 
+    private Image blackBishop, blackKing, blackKnight, blackPawn, blackQueen, blackRook, 
             whiteBishop, whiteKing, whiteKnight, whitePawn, whiteQueen, whiteRook;
     
     /**
@@ -23,24 +24,42 @@ public class ChessBoard {
         board = new AbstractPiece[8][8];
         String filename = "null.wtf";
         try {
-            filename = "truePawn.png";
+            filename = "trueBishop.png";
             URL url = getClass().getResource("/images/" + filename);
-            whitePawn = ImageIO.read(url);
-            filename = "trueQueen.png";
+            whiteBishop = ImageIO.read(url);
+            filename = "trueKing.png";
             url = getClass().getResource("/images/" + filename);
-            whiteQueen = ImageIO.read(url);
+            whiteKing = ImageIO.read(url);
+            filename = "trueKnight.png";
+            url = getClass().getResource("/images/" + filename);
+            whiteKnight = ImageIO.read(url);
             filename = "truePawn.png";
             url = getClass().getResource("/images/" + filename);
             whitePawn = ImageIO.read(url);
             filename = "trueQueen.png";
             url = getClass().getResource("/images/" + filename);
             whiteQueen = ImageIO.read(url);
-            filename = "truePawn.png";
+            filename = "trueRook.png";
             url = getClass().getResource("/images/" + filename);
-            whitePawn = ImageIO.read(url);
-            filename = "trueQueen.png";
+            whiteRook = ImageIO.read(url);
+            filename = "falseBishop.png";
             url = getClass().getResource("/images/" + filename);
-            whiteQueen = ImageIO.read(url);
+            blackBishop = ImageIO.read(url);
+            filename = "falseKing.png";
+            url = getClass().getResource("/images/" + filename);
+            blackKing = ImageIO.read(url);
+            filename = "falseKnight.png";
+            url = getClass().getResource("/images/" + filename);
+            blackKnight = ImageIO.read(url);
+            filename = "falsePawn.png";
+            url = getClass().getResource("/images/" + filename);
+            blackPawn = ImageIO.read(url);
+            filename = "falseQueen.png";
+            url = getClass().getResource("/images/" + filename);
+            blackQueen = ImageIO.read(url);
+            filename = "falseRook.png";
+            url = getClass().getResource("/images/" + filename);
+            blackRook = ImageIO.read(url);
         }
         catch(IOException e) {
             System.out.println("Could not find file images/" + filename);
@@ -83,6 +102,7 @@ public class ChessBoard {
      */
     public void draw(Graphics g) {
         drawCheckers(g);
+        drawPieces(g);
     }
     
     /**
@@ -90,11 +110,43 @@ public class ChessBoard {
      * @param g Graphics to draw on
      */
     private void drawCheckers(Graphics g) {
-        g.setColor(Color.BLACK);
-        for(int i = 0;i<400;i+=100) {
-            for(int j = 0;j<400;j+=100) {
-                g.fillRect(i, j, 50, 50);
-                g.fillRect(i+50, j+50, 50, 50);
+        g.setColor(new Color(240, 217, 181));
+        g.fillRect(0, 0, 480, 480);
+        g.setColor(new Color(181, 136, 99));
+        for(int i = 0;i<480;i+=120) {
+            for(int j = 0;j<480;j+=120) {
+                g.fillRect(i, j, 60, 60);
+                g.fillRect(i+60, j+60, 60, 60);
+            }
+        }
+    }
+    
+    /**
+     * Draws the pieces on the board.
+     * @param g Graphics to draw on
+     */
+    private void drawPieces(Graphics g) {
+        for(int i = 0;i<board.length*60;i+=60) {
+            for(int j = 0;j<board[i/60].length*60;j+=60) {
+                if(board[i/60][j/60] instanceof Pawn) {
+                    if(board[i/60][j/60].isWhite) g.drawImage(whitePawn, i+5, j+5, 50, 50, null);
+                    else g.drawImage(blackPawn, i+5, j+5, 50, 50, null);
+                } else if(board[i/60][j/60] instanceof Rook) {
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteRook, i+5, j+5, 50, 50, null);
+                    else g.drawImage(blackRook, i+5, j+5, 50, 50, null);
+                } else if(board[i/60][j/60] instanceof Knight) {
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteKnight, i+5, j+5, 50, 50, null);
+                    else g.drawImage(blackKnight, i+5, j+5, 50, 50, null);
+                } else if(board[i/60][j/60] instanceof Bishop) {
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteBishop, i+5, j+5, 50, 50, null);
+                    else g.drawImage(blackBishop, i+5, j+5, 50, 50, null);
+                } else if(board[i/60][j/60] instanceof Queen) {
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteQueen, i+5, j+5, 50, 50, null);
+                    else g.drawImage(blackQueen, i+5, j+5, 50, 50, null);
+                } else if(board[i/60][j/60] instanceof King) {
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteKing, i+5, j+5, 50, 50, null);
+                    else g.drawImage(blackKing, i+5, j+5, 50, 50, null);
+                }
             }
         }
     }
