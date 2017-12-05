@@ -12,13 +12,20 @@ public class ChessPanel extends JPanel {
     /**
      * The chessboard
      */
-    ChessBoard cb;
+    private ChessBoard cb;
+    
+    /**
+     * The mouse listener
+     */
+    private ChessMouseListener cml;
     
     /**
      * Default constructor
      */
     public ChessPanel() {
+        cml = new ChessMouseListener();
         cb = new ChessBoard();
+        addMouseListener(cml);
         super.setVisible(true);
     }
 

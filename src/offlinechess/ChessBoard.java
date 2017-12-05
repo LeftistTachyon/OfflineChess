@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
-import java.util.LinkedList;
 import javax.imageio.ImageIO;
 
 /**
@@ -13,9 +12,21 @@ import javax.imageio.ImageIO;
  * @author Jed Wang
  */
 public class ChessBoard {
+    /**
+     * The chess board
+     */
     private AbstractPiece[][] board;
+    
+    /**
+     * All of the images for the pieces
+     */
     private Image blackBishop, blackKing, blackKnight, blackPawn, blackQueen, blackRook, 
             whiteBishop, whiteKing, whiteKnight, whitePawn, whiteQueen, whiteRook;
+    
+    /**
+     * Coordinates of the top left corner
+     */
+    private int x, y;
     
     /**
      * Default constructor.
@@ -66,6 +77,8 @@ public class ChessBoard {
             System.exit(1); 
         }
         addPieces();
+        x = 0;
+        y = 0;
     }
     
     /**
@@ -96,6 +109,12 @@ public class ChessBoard {
         board[7][7] = new Rook(true);
     }
     
+    public ChessBoard(int x, int y) {
+        this();
+        this.x = x;
+        this.y = y;
+    }
+    
     /**
      * Draws the current state of the chess board
      * @param g Graphics to draw on
@@ -111,10 +130,10 @@ public class ChessBoard {
      */
     private void drawCheckers(Graphics g) {
         g.setColor(new Color(240, 217, 181));
-        g.fillRect(0, 0, 480, 480);
+        g.fillRect(x, y, x+480, y+480);
         g.setColor(new Color(181, 136, 99));
-        for(int i = 0;i<480;i+=120) {
-            for(int j = 0;j<480;j+=120) {
+        for(int i = x;i<480+x;i+=120) {
+            for(int j = y;j<480+y;j+=120) {
                 g.fillRect(i, j, 60, 60);
                 g.fillRect(i+60, j+60, 60, 60);
             }
@@ -129,23 +148,23 @@ public class ChessBoard {
         for(int i = 0;i<board.length*60;i+=60) {
             for(int j = 0;j<board[i/60].length*60;j+=60) {
                 if(board[i/60][j/60] instanceof Pawn) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whitePawn, i+5, j+5, 50, 50, null);
-                    else g.drawImage(blackPawn, i+5, j+5, 50, 50, null);
+                    if(board[i/60][j/60].isWhite) g.drawImage(whitePawn, i+5+x, j+5+x, 50, 50, null);
+                    else g.drawImage(blackPawn, i+5+x, j+5+x, 50, 50, null);
                 } else if(board[i/60][j/60] instanceof Rook) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteRook, i+5, j+5, 50, 50, null);
-                    else g.drawImage(blackRook, i+5, j+5, 50, 50, null);
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteRook, i+5+x, j+5+x, 50, 50, null);
+                    else g.drawImage(blackRook, i+5+x, j+5+x, 50, 50, null);
                 } else if(board[i/60][j/60] instanceof Knight) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteKnight, i+5, j+5, 50, 50, null);
-                    else g.drawImage(blackKnight, i+5, j+5, 50, 50, null);
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteKnight, i+5+x, j+5+x, 50, 50, null);
+                    else g.drawImage(blackKnight, i+5+x, j+5+x, 50, 50, null);
                 } else if(board[i/60][j/60] instanceof Bishop) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteBishop, i+5, j+5, 50, 50, null);
-                    else g.drawImage(blackBishop, i+5, j+5, 50, 50, null);
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteBishop, i+5+x, j+5+x, 50, 50, null);
+                    else g.drawImage(blackBishop, i+5+x, j+5+x, 50, 50, null);
                 } else if(board[i/60][j/60] instanceof Queen) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteQueen, i+5, j+5, 50, 50, null);
-                    else g.drawImage(blackQueen, i+5, j+5, 50, 50, null);
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteQueen, i+5+x, j+5+x, 50, 50, null);
+                    else g.drawImage(blackQueen, i+5+x, j+5+x, 50, 50, null);
                 } else if(board[i/60][j/60] instanceof King) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteKing, i+5, j+5, 50, 50, null);
-                    else g.drawImage(blackKing, i+5, j+5, 50, 50, null);
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteKing, i+5+x, j+5+x, 50, 50, null);
+                    else g.drawImage(blackKing, i+5+x, j+5+x, 50, 50, null);
                 }
             }
         }

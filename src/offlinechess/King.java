@@ -103,14 +103,43 @@ public class King extends AbstractPiece {
                 AbstractPiece ap = cb.getPiece(i, j);//lit dude lit
                 if(ap != null && ap.isWhite == isWhite) {
                     if(ap instanceof King && includeOtherKing) {
-                        output.add(ChessBoard.toSquare(i, j));
+                        addAllWODuplicates(ap.legalCaptures(cb, currentPosition), output);
                     } else if(!(ap instanceof King)) {
-                        output.add(ChessBoard.toSquare(i, j));
+                        addAllWODuplicates(ap.legalCaptures(cb, currentPosition), output);
                     }
                 }
             }
         }
-        return output;//lol;
+        return difference(otherArmy, output);//lol;
     }
     
+    /**
+     * Copies from one LinkedList to another, without duplicates.
+     * @param <V> the class of the objects contained in the LinkedLists
+     * @param from the LinkedList the elements are copied from
+     * @param to the LinkedList the elements are copied to
+     * @return a LinkedList with the elements copied
+     */
+    private <V> LinkedList<V> addAllWODuplicates(LinkedList<V> from, LinkedList<V> to) {
+        for(V v:from) {
+            if(!to.contains(v)) to.add(v);
+        }
+        return to;
+    }
+    
+    /**
+     * Removes elements in one LinkedList that are present in the other.
+     *  = b - a.
+     * @param <V> the class of the objects contained in the LinkedLists
+     * @param a the LinkedList to subtract
+     * @param b the LinkedList to subtract from
+     * @return the difference of the LinkedLists
+     */
+    private <V> LinkedList<V> difference(LinkedList<V> a, LinkedList<V> b) {
+        LinkedList<V> bCopy = new LinkedList<>(b);
+        for(V v:bCopy) {
+            if(a.contains(v)) bCopy.remove(v);
+        }
+        return bCopy;
+    }
 }
