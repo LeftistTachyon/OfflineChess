@@ -27,10 +27,10 @@ public class Pawn extends AbstractPiece {
             if(row == 6 && cb.isEmptySquare(column, row - 1) && cb.isEmptySquare(column, row - 2)) {
                 output.add(ChessBoard.shiftSquare(currentPosition, 0, -2));
             }
-            if(!cb.getPiece(column - 1, row - 1).isWhite) {
+            if(!cb.isEmptySquare(column - 1, row - 1) && !cb.getPiece(column - 1, row - 1).isWhite) {
                 output.add(ChessBoard.shiftSquare(currentPosition, -1, -1));
             }
-            if(!cb.getPiece(column + 1, row - 1).isWhite) {
+            if(!cb.isEmptySquare(column + 1, row - 1) && !cb.getPiece(column + 1, row - 1).isWhite) {
                 output.add(ChessBoard.shiftSquare(currentPosition, 1, -1));
             }
         } else {

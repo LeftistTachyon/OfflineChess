@@ -29,6 +29,16 @@ public class ChessBoard {
     private int x, y;
     
     /**
+     * The selected square
+     */
+    private String selected = null;
+    
+    /**
+     * Whether the player this board is facing is white
+     */
+    private boolean playerIsWhite = true; // set it during the server application
+    
+    /**
      * Default constructor.
      */
     public ChessBoard() {
@@ -122,6 +132,7 @@ public class ChessBoard {
     public void draw(Graphics g) {
         drawCheckers(g);
         drawPieces(g);
+        drawSelection(g);
     }
     
     /**
@@ -168,6 +179,10 @@ public class ChessBoard {
                 }
             }
         }
+    }
+    
+    private void drawSelection(Graphics g) {
+        
     }
     
     /**
@@ -315,5 +330,63 @@ public class ChessBoard {
      */
     public static String toSquare(int column, int row) {
         return "" + (char)('a' + column) + (8 - row);
+    }
+    
+    /**
+     * Moves a piece from fromWhere to toWhere
+     * @param fromWhere from where a piece is moved
+     * @param toWhere where to move a piece
+     */
+    public void movePiece(String fromWhere, String toWhere) {
+        movePiece(
+                ChessBoard.getColumn(fromWhere), 
+                ChessBoard.getRow(fromWhere), 
+                ChessBoard.getColumn(toWhere), 
+                ChessBoard.getRow(toWhere)
+        );
+    }
+    
+    /**
+     * Moves a piece from fromWhere(X, Y) to toWhere(X, Y)
+     * @param fromWhereX from where a piece is moved
+     * @param fromWhereY from where a piece is moved
+     * @param toWhereX where to move a piece
+     * @param toWhereY where to move a piece
+     */
+    public void movePiece(int fromWhereX, int fromWhereY, int toWhereX, int toWhereY) {
+        AbstractPiece temp = board[fromWhereX][fromWhereY];
+        board[fromWhereX][fromWhereY] = board[toWhereX][toWhereY];
+        board[toWhereX][toWhereY] = temp;
+    }
+    
+    /**
+     * Notifies this that the board has been clicked on a square
+     * @param square where the board has been clicked
+     */
+    public void clicked(String square) {
+        if(selected == null) {
+            if(!isEmptySquare(square) && (getPiece(square).isWhite == playerIsWhite)) {
+                selected = square;
+            }
+        } else {
+            if(!isEmptySquare(square)) {
+                if(getPiece(selected).isLegalMove(this, selected, square)) {
+                    movePiece(selected, square);
+                    selected = null;
+                } else {
+                    if(getPiece(square).isWhite == playerIsWhite) {
+                        selected = square;
+                    } else {
+                        selected = null;
+                    }
+                }
+            } else {
+                if(getPiece(selected).isLegalMove(this, selected, square)) {
+                    movePiece(selected, square);
+                    selected = null;
+                } else selected = null;
+            }
+        }
+        System.out.println("selected: " + selected);
     }
 }

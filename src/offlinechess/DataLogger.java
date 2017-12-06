@@ -32,6 +32,10 @@ public class DataLogger {
         writer = new BufferedWriter(new FileWriter(file, true));
     }
     
+    public void write(String s) {
+        
+    }
+    
     /**
      * Writes all of the data in a Collection
      * @param c the Collection to write

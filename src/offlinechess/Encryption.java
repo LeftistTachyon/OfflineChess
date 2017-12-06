@@ -1,5 +1,6 @@
 package offlinechess;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 public class Encryption {
@@ -56,23 +57,29 @@ public class Encryption {
      * @return the encoded text
      */
     public static String writableEncrypt(String plaintext, String key) {
-        int[] ints = encodeString(key);
-        int keyNum = key.hashCode()%64;
+        int[] ints = encodeString(plaintext); // Right
+        int keyNum = key.hashCode()%64; // Right
         for(int i = 0;i<ints.length;i++) {
             ints[i]--;
             ints[i] ^= keyNum+1;
-        }
-        return decodeString(ints);
+        } // Right
+        return decodeString(ints); // ??
     }
     
+    /**
+     * Decrypts the text from a writableEncypt
+     * @param ciphertext the encoded text
+     * @param key the key
+     * @return the plaintext
+     */
     public static String writeableDecrypt(String ciphertext, String key) {
-        int[] ints = encodeString(key);
-        int keyNum = key.hashCode()%64;
+        int[] ints = encodeString(ciphertext); // Right
+        int keyNum = key.hashCode()%64; // Right
         for(int i = 0;i<ints.length;i++) {
             ints[i] ^= keyNum+1;
             ints[i]++;
-        }
-        return decodeString(ints);
+        } // Right
+        return decodeString(ints); // ??
     }
     
     /**
@@ -84,10 +91,14 @@ public class Encryption {
         char[] chars = s.toCharArray();
         LinkedList<Integer> ints = new LinkedList<>();
         for(int i = 0;i<chars.length;i++) {
+            int encoded;
             if(chars[i] == '\'') {
                 i++;
-                ints.add(-encodeChar(chars[i]));
-            } else ints.add(encodeChar(chars[i]));
+                encoded = -encodeChar(chars[i]);
+            } else {
+                encoded = encodeChar(chars[i]);
+            }
+            ints.add(encoded);
         }
         int[] output = new int[ints.size()];
         for(int i = 0;i<output.length;i++) {
@@ -103,10 +114,15 @@ public class Encryption {
      */
     private static String decodeString(int[] ii) {
         String output = "";
-        for(int i = 0;i<output.length();i++) {
+        for(int i = 0;i<ii.length;i++) {
+            char c;
             if(ii[i] < 0) {
-                output += "\'" + decodeChar(-ii[i]);
-            } else output += decodeChar(ii[i]);
+                output += "\'";
+                c = decodeChar(-ii[i]);
+            } else {
+                c = decodeChar(ii[i]);
+            }
+            output += c;
         }
         return output;
     }
