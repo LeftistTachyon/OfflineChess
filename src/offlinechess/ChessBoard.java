@@ -323,6 +323,28 @@ public class ChessBoard {
     }
     
     /**
+     * Checks if a shift is valid
+     * @param col current column
+     * @param row current row
+     * @param colShift how much to shift the columns
+     * @param rowShift how much to shift the rows
+     * @return whether the shift is valid
+     */
+    public static boolean isValidShift(int col, int row, int colShift, int rowShift) {
+        if(isValidSquare(col, row)) {
+            int shiftedCol = col + colShift, shiftedRow = row + rowShift;
+            return isValidSquare(shiftedCol, shiftedRow);
+        } else return false;
+    }
+    
+    public static boolean isValidShift(String s, int colShift, int rowShift) {
+        return isValidShift(
+                ChessBoard.getColumn(s), ChessBoard.getRow(s), 
+                colShift, rowShift
+        );
+    }
+    
+    /**
      * Determines the square represented by the row and column
      * @param column the ABSOLUTE column
      * @param row the ABSOLUTE row
@@ -354,9 +376,9 @@ public class ChessBoard {
      * @param toWhereY where to move a piece
      */
     public void movePiece(int fromWhereX, int fromWhereY, int toWhereX, int toWhereY) {
-        AbstractPiece temp = board[fromWhereX][fromWhereY];
-        board[fromWhereX][fromWhereY] = board[toWhereX][toWhereY];
-        board[toWhereX][toWhereY] = temp;
+        board[toWhereX][toWhereY] = board[fromWhereX][fromWhereY];
+        board[fromWhereX][fromWhereY] = null;
+        playerIsWhite = !playerIsWhite;
     }
     
     /**
@@ -368,6 +390,8 @@ public class ChessBoard {
             if(!isEmptySquare(square) && (getPiece(square).isWhite == playerIsWhite)) {
                 selected = square;
             }
+        } else if(selected.equals(square)) {
+            selected = null;
         } else {
             if(!isEmptySquare(square)) {
                 if(getPiece(selected).isLegalMove(this, selected, square)) {
@@ -388,5 +412,30 @@ public class ChessBoard {
             }
         }
         System.out.println("selected: " + selected);
+        printBoard();
+    }
+    
+    private void printBoard() {
+        for(int i = 0;i<board[0].length;i++) {
+            for(int j = 0;j<board.length;j++) {
+                AbstractPiece ap = board[j][i];
+                if(ap == null) {
+                    System.out.print(" ");
+                } else if(ap instanceof Pawn) {
+                    System.out.print("P");
+                } else if(ap instanceof Rook) {
+                    System.out.print("R");
+                } else if(ap instanceof Knight) {
+                    System.out.print("K");
+                } else if(ap instanceof Bishop) {
+                    System.out.print("B");
+                } else if(ap instanceof Queen) {
+                    System.out.print("Q");
+                } else if(ap instanceof King) {
+                    System.out.print("K");
+                } 
+            }
+            System.out.println();
+        }
     }
 }

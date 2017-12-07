@@ -37,15 +37,15 @@ public class Pawn extends AbstractPiece {
             if(row == 7) assert false : "Pawns should have promoted already!";
             if(row == 0) assert false : "Dafuq black pawns shouldn\'t be on the eighth rank";
             if(cb.isEmptySquare(column, row + 1)) {
-                output.add(ChessBoard.shiftSquare(currentPosition, 0, +1));
+                output.add(ChessBoard.shiftSquare(currentPosition, 0, 1));
             }
             if(row == 1 && cb.isEmptySquare(column, row + 1) && cb.isEmptySquare(column, row + 2)) {
-                output.add(ChessBoard.shiftSquare(currentPosition, 0, -2));
+                output.add(ChessBoard.shiftSquare(currentPosition, 0, 2));
             }
-            if(cb.getPiece(column - 1, row + 1).isWhite) {
+            if(!cb.isEmptySquare(column - 1, row + 1) && cb.getPiece(column - 1, row + 1).isWhite) {
                 output.add(ChessBoard.shiftSquare(currentPosition, -1, 1));
             }
-            if(cb.getPiece(column + 1, row + 1).isWhite) {
+            if(!cb.isEmptySquare(column + 1, row + 1) && cb.getPiece(column + 1, row + 1).isWhite) {
                 output.add(ChessBoard.shiftSquare(currentPosition, 1, 1));
             }
         }
