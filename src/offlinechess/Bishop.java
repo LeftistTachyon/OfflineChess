@@ -17,45 +17,40 @@ public class Bishop extends AbstractPiece {
         if(!ChessBoard.isValidSquare(currentPosition)) throw new IllegalArgumentException("Invalid square");
         if(!(cb.getPiece(currentPosition) instanceof Bishop)) throw new IllegalArgumentException("This isn\'t a bishop!");
         LinkedList<String> output = new LinkedList<>();
-        String temp;
-        if(ChessBoard.isValidShift(currentPosition, 1, 1)) {
-            temp = ChessBoard.shiftSquare(currentPosition, 1, 1);
-            while(ChessBoard.isValidSquare(temp) && cb.isEmptySquare(temp)) {
-                output.add(temp);
-                temp = ChessBoard.shiftSquare(temp, 1, 1);
-            }
-            if(ChessBoard.isValidSquare(temp) && !cb.isEmptySquare(temp)) {
-                if(cb.getPiece(temp).isWhite ^ isWhite) {
-                    output.add(temp);
-                }
-            }
-        }
-        if(ChessBoard.isValidShift(currentPosition, 1, -1)) {
-            temp = ChessBoard.shiftSquare(currentPosition, 1, -1);
-            while(ChessBoard.isValidSquare(temp) && cb.isEmptySquare(temp)) {
-                output.add(temp);
-                temp = ChessBoard.shiftSquare(temp, 1, -1);
-            }
-            if(ChessBoard.isValidSquare(temp) && !cb.isEmptySquare(temp)) {
-                if(cb.getPiece(temp).isWhite ^ isWhite) {
-                    output.add(temp);
-                }
-            }
-        }
-        temp = ChessBoard.shiftSquare(currentPosition, -1, -1);
-        while(ChessBoard.isValidSquare(temp) && cb.isEmptySquare(temp)) {
+        String temp = currentPosition;
+        while(ChessBoard.isValidShift(temp, 1, 1) && cb.isEmptySquare(temp)) {
+            temp = ChessBoard.shiftSquare(temp, 1, 1);
             output.add(temp);
-            temp = ChessBoard.shiftSquare(temp, -1, -1);
         }
         if(ChessBoard.isValidSquare(temp) && !cb.isEmptySquare(temp)) {
             if(cb.getPiece(temp).isWhite ^ isWhite) {
                 output.add(temp);
             }
         }
-        temp = ChessBoard.shiftSquare(currentPosition, -1, 1);
-        while(ChessBoard.isValidSquare(temp) && cb.isEmptySquare(temp)) {
+        temp = currentPosition;
+        while(ChessBoard.isValidShift(temp, 1, -1) && cb.isEmptySquare(temp)) {
+            temp = ChessBoard.shiftSquare(temp, 1, -1);
             output.add(temp);
+        }
+        if(ChessBoard.isValidSquare(temp) && !cb.isEmptySquare(temp)) {
+            if(cb.getPiece(temp).isWhite ^ isWhite) {
+                output.add(temp);
+            }
+        }
+        temp = currentPosition;
+        while(ChessBoard.isValidShift(temp, -1, -1) && cb.isEmptySquare(temp)) {
+            temp = ChessBoard.shiftSquare(temp, -1, -1);
+            output.add(temp);
+        }
+        if(ChessBoard.isValidSquare(temp) && !cb.isEmptySquare(temp)) {
+            if(cb.getPiece(temp).isWhite ^ isWhite) {
+                output.add(temp);
+            }
+        }
+        temp = currentPosition;
+        while(ChessBoard.isValidShift(temp, -1, 1) && cb.isEmptySquare(temp)) {
             temp = ChessBoard.shiftSquare(temp, -1, 1);
+            output.add(temp);
         }
         if(ChessBoard.isValidSquare(temp) && !cb.isEmptySquare(temp)) {
             if(cb.getPiece(temp).isWhite ^ isWhite) {
@@ -69,5 +64,4 @@ public class Bishop extends AbstractPiece {
     public LinkedList<String> legalCaptures(ChessBoard cb, String currentPosition) {
         return legalMoves(cb, currentPosition);
     }
-    
 }
