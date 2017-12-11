@@ -1,8 +1,11 @@
 package offlinechess;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 
+/**
+ * A (crappy) encryption class
+ * @author Jed Wang
+ */
 public class Encryption {
     
     private static final String order = "rdNslE8M1zneT_BGiSLDghyWR3OZXbJ.50PoqmUItf2k4YwK6axHpvAcFj-9CuQV"; // 64 chars

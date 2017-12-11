@@ -13,7 +13,7 @@ public class King extends AbstractPiece {
     }
 
     @Override
-    public LinkedList<String> legalMoves(ChessBoard cb, String currentPosition) {
+    public LinkedList<String> allLegalMoves(ChessBoard cb, String currentPosition) {
         return moves(cb, currentPosition, true);
     }
 
@@ -33,79 +33,96 @@ public class King extends AbstractPiece {
         if(!ChessBoard.isValidSquare(currentPosition)) throw new IllegalArgumentException("Invalid square");
         if(!(cb.getPiece(currentPosition) instanceof King)) throw new IllegalArgumentException("This isn\'t a king!");
         LinkedList<String> output = new LinkedList<>();
-        String temp = ChessBoard.shiftSquare(currentPosition, 1, 0);
-        if(ChessBoard.isValidSquare(temp)) {
-            if(cb.isEmptySquare(temp)) {
-                output.add(temp);
-            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                output.add(temp);
+        String temp;
+        if(ChessBoard.isValidShift(currentPosition, 1, 0)) {
+            temp = ChessBoard.shiftSquare(currentPosition, 1, 0);
+            if(ChessBoard.isValidSquare(temp)) {
+                if(cb.isEmptySquare(temp)) {
+                    output.add(temp);
+                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                    output.add(temp);
+                }
             }
         }
-        temp = ChessBoard.shiftSquare(currentPosition, 1, 1);
-        if(ChessBoard.isValidSquare(temp)) {
-            if(cb.isEmptySquare(temp)) {
-                output.add(temp);
-            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                output.add(temp);
+        if(ChessBoard.isValidShift(currentPosition, 1, 1)) {
+            temp = ChessBoard.shiftSquare(currentPosition, 1, 1);
+            if(ChessBoard.isValidSquare(temp)) {
+                if(cb.isEmptySquare(temp)) {
+                    output.add(temp);
+                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                    output.add(temp);
+                }
             }
         }
-        temp = ChessBoard.shiftSquare(currentPosition, 0, 1);
-        if(ChessBoard.isValidSquare(temp)) {
-            if(cb.isEmptySquare(temp)) {
-                output.add(temp);
-            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                output.add(temp);
+        if(ChessBoard.isValidShift(currentPosition, 0, 1)) {
+            temp = ChessBoard.shiftSquare(currentPosition, 0, 1);
+            if(ChessBoard.isValidSquare(temp)) {
+                if(cb.isEmptySquare(temp)) {
+                    output.add(temp);
+                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                    output.add(temp);
+                }
             }
         }
-        temp = ChessBoard.shiftSquare(currentPosition, -1, 1);
-        if(ChessBoard.isValidSquare(temp)) {
-            if(cb.isEmptySquare(temp)) {
-                output.add(temp);
-            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                output.add(temp);
+        if(ChessBoard.isValidShift(currentPosition, -1, 1)) {
+            temp = ChessBoard.shiftSquare(currentPosition, -1, 1);
+            if(ChessBoard.isValidSquare(temp)) {
+                if(cb.isEmptySquare(temp)) {
+                    output.add(temp);
+                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                    output.add(temp);
+                }
             }
         }
-        temp = ChessBoard.shiftSquare(currentPosition, -1, 0);
-        if(ChessBoard.isValidSquare(temp)) {
-            if(cb.isEmptySquare(temp)) {
-                output.add(temp);
-            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                output.add(temp);
+        if(ChessBoard.isValidShift(currentPosition, -1, 0)) {
+            temp = ChessBoard.shiftSquare(currentPosition, -1, 0);
+            if(ChessBoard.isValidSquare(temp)) {
+                if(cb.isEmptySquare(temp)) {
+                    output.add(temp);
+                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                    output.add(temp);
+                }
             }
         }
-        temp = ChessBoard.shiftSquare(currentPosition, -1, -1);
-        if(ChessBoard.isValidSquare(temp)) {
-            if(cb.isEmptySquare(temp)) {//doooooodddddd wasussupppp
-                output.add(temp);
-            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                output.add(temp);
+        if(ChessBoard.isValidShift(currentPosition, -1, -1)) {
+            temp = ChessBoard.shiftSquare(currentPosition, -1, -1);
+            if(ChessBoard.isValidSquare(temp)) {
+                if(cb.isEmptySquare(temp)) {
+                    output.add(temp);
+                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                    output.add(temp);
+                }
             }
         }
-        temp = ChessBoard.shiftSquare(currentPosition, 0, -1);
-        if(ChessBoard.isValidSquare(temp)) {
-            if(cb.isEmptySquare(temp)) {//yoooo mannnnn
-                output.add(temp);
-            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                output.add(temp);
+        if(ChessBoard.isValidShift(currentPosition, 0, -1)) {
+            temp = ChessBoard.shiftSquare(currentPosition, 0, -1);
+            if(ChessBoard.isValidSquare(temp)) {
+                if(cb.isEmptySquare(temp)) {
+                    output.add(temp);
+                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                    output.add(temp);
+                }
             }
         }
-        temp = ChessBoard.shiftSquare(currentPosition, 1, -1);
-        if(ChessBoard.isValidSquare(temp)) {//sup sup
-            if(cb.isEmptySquare(temp)) {
-                output.add(temp);
-            } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                output.add(temp);
+        if(ChessBoard.isValidShift(currentPosition, 1, -1)) {
+            temp = ChessBoard.shiftSquare(currentPosition, 1, -1);
+            if(ChessBoard.isValidSquare(temp)) {
+                if(cb.isEmptySquare(temp)) {
+                    output.add(temp);
+                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                    output.add(temp);
+                }
             }
         }
         LinkedList<String> otherArmy = new LinkedList<>();
         for(int i = 0;i<8;i++) {
             for(int j = 0;j<8;j++) {
                 AbstractPiece ap = cb.getPiece(i, j);//lit dude lit
-                if(ap != null && ap.isWhite == isWhite) {
+                if(ap != null && (ap.isWhite ^ isWhite)) {
                     if(ap instanceof King && includeOtherKing) {
-                        addAllWODuplicates(ap.legalCaptures(cb, currentPosition), output);
+                        addAllWODuplicates(ap.legalCaptures(cb, ChessBoard.toSquare(i, j)), output);
                     } else if(!(ap instanceof King)) {
-                        addAllWODuplicates(ap.legalCaptures(cb, currentPosition), output);
+                        addAllWODuplicates(ap.legalCaptures(cb, ChessBoard.toSquare(i, j)), output);
                     }
                 }
             }
@@ -128,7 +145,7 @@ public class King extends AbstractPiece {
     }
     
     /**
-     * Removes elements in one LinkedList that are present in the other.
+     * Removes elements in one LinkedList that are present in the other.<br>
      *  = b - a.
      * @param <V> the class of the objects contained in the LinkedLists
      * @param a the LinkedList to subtract

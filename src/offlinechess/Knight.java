@@ -13,7 +13,7 @@ public class Knight extends AbstractPiece {
     }
 
     @Override
-    public LinkedList<String> legalMoves(ChessBoard cb, String currentPosition) {
+    public LinkedList<String> allLegalMoves(ChessBoard cb, String currentPosition) {
         if(!ChessBoard.isValidSquare(currentPosition)) throw new IllegalArgumentException("Invalid square");
         if(!(cb.getPiece(currentPosition) instanceof Knight)) throw new IllegalArgumentException("This isn\'t a knight!");
         LinkedList<String> output = new LinkedList<>();
@@ -103,7 +103,7 @@ public class Knight extends AbstractPiece {
 
     @Override
     public LinkedList<String> legalCaptures(ChessBoard cb, String currentPosition) {
-        return legalMoves(cb, currentPosition);
+        return allLegalMoves(cb, currentPosition);
     }
     
 }

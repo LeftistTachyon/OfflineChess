@@ -37,7 +37,25 @@ public abstract class AbstractPiece {
      * @param currentPosition the current place of the piece
      * @return all legal moves
      */
-    public abstract LinkedList<String> legalMoves(ChessBoard cb, String currentPosition);
+    public abstract LinkedList<String> allLegalMoves(ChessBoard cb, String currentPosition);
+    
+    /**
+     * Returns all of the legal moves this piece could make, taking into account check
+     * @param cb the current state of the chess game
+     * @param currentPosition the current place of the piece
+     * @return the legal moves this piece can make
+     */
+    public LinkedList<String> legalMoves(ChessBoard cb, String currentPosition) {
+        if(cb.inCheck(isWhite)) {
+            LinkedList<String> output = new LinkedList<>();
+            for(String s:output) {
+                ChessBoard copy = new ChessBoard(cb);
+                copy.movePiece(currentPosition, s);
+                if(!cb.inCheck(isWhite)) output.add(s);
+            }
+            return output;
+        } else return allLegalMoves(cb, currentPosition);
+    }
     
     /**
      * Returns all of the legal captures this piece could make

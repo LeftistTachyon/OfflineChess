@@ -18,18 +18,23 @@ public class ChessMain {
      * @throws java.io.IOException stuff happens with the file
      */
     public static void main(String[] args) throws IOException {
+        //System.out.println(Encryption.writableEncrypt("nargles", "Leftist_Tachyon"));
         ChessFrame cf = new ChessFrame();
-        DataLogger dl = new DataLogger(new File("src/userdata/users.cpd"));
         Scanner input = new Scanner(new File("src/userdata/users.cpd"));
-        int numUsers = Integer.parseInt(input.nextLine());
+        DataLogger dl = new DataLogger(new File("src/userdata/users.cpd"));
         LinkedList<User> users = new LinkedList<>();
-        for(int i = 0;i<numUsers;i++) {
+        while(input.hasNext()) {
             String[] data = input.nextLine().split(Pattern.quote("|"));
             users.add(new User(data[0], Encryption.decrypt(data[1]), Integer.parseInt(data[2])));
         }
+        /*
+        Leftist_Tachyon|'J'mg'1'R'.'W|1500
+        */
         while(cf.isVisible()) {
-            dl.writeAll(users);
+            dl.appendAll(users);
         }
+        dl.appendAll(users);
+        System.out.println("Closing!");
         dl.close();
         input.close();
     }

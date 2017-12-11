@@ -18,6 +18,6 @@ public class ChessFrame extends JFrame {
         super.getContentPane().add(new ChessPanel());
         super.setResizable(false);
         super.setVisible(true);
-        super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        super.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 }

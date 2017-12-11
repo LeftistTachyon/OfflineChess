@@ -18,9 +18,9 @@ public class DataLogger {
     private File file;
     
     /**
-     * The writer
+     * Whether this DataLogger is closed
      */
-    private BufferedWriter writer;
+    private boolean closed = false;
     
     /**
      * Constructor
@@ -29,21 +29,66 @@ public class DataLogger {
      */
     public DataLogger(File file) throws IOException {
         this.file = file;
-        writer = new BufferedWriter(new FileWriter(file, true));
     }
     
-    public void write(String s) {
-        
+    /**
+     * Writes a String to the file
+     * @param s the String to write
+     * @throws IOException if something goes wrong
+     */
+    public void write(String s) throws IOException {
+        if(!closed) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
+                writer.write(s);
+            }
+        } else throw new IOException("Already closed");
     }
     
     /**
      * Writes all of the data in a Collection
      * @param c the Collection to write
+     * @throws java.io.IOException if something goes wrong
      */
     public void writeAll(Collection c) throws IOException {
-        for(Object o:c) {
-            writer.write(o.toString());
-        }
+        if(!closed) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
+                for(Object o:c) {
+                    writer.write(o.toString());
+                }
+            }
+        } else throw new IOException("Already closed");
+    }
+    
+    /**
+     * Appends a String to the end of a file
+     * @param s the String to append
+     * @throws IOException if something goes wrong
+     */
+    public void append(String s) throws IOException {
+        if(!closed) {
+            try(BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
+                writer.append(s);
+            }
+        } else throw new IOException("Already closed");
+    }
+    
+    /**
+     * 
+     * @param c
+     * @throws IOException 
+     */
+    public void appendAll(Collection c) throws IOException {
+        if(!closed) {
+            try(BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
+                for(Object o:c) {
+                    writer.write(o.toString());
+                }
+            }
+        } else throw new IOException("Already closed");
+    }
+    
+    public void clearFile() throws IOException {
+        new FileWriter(file, false);
     }
     
     /**
@@ -51,6 +96,7 @@ public class DataLogger {
      * @throws IOException if something bad happens
      */
     public void close() throws IOException {
-        writer.close();
+        file = null;
+        closed = true;
     }
 }

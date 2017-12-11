@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
 import javax.imageio.ImageIO;
 
 /**
@@ -43,6 +44,16 @@ public class ChessBoard {
      */
     public ChessBoard() {
         board = new AbstractPiece[8][8];
+        initImages();
+        addPieces();
+        x = 0;
+        y = 0;
+    }
+    
+    /**
+     * Initializes the images
+     */
+    private void initImages() {
         String filename = "null.wtf";
         try {
             filename = "trueBishop.png";
@@ -86,9 +97,6 @@ public class ChessBoard {
             System.out.println("Could not find file images/" + filename);
             System.exit(1); 
         }
-        addPieces();
-        x = 0;
-        y = 0;
     }
     
     /**
@@ -119,10 +127,22 @@ public class ChessBoard {
         board[7][7] = new Rook(true);
     }
     
+    /**
+     * Constructor with coordinates
+     * @param x x of the top left corner
+     * @param y y of the top left corner
+     */
     public ChessBoard(int x, int y) {
         this();
         this.x = x;
         this.y = y;
+    }
+    
+    public ChessBoard(ChessBoard cb) {
+        this();
+        for (int i = 0; i < cb.board.length; i++) {
+            System.arraycopy(cb.board[i], 0, board[i], 0, cb.board[i].length);
+        }
     }
     
     /**
@@ -131,8 +151,8 @@ public class ChessBoard {
      */
     public void draw(Graphics g) {
         drawCheckers(g);
-        drawPieces(g);
         drawSelection(g);
+        drawPieces(g);
     }
     
     /**
@@ -159,30 +179,37 @@ public class ChessBoard {
         for(int i = 0;i<board.length*60;i+=60) {
             for(int j = 0;j<board[i/60].length*60;j+=60) {
                 if(board[i/60][j/60] instanceof Pawn) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whitePawn, i+5+x, j+5+x, 50, 50, null);
-                    else g.drawImage(blackPawn, i+5+x, j+5+x, 50, 50, null);
+                    if(board[i/60][j/60].isWhite) g.drawImage(whitePawn, i+5+x, j+5+y, 50, 50, null);
+                    else g.drawImage(blackPawn, i+5+x, j+5+y, 50, 50, null);
                 } else if(board[i/60][j/60] instanceof Rook) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteRook, i+5+x, j+5+x, 50, 50, null);
-                    else g.drawImage(blackRook, i+5+x, j+5+x, 50, 50, null);
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteRook, i+5+x, j+5+y, 50, 50, null);
+                    else g.drawImage(blackRook, i+5+x, j+5+y, 50, 50, null);
                 } else if(board[i/60][j/60] instanceof Knight) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteKnight, i+5+x, j+5+x, 50, 50, null);
-                    else g.drawImage(blackKnight, i+5+x, j+5+x, 50, 50, null);
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteKnight, i+5+x, j+5+y, 50, 50, null);
+                    else g.drawImage(blackKnight, i+5+x, j+5+y, 50, 50, null);
                 } else if(board[i/60][j/60] instanceof Bishop) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteBishop, i+5+x, j+5+x, 50, 50, null);
-                    else g.drawImage(blackBishop, i+5+x, j+5+x, 50, 50, null);
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteBishop, i+5+x, j+5+y, 50, 50, null);
+                    else g.drawImage(blackBishop, i+5+x, j+5+y, 50, 50, null);
                 } else if(board[i/60][j/60] instanceof Queen) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteQueen, i+5+x, j+5+x, 50, 50, null);
-                    else g.drawImage(blackQueen, i+5+x, j+5+x, 50, 50, null);
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteQueen, i+5+x, j+5+y, 50, 50, null);
+                    else g.drawImage(blackQueen, i+5+x, j+5+y, 50, 50, null);
                 } else if(board[i/60][j/60] instanceof King) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteKing, i+5+x, j+5+x, 50, 50, null);
-                    else g.drawImage(blackKing, i+5+x, j+5+x, 50, 50, null);
+                    if(board[i/60][j/60].isWhite) g.drawImage(whiteKing, i+5+x, j+5+y, 50, 50, null);
+                    else g.drawImage(blackKing, i+5+x, j+5+y, 50, 50, null);
                 }
             }
         }
     }
     
     private void drawSelection(Graphics g) {
-        
+        if(selected == null) return;
+        LinkedList<String> moves = getPiece(selected).legalMoves(this, selected);
+        g.setColor(Color.BLUE);
+        for(String s:moves) {
+            int x = ChessBoard.getColumn(s)*60, 
+                    y = ChessBoard.getRow(s)*60;
+            g.fillRect(x, y, 60, 60);
+        }
     }
     
     /**
@@ -197,7 +224,7 @@ public class ChessBoard {
     }
     
     /**
-     * Determines which piece occupies a space represented by ABSOLUTE coordinates
+     * Determines which piece occupies a space represented by ABSOLUTE coordinates<br>
      * i.e. (0, 0) represents the top left corner
      * @param col the ABSOLUTE column
      * @param row the ABSOLUTE row
@@ -250,12 +277,12 @@ public class ChessBoard {
     }
     
     /**
-     * Determines which column a square is referring to
-     * 
-     * The columns are ordered as such:
-     * |_|_|_|_|_|_|_|_|
-     *  0 1 2 3 4 5 6 7
-     *  a b c d e f g h
+     * Determines which column a square is referring to<br>
+     * <br>
+     * The columns are ordered as such:<br>
+     * |_|_|_|_|_|_|_|_|<br>
+     * |0 1 2 3 4 5 6 7<br>
+     * |a b c d e f g h
      * @param s a square
      * @return which column the String is referring to
      */
@@ -266,19 +293,19 @@ public class ChessBoard {
     }
     
     /**
-     * Determines which row a square is referring to
-     * 
-     * The rows are ordered as such:
-     *    _
-     * 0 |_
-     * 1 |_ 
-     * 2 |_
-     * 3 |_
-     * 4 |_
-     * 5 |_
-     * 6 |_
-     * 7 |_
-     *    W
+     * Determines which row a square is referring to<br>
+     * <br>
+     * The rows are ordered as such:<br>
+     * ____<br>
+     * 0 |_<br>
+     * 1 |_ <br>
+     * 2 |_<br>
+     * 3 |_<br>
+     * 4 |_<br>
+     * 5 |_<br>
+     * 6 |_<br>
+     * 7 |_<br>
+     * ___W
      * @param s
      * @return 
      */
@@ -337,6 +364,13 @@ public class ChessBoard {
         } else return false;
     }
     
+    /**
+     * Checks if this shift is valid
+     * @param s current square
+     * @param colShift how much to shift the columns
+     * @param rowShift how much to shift the rows
+     * @return whether the shift is valid
+     */
     public static boolean isValidShift(String s, int colShift, int rowShift) {
         return isValidShift(
                 ChessBoard.getColumn(s), ChessBoard.getRow(s), 
@@ -379,6 +413,53 @@ public class ChessBoard {
         board[toWhereX][toWhereY] = board[fromWhereX][fromWhereY];
         board[fromWhereX][fromWhereY] = null;
         playerIsWhite = !playerIsWhite;
+        if(inCheck(playerIsWhite)) System.out.println("Check!\n\n");
+    }
+    
+    /**
+     * Determines whether one side's king is in check
+     * @param isWhite whether the side to check is white (PUN INTENDED)
+     * @return whether the side is in check
+     */
+    public boolean inCheck(boolean isWhite) {
+        String kingPos = findKing(isWhite);
+        for(int i = 0;i<8;i++) {
+            for(int j = 0;j<8;j++) {
+                AbstractPiece ap = getPiece(i, j);//lit dude lit
+                if(ap != null)
+                    if(ap.isWhite == isWhite) 
+                        if(ap.legalCaptures(this, ChessBoard.toSquare(i, j)).contains(kingPos))
+                            return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Determines whether the king is checkmated
+     * @param isWhite whether the side to check is white (PUN INTENDED)
+     * @return whether the side is checkmated
+     */
+    public boolean checkMated(boolean isWhite) {
+        String kingPos = findKing(isWhite);
+        return getPiece(kingPos).legalMoves(this, kingPos).isEmpty() && inCheck(isWhite);
+    }
+    
+    /**
+     * Determines where the king is
+     * @param isWhite which king, white or black
+     * @return the king's position
+     */
+    private String findKing(boolean isWhite) {
+        String kingPos = null;
+        for(int i = 0;i<8;i++) {
+            for(int j = 0;j<8;j++) {
+                AbstractPiece ap = getPiece(i, j);//lit dude lit
+                if(ap instanceof King && ap.isWhite == isWhite) kingPos = ChessBoard.toSquare(i, j);
+            }
+        }
+        System.out.println(isWhite + "KingPos: " + kingPos);
+        return kingPos;
     }
     
     /**
@@ -412,9 +493,11 @@ public class ChessBoard {
             }
         }
         System.out.println("selected: " + selected);
-        printBoard();
     }
     
+    /**
+     * Prints the current state of the chess board.
+     */
     private void printBoard() {
         for(int i = 0;i<board[0].length;i++) {
             for(int j = 0;j<board.length;j++) {

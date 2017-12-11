@@ -75,5 +75,6 @@ public class ChessPanel extends JPanel {
             case ChessMouseListener.MOUSE_RELEASED:
                 break;
         }
+        repaint();
     }
 }
