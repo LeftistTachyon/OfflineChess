@@ -120,9 +120,9 @@ public class King extends AbstractPiece {
                 AbstractPiece ap = cb.getPiece(i, j);//lit dude lit
                 if(ap != null && (ap.isWhite ^ isWhite)) {
                     if(ap instanceof King && includeOtherKing) {
-                        addAllWODuplicates(ap.legalCaptures(cb, ChessBoard.toSquare(i, j)), output);
+                        addAllWODuplicates(ap.legalCaptures(cb, ChessBoard.toSquare(i, j)), otherArmy);
                     } else if(!(ap instanceof King)) {
-                        addAllWODuplicates(ap.legalCaptures(cb, ChessBoard.toSquare(i, j)), output);
+                        addAllWODuplicates(ap.legalCaptures(cb, ChessBoard.toSquare(i, j)), otherArmy);
                     }
                 }
             }

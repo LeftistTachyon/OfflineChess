@@ -412,6 +412,8 @@ public class ChessBoard {
     public void movePiece(int fromWhereX, int fromWhereY, int toWhereX, int toWhereY) {
         board[toWhereX][toWhereY] = board[fromWhereX][fromWhereY];
         board[fromWhereX][fromWhereY] = null;
+        System.out.println("Moved: " + playerIsWhite);
+        //if(inCheck(playerIsWhite)) System.out.println("Check!\n\n");
         playerIsWhite = !playerIsWhite;
         if(inCheck(playerIsWhite)) System.out.println("Check!\n\n");
     }
@@ -493,6 +495,7 @@ public class ChessBoard {
             }
         }
         System.out.println("selected: " + selected);
+        if(inCheck(playerIsWhite)) System.out.println("Check!\n\n");
     }
     
     /**
