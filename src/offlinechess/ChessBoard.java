@@ -413,7 +413,6 @@ public class ChessBoard {
         board[toWhereX][toWhereY] = board[fromWhereX][fromWhereY];
         board[fromWhereX][fromWhereY] = null;
         System.out.println("Moved: " + playerIsWhite);
-        //if(inCheck(playerIsWhite)) System.out.println("Check!\n\n");
         playerIsWhite = !playerIsWhite;
         if(inCheck(playerIsWhite)) System.out.println("Check!\n\n");
     }
@@ -429,7 +428,7 @@ public class ChessBoard {
             for(int j = 0;j<8;j++) {
                 AbstractPiece ap = getPiece(i, j);//lit dude lit
                 if(ap != null)
-                    if(ap.isWhite == isWhite) 
+                    if(ap.isWhite != isWhite) 
                         if(ap.legalCaptures(this, ChessBoard.toSquare(i, j)).contains(kingPos))
                             return true;
             }
@@ -495,7 +494,6 @@ public class ChessBoard {
             }
         }
         System.out.println("selected: " + selected);
-        if(inCheck(playerIsWhite)) System.out.println("Check!\n\n");
     }
     
     /**
