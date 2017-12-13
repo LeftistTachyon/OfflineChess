@@ -2,7 +2,7 @@
 Chess meant to be played offline. To be transferred to an online version.  
 
 ## TODO
- - [ ] Change images from ChessBoard to individual pieces (Issue #1)
+ - [ ] Change images from ChessBoard to individual pieces (Issue LeftistTachyon/OfflineChess#1)
  - [ ] Figure out the colors for the board (selection, moved)
  - [ ] En passant
  - [ ] Castling
