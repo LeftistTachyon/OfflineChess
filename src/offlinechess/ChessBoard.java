@@ -6,6 +6,8 @@ import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
@@ -204,11 +206,12 @@ public class ChessBoard {
     private void drawSelection(Graphics g) {
         if(selected == null) return;
         LinkedList<String> moves = getPiece(selected).legalMoves(this, selected);
-        g.setColor(Color.BLUE);
+        Color selection = new Color(0, 187, 28, 255/6);
+        g.setColor(selection);
         for(String s:moves) {
-            int x = ChessBoard.getColumn(s)*60, 
-                    y = ChessBoard.getRow(s)*60;
-            g.fillRect(x, y, 60, 60);
+            int x1 = ChessBoard.getColumn(s), 
+                    y1 = ChessBoard.getRow(s);
+            g.fillRect(x1*60, y1*60, 60, 60);
         }
     }
     
@@ -414,7 +417,8 @@ public class ChessBoard {
         board[fromWhereX][fromWhereY] = null;
         System.out.println("Moved: " + playerIsWhite);
         playerIsWhite = !playerIsWhite;
-        if(inCheck(playerIsWhite)) System.out.println("Check!\n\n");
+        if(checkMated(playerIsWhite)) System.out.println("Checkmate!\n");
+        else if(inCheck(playerIsWhite)) System.out.println("Check!\n");
     }
     
     /**
@@ -429,7 +433,8 @@ public class ChessBoard {
                 AbstractPiece ap = getPiece(i, j);//lit dude lit
                 if(ap != null)
                     if(ap.isWhite != isWhite) 
-                        if(ap.legalCaptures(this, ChessBoard.toSquare(i, j)).contains(kingPos))
+                        //if(ap.legalCaptures(this, ChessBoard.toSquare(i, j)).contains(kingPos))
+                        if(ap.isAllLegalMove(this, ChessBoard.toSquare(i, j), kingPos))
                             return true;
             }
         }
@@ -499,7 +504,7 @@ public class ChessBoard {
     /**
      * Prints the current state of the chess board.
      */
-    private void printBoard() {
+    public void printBoard() {
         for(int i = 0;i<board[0].length;i++) {
             for(int j = 0;j<board.length;j++) {
                 AbstractPiece ap = board[j][i];

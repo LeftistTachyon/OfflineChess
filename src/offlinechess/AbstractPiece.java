@@ -39,6 +39,10 @@ public abstract class AbstractPiece {
      */
     public abstract LinkedList<String> allLegalMoves(ChessBoard cb, String currentPosition);
     
+    public boolean isAllLegalMove(ChessBoard cb, String fromWhere, String toWhere) {
+        return allLegalMoves(cb, fromWhere).contains(toWhere);
+    }
+    
     /**
      * Returns all of the legal moves this piece could make, taking into account check
      * @param cb the current state of the chess game
@@ -47,11 +51,12 @@ public abstract class AbstractPiece {
      */
     public LinkedList<String> legalMoves(ChessBoard cb, String currentPosition) {
         if(cb.inCheck(isWhite)) {
+            LinkedList<String> allLegal = allLegalMoves(cb, currentPosition);
             LinkedList<String> output = new LinkedList<>();
-            for(String s:output) {
+            for(String s:allLegal) {
                 ChessBoard copy = new ChessBoard(cb);
                 copy.movePiece(currentPosition, s);
-                if(!cb.inCheck(isWhite)) output.add(s);
+                if(!copy.inCheck(isWhite)) output.add(s);
             }
             return output;
         } else return allLegalMoves(cb, currentPosition);
