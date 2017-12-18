@@ -1,12 +1,22 @@
 package offlinechess;
 
+import java.awt.Graphics;
+import java.awt.Image;
+import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedList;
+import javax.imageio.ImageIO;
 
 /**
  * A class that represents the king
  * @author Jed Wang
  */
 public class King extends AbstractPiece {
+    
+    /**
+     * Whether this king has moved before - used to check castling
+     */
+    private boolean moved = false;
 
     public King(boolean isWhite) {
         super(isWhite);
@@ -114,6 +124,21 @@ public class King extends AbstractPiece {
                 }
             }
         }
+        boolean canCastle = false;
+        if(!moved) {
+            canCastle = true;
+            output.add(currentPosition);
+            // white on 7, black on 0
+            int column = (isWhite)?7:0;
+            // 1, 2, 3, Queenside
+            if(cb.isEmptySquare(column, 1) && cb.isEmptySquare(column, 2) && cb.isEmptySquare(column, 3)) {
+                output.add(ChessBoard.shiftSquare(currentPosition, -2, 0));
+            }
+            // 5, 6, Kingside
+            if(cb.isEmptySquare(column, 5) && cb.isEmptySquare(column, 6)) {
+                output.add(ChessBoard.shiftSquare(currentPosition, 2, 0));
+            }
+        }
         LinkedList<String> otherArmy = new LinkedList<>();
         for(int i = 0;i<8;i++) {
             for(int j = 0;j<8;j++) {
@@ -127,7 +152,21 @@ public class King extends AbstractPiece {
                 }
             }
         }
-        return difference(otherArmy, output);//lol;
+        LinkedList<String> difference = difference(otherArmy, output); //lol;
+        if(canCastle) {
+            if(!difference.contains(currentPosition)) {
+                difference.remove(ChessBoard.shiftSquare(currentPosition, -2, 0));
+                difference.remove(ChessBoard.shiftSquare(currentPosition, 2, 0));
+            }
+            if(!difference.contains(ChessBoard.shiftSquare(currentPosition, 1, 0))) {
+                difference.remove(ChessBoard.shiftSquare(currentPosition, 2, 0));
+            }
+            if(!difference.contains(ChessBoard.shiftSquare(currentPosition, -1, 0))) {
+                difference.remove(ChessBoard.shiftSquare(currentPosition, -2, 0));
+            }
+        }
+        difference.remove(currentPosition);
+        return difference;
     }
     
     /**
@@ -154,9 +193,63 @@ public class King extends AbstractPiece {
      */
     private <V> LinkedList<V> difference(LinkedList<V> a, LinkedList<V> b) {
         LinkedList<V> bCopy = new LinkedList<>(b);
-        for(V v:bCopy) {
-            if(a.contains(v)) bCopy.remove(v);
+        LinkedList<V> aCopy = new LinkedList<>(a);
+        for(V v:aCopy) {
+            if(bCopy.contains(v)) bCopy.remove(v);
         }
         return bCopy;
+    }
+    
+    /**
+     * The images for the black and white pieces
+     */
+    private static Image black, white;
+    
+    /**
+     * Loads the images for this piece
+     * @param b the black image
+     * @param w the white image
+     * @throws IOException if something goes wrong
+     */
+    public static void loadImages(URL b, URL w) throws IOException {
+        white = ImageIO.read(w);
+        black = ImageIO.read(b);
+    }
+    
+    /**
+     * Draws this piece
+     * @param g the Graphics to draw on
+     * @param x the X coordinate of the image
+     * @param y the Y coordinate of the image
+     * @param width the width of the picture
+     * @param height the height of the picture
+     */
+    @Override
+    public void draw(Graphics g, int x, int y, int width, int height) {
+        if(isWhite) {
+            g.drawImage(white, x, y, width, height, null);
+        } else {
+            g.drawImage(black, x, y, width, height, null);
+        }
+    }
+
+    @Override
+    public String getCharRepresentation() {
+        return "K";
+    }
+    
+    /**
+     * Notifies the King that it has moved
+     */
+    public void notifyOfMove() {
+        moved = true;
+    }
+
+    /**
+     * Returns whether this King has moved
+     * @return whether this King has moved
+     */
+    public boolean isMoved() {
+        return moved;
     }
 }

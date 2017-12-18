@@ -1,6 +1,11 @@
 package offlinechess;
 
+import java.awt.Graphics;
+import java.awt.Image;
+import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedList;
+import javax.imageio.ImageIO;
 
 /**
  * A class to represent any chess piece
@@ -69,4 +74,42 @@ public abstract class AbstractPiece {
      * @return all legal captures
      */
     public abstract LinkedList<String> legalCaptures(ChessBoard cb, String currentPosition);
+    
+    /**
+     * The images for the black and white pieces
+     */
+    private static Image black, white;
+    
+    /**
+     * Loads the images for this piece
+     * @param b the black image
+     * @param w the white image
+     * @throws IOException if something goes wrong
+     */
+    public static void loadImages(URL b, URL w) throws IOException {
+        white = ImageIO.read(w);
+        black = ImageIO.read(b);
+    }
+    
+    /**
+     * Draws this piece
+     * @param g the Graphics to draw on
+     * @param x the X coordinate of the image
+     * @param y the Y coordinate of the image
+     * @param width the width of the picture
+     * @param height the height of the picture
+     */
+    public void draw(Graphics g, int x, int y, int width, int height) {
+        if(isWhite) {
+            g.drawImage(white, x, y, width, height, null);
+        } else {
+            g.drawImage(black, x, y, width, height, null);
+        }
+    }
+    
+    /**
+     * Returns the character that represents this piece
+     * @return the character that represents this piece
+     */
+    public abstract String getCharRepresentation();
 }

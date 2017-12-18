@@ -21,6 +21,16 @@ public class ChessPanel extends JPanel {
     private ChessMouseListener cml;
     
     /**
+     * A reference to the most recent ChessPanel created
+     */
+    private static ChessPanel _this;
+    
+    /**
+     * When to stop the game
+     */
+    private volatile boolean stop = false;
+    
+    /**
      * Default constructor
      */
     public ChessPanel() {
@@ -28,6 +38,7 @@ public class ChessPanel extends JPanel {
         cb = new ChessBoard();
         addMouseListener(cml);
         super.setVisible(true);
+        _this = this;
     }
 
     /**
@@ -76,5 +87,40 @@ public class ChessPanel extends JPanel {
                 break;
         }
         repaint();
+    }
+    
+    /**
+     * Determines where the mouse currently is
+     * @return A point representing the mouse's position
+     */
+    public static Point getMouseCoordinates() {
+        return _this.getMousePosition();
+    }
+    
+    /**
+     * A method that starts the redrawing of the chess board constantly
+     */
+    public void start() {
+        new Thread() {
+            @Override
+            public void run() {
+                while(!stop) {
+                    repaint();
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                System.out.println("Thread stopped!");
+            }
+        }.start();
+    }
+    
+    /**
+     * Stops this thread and redrawing the chess board.
+     */
+    public void stop() {
+        stop = true;
     }
 }

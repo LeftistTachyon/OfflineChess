@@ -10,14 +10,29 @@ import javax.swing.JFrame;
 public class ChessFrame extends JFrame {
     
     /**
+     * The content panel/chess panel
+     */
+    private ChessPanel cp;
+    
+    /**
      * Default constructor
      */
     public ChessFrame() {
         super("Offline Chess");
+        cp = new ChessPanel();
         setSize(new Dimension(485, 510));
-        super.getContentPane().add(new ChessPanel());
+        super.getContentPane().add(cp);
         super.setResizable(false);
         super.setVisible(true);
         super.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        cp.start();
+    }
+    
+    /**
+     * Stops redrawing the chess board
+     */
+    public void stop() {
+        System.out.println("STOP!");
+        cp.stop();
     }
 }

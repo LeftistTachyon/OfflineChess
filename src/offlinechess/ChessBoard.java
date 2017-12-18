@@ -3,12 +3,10 @@ package offlinechess;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.io.IOException;
-import java.net.URL;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 
 /**
  * A class that represents a chess board
@@ -42,6 +40,21 @@ public class ChessBoard {
     private boolean playerIsWhite = true; // set it during the server application
     
     /**
+     * The size of the individual chess squares
+     */
+    public final int SQUARE_SIZE = 60; // change to 50 soon
+    
+    /**
+     * The offset to the center needed for a 13-diameter square
+     */
+    public final int CENTER_OFFSET = (SQUARE_SIZE-13)/2;
+    
+    /**
+     * The sizes of the triangles that surround a piece that can be captured
+     */
+    public final int TRIANGLE_SIZE = (int) ((11.0/51)*SQUARE_SIZE);
+    
+    /**
      * Default constructor.
      */
     public ChessBoard() {
@@ -56,47 +69,45 @@ public class ChessBoard {
      * Initializes the images
      */
     private void initImages() {
-        String filename = "null.wtf";
         try {
-            filename = "trueBishop.png";
-            URL url = getClass().getResource("/images/" + filename);
-            whiteBishop = ImageIO.read(url);
-            filename = "trueKing.png";
-            url = getClass().getResource("/images/" + filename);
-            whiteKing = ImageIO.read(url);
-            filename = "trueKnight.png";
-            url = getClass().getResource("/images/" + filename);
-            whiteKnight = ImageIO.read(url);
-            filename = "truePawn.png";
-            url = getClass().getResource("/images/" + filename);
-            whitePawn = ImageIO.read(url);
-            filename = "trueQueen.png";
-            url = getClass().getResource("/images/" + filename);
-            whiteQueen = ImageIO.read(url);
-            filename = "trueRook.png";
-            url = getClass().getResource("/images/" + filename);
-            whiteRook = ImageIO.read(url);
-            filename = "falseBishop.png";
-            url = getClass().getResource("/images/" + filename);
-            blackBishop = ImageIO.read(url);
-            filename = "falseKing.png";
-            url = getClass().getResource("/images/" + filename);
-            blackKing = ImageIO.read(url);
-            filename = "falseKnight.png";
-            url = getClass().getResource("/images/" + filename);
-            blackKnight = ImageIO.read(url);
-            filename = "falsePawn.png";
-            url = getClass().getResource("/images/" + filename);
-            blackPawn = ImageIO.read(url);
-            filename = "falseQueen.png";
-            url = getClass().getResource("/images/" + filename);
-            blackQueen = ImageIO.read(url);
-            filename = "falseRook.png";
-            url = getClass().getResource("/images/" + filename);
-            blackRook = ImageIO.read(url);
+            Bishop.loadImages(getClass().getResource("/images/falseBishop.png"), getClass().getResource("/images/trueBishop.png"));
+        } catch(IOException e) {
+            System.err.println("Could not find Bishop file images");
+            System.exit(1); 
         }
-        catch(IOException e) {
-            System.out.println("Could not find file images/" + filename);
+        
+        try {
+            King.loadImages(getClass().getResource("/images/falseKing.png"), getClass().getResource("/images/trueKing.png"));
+        } catch(IOException e) {
+            System.err.println("Could not find King file images");
+            System.exit(1); 
+        }
+        
+        try {
+            Knight.loadImages(getClass().getResource("/images/falseKnight.png"), getClass().getResource("/images/trueKnight.png"));
+        } catch(IOException e) {
+            System.err.println("Could not find Knight file images");
+            System.exit(1); 
+        }
+        
+        try {
+            Pawn.loadImages(getClass().getResource("/images/falsePawn.png"), getClass().getResource("/images/truePawn.png"));
+        } catch(IOException e) {
+            System.err.println("Could not find Pawn file images");
+            System.exit(1); 
+        }
+        
+        try {
+            Queen.loadImages(getClass().getResource("/images/falseQueen.png"), getClass().getResource("/images/trueQueen.png"));
+        } catch(IOException e) {
+            System.err.println("Could not find Queen file images");
+            System.exit(1); 
+        }
+        
+        try {
+            Rook.loadImages(getClass().getResource("/images/falseRook.png"), getClass().getResource("/images/trueRook.png"));
+        } catch(IOException e) {
+            System.err.println("Could not find Rook file images");
             System.exit(1); 
         }
     }
@@ -167,8 +178,8 @@ public class ChessBoard {
         g.setColor(new Color(181, 136, 99));
         for(int i = x;i<480+x;i+=120) {
             for(int j = y;j<480+y;j+=120) {
-                g.fillRect(i, j, 60, 60);
-                g.fillRect(i+60, j+60, 60, 60);
+                g.fillRect(i, j, SQUARE_SIZE, SQUARE_SIZE);
+                g.fillRect(i+SQUARE_SIZE, j+SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
             }
         }
     }
@@ -178,27 +189,9 @@ public class ChessBoard {
      * @param g Graphics to draw on
      */
     private void drawPieces(Graphics g) {
-        for(int i = 0;i<board.length*60;i+=60) {
-            for(int j = 0;j<board[i/60].length*60;j+=60) {
-                if(board[i/60][j/60] instanceof Pawn) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whitePawn, i+5+x, j+5+y, 50, 50, null);
-                    else g.drawImage(blackPawn, i+5+x, j+5+y, 50, 50, null);
-                } else if(board[i/60][j/60] instanceof Rook) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteRook, i+5+x, j+5+y, 50, 50, null);
-                    else g.drawImage(blackRook, i+5+x, j+5+y, 50, 50, null);
-                } else if(board[i/60][j/60] instanceof Knight) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteKnight, i+5+x, j+5+y, 50, 50, null);
-                    else g.drawImage(blackKnight, i+5+x, j+5+y, 50, 50, null);
-                } else if(board[i/60][j/60] instanceof Bishop) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteBishop, i+5+x, j+5+y, 50, 50, null);
-                    else g.drawImage(blackBishop, i+5+x, j+5+y, 50, 50, null);
-                } else if(board[i/60][j/60] instanceof Queen) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteQueen, i+5+x, j+5+y, 50, 50, null);
-                    else g.drawImage(blackQueen, i+5+x, j+5+y, 50, 50, null);
-                } else if(board[i/60][j/60] instanceof King) {
-                    if(board[i/60][j/60].isWhite) g.drawImage(whiteKing, i+5+x, j+5+y, 50, 50, null);
-                    else g.drawImage(blackKing, i+5+x, j+5+y, 50, 50, null);
-                }
+        for(int i = 0;i<board.length*SQUARE_SIZE;i+=SQUARE_SIZE) {
+            for(int j = 0;j<board[i/SQUARE_SIZE].length*SQUARE_SIZE;j+=SQUARE_SIZE) {
+                if(board[i/SQUARE_SIZE][j/SQUARE_SIZE] != null) board[i/SQUARE_SIZE][j/SQUARE_SIZE].draw(g, i+5+x, j+5+y, 50, 50);
             }
         }
     }
@@ -206,13 +199,42 @@ public class ChessBoard {
     private void drawSelection(Graphics g) {
         if(selected == null) return;
         LinkedList<String> moves = getPiece(selected).legalMoves(this, selected);
-        Color selection = new Color(0, 187, 28, 255/6);
-        g.setColor(selection);
+        Color moveDest = new Color(20, 85, 30, 77);
+        g.setColor(moveDest);
+        final Point p = ChessPanel.getMouseCoordinates();
+        System.out.println((p == null)?"null":"(" + p.x + ", " + p.y + ")");
         for(String s:moves) {
             int x1 = ChessBoard.getColumn(s), 
                     y1 = ChessBoard.getRow(s);
-            g.fillRect(x1*60, y1*60, 60, 60);
+            
+            if(p != null) {
+                if((p.x >= x1*SQUARE_SIZE && p.x <= x1*SQUARE_SIZE+SQUARE_SIZE) && (p.y >= y1*SQUARE_SIZE && p.y <= y1*SQUARE_SIZE+SQUARE_SIZE)) {
+                    g.fillRect(x1*SQUARE_SIZE, y1*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+                    continue;
+                }
+            }
+            if(isEmptySquare(x1, y1)) {
+                g.fillOval(x1*SQUARE_SIZE+CENTER_OFFSET, y1*SQUARE_SIZE+CENTER_OFFSET, 14, 14);
+            } else {
+                /*
+                1___2
+                 | |
+                4---3
+                */
+                Point one = new Point(x1*SQUARE_SIZE, y1*SQUARE_SIZE), 
+                        two = new Point(x1*SQUARE_SIZE + SQUARE_SIZE, y1*SQUARE_SIZE), 
+                        three = new Point(x1*SQUARE_SIZE + SQUARE_SIZE, y1*SQUARE_SIZE + SQUARE_SIZE), 
+                        four = new Point(x1*SQUARE_SIZE, y1*SQUARE_SIZE + SQUARE_SIZE);
+                
+                g.fillPolygon(new int[]{one.x, one.x, one.x+TRIANGLE_SIZE}, new int[]{one.y, one.y+TRIANGLE_SIZE, one.y}, 3); // 1
+                g.fillPolygon(new int[]{two.x, two.x, two.x-TRIANGLE_SIZE}, new int[]{two.y, two.y+TRIANGLE_SIZE, two.y}, 3); // 2
+                g.fillPolygon(new int[]{three.x, three.x, three.x-TRIANGLE_SIZE}, new int[]{three.y, three.y-TRIANGLE_SIZE, three.y}, 3); // 3
+                g.fillPolygon(new int[]{four.x, four.x, four.x+TRIANGLE_SIZE}, new int[]{four.y, four.y-TRIANGLE_SIZE, four.y}, 3); // 4
+            }
         }
+        Color selection = new Color(20, 85, 30, 128);
+        g.setColor(selection);
+        g.fillRect(ChessBoard.getColumn(selected)*SQUARE_SIZE, ChessBoard.getRow(selected)*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
     }
     
     /**
@@ -413,6 +435,21 @@ public class ChessBoard {
      * @param toWhereY where to move a piece
      */
     public void movePiece(int fromWhereX, int fromWhereY, int toWhereX, int toWhereY) {
+        if(board[fromWhereX][fromWhereY] instanceof King) {
+            if(Math.abs(fromWhereX-toWhereX) == 2 && fromWhereY == toWhereY) {
+                // Castling
+                if(fromWhereX < toWhereX) {
+                    // Castling Kingside
+                    board[toWhereX-1][toWhereY] = board[7][fromWhereY];
+                    board[7][fromWhereY] = null;
+                } else {
+                    // Castling Queenside
+                    board[toWhereX+1][toWhereY] = board[0][fromWhereY];
+                    board[0][fromWhereY] = null;
+                }
+            }
+            ((King)(board[fromWhereX][fromWhereY])).notifyOfMove();
+        }
         board[toWhereX][toWhereY] = board[fromWhereX][fromWhereY];
         board[fromWhereX][fromWhereY] = null;
         System.out.println("Moved: " + playerIsWhite);
@@ -510,19 +547,7 @@ public class ChessBoard {
                 AbstractPiece ap = board[j][i];
                 if(ap == null) {
                     System.out.print(" ");
-                } else if(ap instanceof Pawn) {
-                    System.out.print("P");
-                } else if(ap instanceof Rook) {
-                    System.out.print("R");
-                } else if(ap instanceof Knight) {
-                    System.out.print("K");
-                } else if(ap instanceof Bishop) {
-                    System.out.print("B");
-                } else if(ap instanceof Queen) {
-                    System.out.print("Q");
-                } else if(ap instanceof King) {
-                    System.out.print("K");
-                } 
+                } else System.out.println(ap.getCharRepresentation());
             }
             System.out.println();
         }

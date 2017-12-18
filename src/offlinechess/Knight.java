@@ -1,6 +1,11 @@
 package offlinechess;
 
+import java.awt.Graphics;
+import java.awt.Image;
+import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedList;
+import javax.imageio.ImageIO;
 
 /**
  * A class that represents a knight
@@ -106,4 +111,41 @@ public class Knight extends AbstractPiece {
         return allLegalMoves(cb, currentPosition);
     }
     
+    /**
+     * The images for the black and white pieces
+     */
+    private static Image black, white;
+    
+    /**
+     * Loads the images for this piece
+     * @param b the black image
+     * @param w the white image
+     * @throws IOException if something goes wrong
+     */
+    public static void loadImages(URL b, URL w) throws IOException {
+        white = ImageIO.read(w);
+        black = ImageIO.read(b);
+    }
+    
+    /**
+     * Draws this piece
+     * @param g the Graphics to draw on
+     * @param x the X coordinate of the image
+     * @param y the Y coordinate of the image
+     * @param width the width of the picture
+     * @param height the height of the picture
+     */
+    @Override
+    public void draw(Graphics g, int x, int y, int width, int height) {
+        if(isWhite) {
+            g.drawImage(white, x, y, width, height, null);
+        } else {
+            g.drawImage(black, x, y, width, height, null);
+        }
+    }
+
+    @Override
+    public String getCharRepresentation() {
+        return "N";
+    }
 }

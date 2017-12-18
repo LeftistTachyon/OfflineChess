@@ -20,6 +20,7 @@ public class ChessMain {
     public static void main(String[] args) throws IOException {
         //System.out.println(Encryption.writableEncrypt("nargles", "Leftist_Tachyon"));
         ChessFrame cf = new ChessFrame();
+        System.out.println("Past the chessframe");
         Scanner input = new Scanner(new File("src/userdata/users.cpd"));
         DataLogger dl = new DataLogger(new File("src/userdata/users.cpd"));
         LinkedList<User> users = new LinkedList<>();
@@ -27,12 +28,10 @@ public class ChessMain {
             String[] data = input.nextLine().split(Pattern.quote("|"));
             users.add(new User(data[0], Encryption.decrypt(data[1]), Integer.parseInt(data[2])));
         }
-        /*
-        Leftist_Tachyon|'J'mg'1'R'.'W|1500
-        */
         while(cf.isVisible()) {
             dl.appendAll(users);
         }
+        cf.stop();
         dl.appendAll(users);
         System.out.println("Closing!");
         dl.close();
