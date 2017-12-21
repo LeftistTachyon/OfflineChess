@@ -4,8 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -40,6 +40,11 @@ public class ChessBoard {
     private boolean playerIsWhite = true; // set it during the server application
     
     /**
+     * The MoveRecorder
+     */
+    private MoveRecorder mr;
+    
+    /**
      * The size of the individual chess squares
      */
     public final int SQUARE_SIZE = 60; // change to 50 soon
@@ -61,6 +66,7 @@ public class ChessBoard {
         board = new AbstractPiece[8][8];
         initImages();
         addPieces();
+        mr = new MoveRecorder();
         x = 0;
         y = 0;
     }
@@ -208,7 +214,7 @@ public class ChessBoard {
                     y1 = ChessBoard.getRow(s);
             
             if(p != null) {
-                if((p.x >= x1*SQUARE_SIZE && p.x <= x1*SQUARE_SIZE+SQUARE_SIZE) && (p.y >= y1*SQUARE_SIZE && p.y <= y1*SQUARE_SIZE+SQUARE_SIZE)) {
+                if(isEmptySquare(x1, y1) && (p.x >= x1*SQUARE_SIZE && p.x <= x1*SQUARE_SIZE+SQUARE_SIZE) && (p.y >= y1*SQUARE_SIZE && p.y <= y1*SQUARE_SIZE+SQUARE_SIZE)) {
                     g.fillRect(x1*SQUARE_SIZE, y1*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
                     continue;
                 }
@@ -450,10 +456,13 @@ public class ChessBoard {
             }
             ((King)(board[fromWhereX][fromWhereY])).notifyOfMove();
         }
+        
+        ChessBoard thisCopy = new ChessBoard(this);
         board[toWhereX][toWhereY] = board[fromWhereX][fromWhereY];
         board[fromWhereX][fromWhereY] = null;
         System.out.println("Moved: " + playerIsWhite);
         playerIsWhite = !playerIsWhite;
+        mr.moved(thisCopy, this, ChessBoard.toSquare(fromWhereX, fromWhereY), ChessBoard.toSquare(toWhereX, toWhereY));
         if(checkMated(playerIsWhite)) System.out.println("Checkmate!\n");
         else if(inCheck(playerIsWhite)) System.out.println("Check!\n");
     }
@@ -506,6 +515,48 @@ public class ChessBoard {
     }
     
     /**
+     * Determines where all of the pieces which fit the criteria
+     * @param whichPiece which piece, determined by the number
+     * @param isWhite whether the piece is white
+     * @return where all of the pieces are
+     */
+    public ArrayList<String> findAll(int whichPiece, boolean isWhite) {
+        String representation;
+        switch(whichPiece) {
+            case MoveRecorder.BISHOP:
+                representation = "B";
+                break;
+            case MoveRecorder.KING:
+                representation = "K";
+                break;
+            case MoveRecorder.KNIGHT:
+                representation = "N";
+                break;
+            case MoveRecorder.PAWN:
+                representation = "P";
+                break;
+            case MoveRecorder.QUEEN:
+                representation = "Q";
+                break;
+            case MoveRecorder.ROOK:
+                representation = "R";
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown piece type: " + whichPiece);
+        }
+        ArrayList<String> output = new ArrayList<>();
+        for(int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if(board[i][j] == null) continue;
+                if(isWhite == board[i][j].isWhite && board[i][j].getCharRepresentation().equals(representation)) {
+                    output.add(toSquare(i, j));
+                }
+            }
+        }
+        return output;
+    }
+    
+    /**
      * Notifies this that the board has been clicked on a square
      * @param square where the board has been clicked
      */
@@ -551,5 +602,9 @@ public class ChessBoard {
             }
             System.out.println();
         }
+    }
+    
+    public void printMoves() {
+        System.out.println(mr.toString());
     }
 }

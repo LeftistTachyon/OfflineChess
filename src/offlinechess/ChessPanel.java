@@ -122,5 +122,6 @@ public class ChessPanel extends JPanel {
      */
     public void stop() {
         stop = true;
+        cb.printMoves();
     }
 }
