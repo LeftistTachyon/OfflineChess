@@ -1,0 +1,8 @@
+// (250,250,250,0.7); other squares/background
+// circle as big as square
+// radial shadow (inside)#b0b0b0 -- (outside)#808080
+// 3px outward, 25px fade
+// not hovered piece: 80% size
+// hovered shadow outside #d85000
+// 8px outward, 48px fade
+// hovered piece: 100% size
