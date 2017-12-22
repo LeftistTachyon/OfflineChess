@@ -1,7 +1,7 @@
 package offlinechess;
 
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
@@ -55,16 +55,14 @@ public abstract class AbstractPiece {
      * @return the legal moves this piece can make
      */
     public LinkedList<String> legalMoves(ChessBoard cb, String currentPosition) {
-        if(cb.inCheck(isWhite)) {
-            LinkedList<String> allLegal = allLegalMoves(cb, currentPosition);
-            LinkedList<String> output = new LinkedList<>();
-            for(String s:allLegal) {
-                ChessBoard copy = new ChessBoard(cb);
-                copy.movePiece(currentPosition, s);
-                if(!copy.inCheck(isWhite)) output.add(s);
-            }
-            return output;
-        } else return allLegalMoves(cb, currentPosition);
+        LinkedList<String> allLegal = allLegalMoves(cb, currentPosition);
+        LinkedList<String> output = new LinkedList<>();
+        for(String s:allLegal) {
+            ChessBoard copy = new ChessBoard(cb);
+            copy.movePiece(currentPosition, s);
+            if(!copy.inCheck(isWhite)) output.add(s);
+        }
+        return output;
     }
     
     /**
@@ -78,7 +76,7 @@ public abstract class AbstractPiece {
     /**
      * The images for the black and white pieces
      */
-    private static Image black, white;
+    private static BufferedImage black, white;
     
     /**
      * Loads the images for this piece
@@ -105,6 +103,15 @@ public abstract class AbstractPiece {
         } else {
             g.drawImage(black, x, y, width, height, null);
         }
+    }
+    
+    /**
+     * Gets this piece's image that is white or black
+     * @param isWhite whether the image should be white or black
+     * @return the image that represents this piece
+     */
+    public static BufferedImage getImage(boolean isWhite) {
+        return (isWhite)?white:black;
     }
     
     /**

@@ -2,6 +2,7 @@ package offlinechess;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
@@ -35,12 +36,16 @@ public class Pawn extends AbstractPiece {
                 }
             }
             if(ChessBoard.isValidSquare(column - 1, row - 1)) {
-                if(!cb.isEmptySquare(column - 1, row - 1) && !cb.getPiece(column - 1, row - 1).isWhite) {
+                if((!cb.isEmptySquare(column - 1, row - 1) && !cb.getPiece(column - 1, row - 1).isWhite) || 
+                        (cb.getEnPassant() == null?ChessBoard.shiftSquare(currentPosition, -1, -1) == null
+                        :cb.getEnPassant().equals(ChessBoard.shiftSquare(currentPosition, -1, -1)))) {
                     output.add(ChessBoard.shiftSquare(currentPosition, -1, -1));
                 }
             }
             if (ChessBoard.isValidSquare(column + 1, row - 1)) {
-                if(!cb.isEmptySquare(column + 1, row - 1) && !cb.getPiece(column + 1, row - 1).isWhite) {
+                if(!cb.isEmptySquare(column + 1, row - 1) && !cb.getPiece(column + 1, row - 1).isWhite || 
+                        (cb.getEnPassant() == null?ChessBoard.shiftSquare(currentPosition, 1, -1) == null
+                        :cb.getEnPassant().equals(ChessBoard.shiftSquare(currentPosition, 1, -1)))) {
                     output.add(ChessBoard.shiftSquare(currentPosition, 1, -1));
                 }
             }
@@ -56,12 +61,16 @@ public class Pawn extends AbstractPiece {
                 }
             }
             if(ChessBoard.isValidSquare(column - 1, row + 1)) {
-                if(!cb.isEmptySquare(column - 1, row + 1) && cb.getPiece(column - 1, row + 1).isWhite) {
+                if(!cb.isEmptySquare(column - 1, row + 1) && cb.getPiece(column - 1, row + 1).isWhite 
+                        || (cb.getEnPassant() == null?ChessBoard.shiftSquare(currentPosition, -1, 1) == null
+                        :cb.getEnPassant().equals(ChessBoard.shiftSquare(currentPosition, -1, 1)))) {
                     output.add(ChessBoard.shiftSquare(currentPosition, -1, 1));
                 }
             }
             if(ChessBoard.isValidSquare(column + 1, row + 1)) {
-                if(!cb.isEmptySquare(column + 1, row + 1) && cb.getPiece(column + 1, row + 1).isWhite) {
+                if(!cb.isEmptySquare(column + 1, row + 1) && cb.getPiece(column + 1, row + 1).isWhite 
+                        || (cb.getEnPassant() == null?ChessBoard.shiftSquare(currentPosition, 1, 1) == null
+                        :cb.getEnPassant().equals(ChessBoard.shiftSquare(currentPosition, 1, 1)))) {
                     output.add(ChessBoard.shiftSquare(currentPosition, 1, 1));
                 }
             }
@@ -108,7 +117,7 @@ public class Pawn extends AbstractPiece {
     /**
      * The images for the black and white pieces
      */
-    private static Image black, white;
+    private static BufferedImage black, white;
     
     /**
      * Loads the images for this piece
@@ -136,6 +145,10 @@ public class Pawn extends AbstractPiece {
         } else {
             g.drawImage(black, x, y, width, height, null);
         }
+    }
+    
+    public static BufferedImage getImage(boolean isWhite) {
+        return (isWhite)?white:black;
     }
 
     @Override

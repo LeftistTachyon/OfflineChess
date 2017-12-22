@@ -2,6 +2,7 @@ package offlinechess;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
@@ -203,7 +204,7 @@ public class King extends AbstractPiece {
     /**
      * The images for the black and white pieces
      */
-    private static Image black, white;
+    private static BufferedImage black, white;
     
     /**
      * Loads the images for this piece
@@ -231,6 +232,10 @@ public class King extends AbstractPiece {
         } else {
             g.drawImage(black, x, y, width, height, null);
         }
+    }
+    
+    public static BufferedImage getImage(boolean isWhite) {
+        return (isWhite)?white:black;
     }
 
     @Override

@@ -2,10 +2,16 @@ package offlinechess;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RadialGradientPaint;
+import java.awt.RenderingHints;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -17,12 +23,6 @@ public class ChessBoard {
      * The chess board
      */
     private AbstractPiece[][] board;
-    
-    /**
-     * All of the images for the pieces
-     */
-    private Image blackBishop, blackKing, blackKnight, blackPawn, blackQueen, blackRook, 
-            whiteBishop, whiteKing, whiteKnight, whitePawn, whiteQueen, whiteRook;
     
     /**
      * Coordinates of the top left corner
@@ -43,6 +43,21 @@ public class ChessBoard {
      * The MoveRecorder
      */
     private MoveRecorder mr;
+    
+    /**
+     * Controls the promotion dialog
+     */
+    private int promotion = -1;
+    
+    /**
+     * Controls en passant
+     */
+    private String enPassant = null;
+    
+    /**
+     * A Map of all of the legal moves possible
+     */
+    private HashMap<String, LinkedList<String>> allLegalMoves;
     
     /**
      * The size of the individual chess squares
@@ -67,6 +82,7 @@ public class ChessBoard {
         initImages();
         addPieces();
         mr = new MoveRecorder();
+        allLegalMoves = new HashMap<>();
         x = 0;
         y = 0;
     }
@@ -157,6 +173,10 @@ public class ChessBoard {
         this.y = y;
     }
     
+    /**
+     * Constructor from a previous ChessBoard
+     * @param cb the ChessBoard to duplicate
+     */
     public ChessBoard(ChessBoard cb) {
         this();
         for (int i = 0; i < cb.board.length; i++) {
@@ -172,6 +192,7 @@ public class ChessBoard {
         drawCheckers(g);
         drawSelection(g);
         drawPieces(g);
+        drawPromotions(g);
     }
     
     /**
@@ -204,7 +225,7 @@ public class ChessBoard {
     
     private void drawSelection(Graphics g) {
         if(selected == null) return;
-        LinkedList<String> moves = getPiece(selected).legalMoves(this, selected);
+        LinkedList<String> moves = allLegalMoves.get(selected);
         Color moveDest = new Color(20, 85, 30, 77);
         g.setColor(moveDest);
         final Point p = ChessPanel.getMouseCoordinates();
@@ -241,6 +262,68 @@ public class ChessBoard {
         Color selection = new Color(20, 85, 30, 128);
         g.setColor(selection);
         g.fillRect(ChessBoard.getColumn(selected)*SQUARE_SIZE, ChessBoard.getRow(selected)*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+    }
+    
+    /**
+     * Draws the promotion choice box
+     * @param g the Graphics to draw on
+     */
+    private void drawPromotions(Graphics g) {
+        if(promotion != -1) {
+            g.setColor(new Color(250, 250, 250, (int) (255*0.7)));
+            g.fillRect(x, y, (8*SQUARE_SIZE)+x, (8*SQUARE_SIZE)+y);
+            Graphics2D gd = (Graphics2D)g;
+            gd.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            Color inside = new Color(176, 176, 176);
+            Color outsideNH = new Color(128, 128, 128);
+            Color outsideH = new Color(216, 80, 0);
+            BufferedImage[] promotions = new BufferedImage[]{
+                Queen.getImage(playerIsWhite), Rook.getImage(playerIsWhite), 
+                Bishop.getImage(playerIsWhite), Knight.getImage(playerIsWhite)
+            };
+            if(ChessPanel.getMouseCoordinates() == null) {
+                if(playerIsWhite) {
+                    for(int i = 0; i <= 3; i++) {
+                        gd.setPaint(new RadialGradientPaint(30 + (promotion*SQUARE_SIZE), 30 + (SQUARE_SIZE * i), 57, new float[]{0F, 1.0F}, new Color[]{inside, outsideNH}));
+                        gd.fill(new Ellipse2D.Double(promotion*SQUARE_SIZE, SQUARE_SIZE * i, SQUARE_SIZE, SQUARE_SIZE));
+                        gd.drawImage(promotions[i], (SQUARE_SIZE*promotion)+(SQUARE_SIZE/10), (SQUARE_SIZE*i)+(SQUARE_SIZE/10), (SQUARE_SIZE*4)/5, (SQUARE_SIZE*4)/5, null);
+                    }
+                } else {
+                    for(int i = 8; i >= 5; i--) {
+                        gd.setPaint(new RadialGradientPaint(30 + (promotion*SQUARE_SIZE), 30 + (SQUARE_SIZE * i), 57, new float[]{0F, 1.0F}, new Color[]{inside, outsideNH}));
+                        gd.fill(new Ellipse2D.Double(promotion*SQUARE_SIZE, SQUARE_SIZE * i, SQUARE_SIZE, SQUARE_SIZE));
+                        gd.drawImage(promotions[i], (SQUARE_SIZE*promotion)+(SQUARE_SIZE/10), (SQUARE_SIZE*i)+(SQUARE_SIZE/10), (SQUARE_SIZE*4)/5, (SQUARE_SIZE*4)/5, null);
+                    }
+                }
+            } else {
+                Point mouse = new Point(ChessPanel.getMouseCoordinates().x/60, ChessPanel.getMouseCoordinates().y/60);
+                if(playerIsWhite) {
+                    for(int i = 0; i <= 3; i++) {
+                        if(mouse.x == promotion && mouse.y == i) {
+                            gd.setPaint(new RadialGradientPaint(30 + (promotion*SQUARE_SIZE), 30 + (SQUARE_SIZE * i), 52, new float[]{0F, 1.0F}, new Color[]{inside, outsideH}));
+                            gd.fill(new Rectangle2D.Double(promotion*SQUARE_SIZE, SQUARE_SIZE * i, SQUARE_SIZE, SQUARE_SIZE));
+                            gd.drawImage(promotions[i], SQUARE_SIZE*promotion+5, SQUARE_SIZE*i+5, 50, 50, null);
+                        } else {
+                            gd.setPaint(new RadialGradientPaint(30 + (promotion*SQUARE_SIZE), 30 + (SQUARE_SIZE * i), 57, new float[]{0F, 1.0F}, new Color[]{inside, outsideNH}));
+                            gd.fill(new Ellipse2D.Double(promotion*SQUARE_SIZE, SQUARE_SIZE * i, SQUARE_SIZE, SQUARE_SIZE));
+                            gd.drawImage(promotions[i], (SQUARE_SIZE*promotion)+(SQUARE_SIZE/10), (SQUARE_SIZE*i)+(SQUARE_SIZE/10), (SQUARE_SIZE*4)/5, (SQUARE_SIZE*4)/5, null);
+                        }
+                    }
+                } else {
+                    for(int i = 8; i >= 5; i--) {
+                        if(mouse.x == promotion && mouse.y == i) {
+                            gd.setPaint(new RadialGradientPaint(30 + (promotion*SQUARE_SIZE), 30 + (SQUARE_SIZE * i), 52, new float[]{0F, 1.0F}, new Color[]{inside, outsideH}));
+                            gd.fill(new Rectangle2D.Double(promotion*SQUARE_SIZE, SQUARE_SIZE * i, SQUARE_SIZE, SQUARE_SIZE));
+                            gd.drawImage(promotions[i], SQUARE_SIZE*promotion+5, SQUARE_SIZE*i+5, 50, 50, null);
+                        } else {
+                            gd.setPaint(new RadialGradientPaint(30 + (promotion*SQUARE_SIZE), 30 + (SQUARE_SIZE * i), 57, new float[]{0F, 1.0F}, new Color[]{inside, outsideNH}));
+                            gd.fill(new Ellipse2D.Double(promotion*SQUARE_SIZE, SQUARE_SIZE * i, SQUARE_SIZE, SQUARE_SIZE));
+                            gd.drawImage(promotions[i], (SQUARE_SIZE*promotion)+(SQUARE_SIZE/10), (SQUARE_SIZE*i)+(SQUARE_SIZE/10), (SQUARE_SIZE*4)/5, (SQUARE_SIZE*4)/5, null);
+                        }
+                    }
+                }
+            }
+        }
     }
     
     /**
@@ -420,6 +503,22 @@ public class ChessBoard {
     }
     
     /**
+     * Recalculates all of the moves on a square
+     */
+    private void recalculateMoves() {
+        allLegalMoves = new HashMap<>();
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board[i].length; j++) {
+                if(board[i][j].isWhite == playerIsWhite) {
+                    String current = ChessBoard.toSquare(i, j);
+                    LinkedList<String> moves = board[i][j].legalMoves(this, current);
+                    allLegalMoves.put(current, moves);
+                }
+            }
+        }
+    }
+    
+    /**
      * Moves a piece from fromWhere to toWhere
      * @param fromWhere from where a piece is moved
      * @param toWhere where to move a piece
@@ -441,6 +540,7 @@ public class ChessBoard {
      * @param toWhereY where to move a piece
      */
     public void movePiece(int fromWhereX, int fromWhereY, int toWhereX, int toWhereY) {
+        enPassant = null;
         if(board[fromWhereX][fromWhereY] instanceof King) {
             if(Math.abs(fromWhereX-toWhereX) == 2 && fromWhereY == toWhereY) {
                 // Castling
@@ -455,6 +555,9 @@ public class ChessBoard {
                 }
             }
             ((King)(board[fromWhereX][fromWhereY])).notifyOfMove();
+        } else if(board[fromWhereX][fromWhereY] instanceof Pawn && Math.abs(fromWhereY-toWhereY) == 2) {
+            String file = (char) ('a' + fromWhereX) + "", rank = String.valueOf((fromWhereY+fromWhereX)/2);
+            enPassant = file + rank;
         }
         
         ChessBoard thisCopy = new ChessBoard(this);
@@ -465,6 +568,39 @@ public class ChessBoard {
         mr.moved(thisCopy, this, ChessBoard.toSquare(fromWhereX, fromWhereY), ChessBoard.toSquare(toWhereX, toWhereY));
         if(checkMated(playerIsWhite)) System.out.println("Checkmate!\n");
         else if(inCheck(playerIsWhite)) System.out.println("Check!\n");
+    }
+    
+    /**
+     * Promotes a pawn
+     * @param fromWhere from where to promote
+     * @param toWhere to where to promote
+     * @param toWhatPiece to what piece to promote to
+     */
+    public void promotePiece(String fromWhere, String toWhere, int toWhatPiece) {
+        boolean isWhite = getPiece(fromWhere).isWhite;
+        ChessBoard thisCopy = new ChessBoard(this);
+        int fromWhereX = getColumn(fromWhere), fromWhereY = getRow(fromWhere);
+        int toWhereX = getColumn(toWhere), toWhereY = getRow(toWhere);
+        board[fromWhereX][fromWhereY] = null;
+        // board[toWhereX][toWhereY];
+        switch(toWhatPiece) {
+            case MoveRecorder.BISHOP:
+                board[toWhereX][toWhereY] = new Bishop(isWhite);
+                break;
+            case MoveRecorder.KNIGHT:
+                board[toWhereX][toWhereY] = new Knight(isWhite);
+                break;
+            case MoveRecorder.QUEEN:
+                board[toWhereX][toWhereY] = new Queen(isWhite);
+                break;
+            case MoveRecorder.ROOK:
+                board[toWhereX][toWhereY] = new Rook(isWhite);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown piece" + toWhatPiece);
+        }
+        mr.moved(thisCopy, this, fromWhere, toWhere);
+        System.out.println("Promoted from " + fromWhere + " to " + toWhere + " to a " + toWhatPiece);
     }
     
     /**
@@ -565,13 +701,61 @@ public class ChessBoard {
             if(!isEmptySquare(square) && (getPiece(square).isWhite == playerIsWhite)) {
                 selected = square;
             }
+        } else if(promotion != -1) {
+            if(ChessBoard.getColumn(square) == promotion) {
+                if(playerIsWhite) {
+                    /**
+                     * QUEEN
+                     * ROOK
+                     * BISHOP
+                     * KNIGHT
+                     */
+                    switch(ChessBoard.getRow(square)) {
+                        case 0:
+                            promotePiece(selected, square, MoveRecorder.QUEEN);
+                            break;
+                        case 1:
+                            promotePiece(selected, square, MoveRecorder.ROOK);
+                            break;
+                        case 2:
+                            promotePiece(selected, square, MoveRecorder.BISHOP);
+                            break;
+                        case 3:
+                            promotePiece(selected, square, MoveRecorder.KNIGHT);
+                            break;
+                    }
+                } else {
+                    switch(ChessBoard.getRow(square)) {
+                        case 7:
+                            promotePiece(selected, square, MoveRecorder.QUEEN);
+                            break;
+                        case 6:
+                            promotePiece(selected, square, MoveRecorder.ROOK);
+                            break;
+                        case 5:
+                            promotePiece(selected, square, MoveRecorder.BISHOP);
+                            break;
+                        case 4:
+                            promotePiece(selected, square, MoveRecorder.KNIGHT);
+                            break;
+                    }
+                }
+                selected = null;
+                promotion = -1;
+                recalculateMoves();
+            }
         } else if(selected.equals(square)) {
             selected = null;
         } else {
             if(!isEmptySquare(square)) {
                 if(getPiece(selected).isLegalMove(this, selected, square)) {
-                    movePiece(selected, square);
-                    selected = null;
+                    if(getPiece(selected).getCharRepresentation().equals("P") && (ChessBoard.getRow(square) == 0 || ChessBoard.getRow(square) == 8)) {
+                        promotion = ChessBoard.getColumn(square);
+                    } else {
+                        movePiece(selected, square);
+                        recalculateMoves();
+                        selected = null;
+                    }
                 } else {
                     if(getPiece(square).isWhite == playerIsWhite) {
                         selected = square;
@@ -581,12 +765,25 @@ public class ChessBoard {
                 }
             } else {
                 if(getPiece(selected).isLegalMove(this, selected, square)) {
-                    movePiece(selected, square);
-                    selected = null;
+                    if(getPiece(selected).getCharRepresentation().equals("P") && (ChessBoard.getRow(square) == 0 || ChessBoard.getRow(square) == 8)) {
+                        promotion = ChessBoard.getColumn(square);
+                    } else {
+                        movePiece(selected, square);
+                        recalculateMoves();
+                        selected = null;
+                    }
                 } else selected = null;
             }
         }
         System.out.println("selected: " + selected);
+    }
+
+    /**
+     * Determines which square is open for en passant
+     * @return which square is open for en passant
+     */
+    public String getEnPassant() {
+        return enPassant;
     }
     
     /**
@@ -604,6 +801,9 @@ public class ChessBoard {
         }
     }
     
+    /**
+     * Prints all of the current moves.
+     */
     public void printMoves() {
         System.out.println(mr.toString());
     }
