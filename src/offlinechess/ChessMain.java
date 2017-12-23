@@ -20,7 +20,6 @@ public class ChessMain {
     public static void main(String[] args) throws IOException {
         //System.out.println(Encryption.writableEncrypt("nargles", "Leftist_Tachyon"));
         ChessFrame cf = new ChessFrame();
-        System.out.println("Past the chessframe");
         Scanner input = new Scanner(new File("src/userdata/users.cpd"));
         DataLogger dl = new DataLogger(new File("src/userdata/users.cpd"));
         LinkedList<User> users = new LinkedList<>();

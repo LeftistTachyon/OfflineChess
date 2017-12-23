@@ -1,7 +1,6 @@
 package offlinechess;
 
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -88,12 +87,12 @@ public class Pawn extends AbstractPiece {
             if(row == 0) assert false : "Pawns should have promoted already!";
             if(row == 7) assert false : "Dafuq white pawns shouldn\'t be on the first rank";
             if(ChessBoard.isValidSquare(column - 1, row - 1)) {
-                if(!cb.isEmptySquare(column - 1, row - 1) && !cb.getPiece(column - 1, row - 1).isWhite) {
+                if(cb.isEmptySquare(column - 1, row - 1) || !cb.getPiece(column - 1, row - 1).isWhite) {
                     output.add(ChessBoard.shiftSquare(currentPosition, -1, -1));
                 }
             }
             if (ChessBoard.isValidSquare(column + 1, row - 1)) {
-                if(!cb.isEmptySquare(column + 1, row - 1) && !cb.getPiece(column + 1, row - 1).isWhite) {
+                if(cb.isEmptySquare(column + 1, row - 1) || !cb.getPiece(column + 1, row - 1).isWhite) {
                     output.add(ChessBoard.shiftSquare(currentPosition, 1, -1));
                 }
             }
@@ -101,12 +100,12 @@ public class Pawn extends AbstractPiece {
             if(row == 7) assert false : "Pawns should have promoted already!";
             if(row == 0) assert false : "Dafuq black pawns shouldn\'t be on the eighth rank";
             if(ChessBoard.isValidSquare(column - 1, row + 1)) {
-                if(!cb.isEmptySquare(column - 1, row + 1) && cb.getPiece(column - 1, row + 1).isWhite) {
+                if(cb.isEmptySquare(column - 1, row + 1) || cb.getPiece(column - 1, row + 1).isWhite) {
                     output.add(ChessBoard.shiftSquare(currentPosition, -1, 1));
                 }
             }
             if(ChessBoard.isValidSquare(column + 1, row + 1)) {
-                if(!cb.isEmptySquare(column + 1, row + 1) && cb.getPiece(column + 1, row + 1).isWhite) {
+                if(cb.isEmptySquare(column + 1, row + 1) || cb.getPiece(column + 1, row + 1).isWhite) {
                     output.add(ChessBoard.shiftSquare(currentPosition, 1, 1));
                 }
             }

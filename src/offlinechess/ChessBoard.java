@@ -60,6 +60,11 @@ public class ChessBoard {
     private HashMap<String, LinkedList<String>> allLegalMoves;
     
     /**
+     * A Map of the king's position
+     */
+    private HashMap<Boolean, String> kingPos;
+    
+    /**
      * The size of the individual chess squares
      */
     public final int SQUARE_SIZE = 60; // change to 50 soon
@@ -80,6 +85,7 @@ public class ChessBoard {
     public ChessBoard() {
         board = new AbstractPiece[8][8];
         initImages();
+        kingPos = new HashMap<>();
         addPieces();
         mr = new MoveRecorder();
         allLegalMoves = new HashMap<>();
@@ -160,6 +166,9 @@ public class ChessBoard {
         board[5][7] = new Bishop(true);
         board[6][7] = new Knight(true);
         board[7][7] = new Rook(true);
+        
+        kingPos.put(true, "e1");
+        kingPos.put(false, "e8");
     }
     
     /**
@@ -505,10 +514,11 @@ public class ChessBoard {
     /**
      * Recalculates all of the moves on a square
      */
-    private void recalculateMoves() {
+    public void recalculateMoves() {
         allLegalMoves = new HashMap<>();
         for(int i = 0; i < board.length; i++) {
             for(int j = 0; j < board[i].length; j++) {
+                if(board[i][j] == null) continue;
                 if(board[i][j].isWhite == playerIsWhite) {
                     String current = ChessBoard.toSquare(i, j);
                     LinkedList<String> moves = board[i][j].legalMoves(this, current);
@@ -540,7 +550,42 @@ public class ChessBoard {
      * @param toWhereY where to move a piece
      */
     public void movePiece(int fromWhereX, int fromWhereY, int toWhereX, int toWhereY) {
+        ChessBoard thisCopy = new ChessBoard(this);
+        maybeMove(fromWhereX, fromWhereY, toWhereX, toWhereY);
         enPassant = null;
+        if(board[toWhereX][toWhereX] instanceof Pawn && Math.abs(fromWhereY-toWhereY) == 2) {
+            String file = (char) ('a' + fromWhereX) + "", rank = String.valueOf((fromWhereY+fromWhereX)/2);
+            enPassant = file + rank;
+        }
+        if(board[toWhereX][toWhereY] instanceof King) kingPos.put(playerIsWhite, toSquare(toWhereX, toWhereY));
+        System.out.println("Moved: " + playerIsWhite);
+        playerIsWhite = !playerIsWhite;
+        recalculateMoves();
+        mr.moved(thisCopy, this, ChessBoard.toSquare(fromWhereX, fromWhereY), ChessBoard.toSquare(toWhereX, toWhereY));
+        if(checkMated(playerIsWhite)) System.out.println("Checkmate!\n");
+        else if(inCheck(playerIsWhite)) System.out.println("Check!\n");
+    }
+    
+    /**
+     * Used to check whether this move is legal
+     * @param fromWhere from where to move a piece
+     * @param toWhere to where to move a piece
+     */
+    public void maybeMove(String fromWhere, String toWhere) {
+        maybeMove(
+                getColumn(fromWhere), getRow(fromWhere), 
+                getColumn(toWhere), getRow(toWhere)
+        );
+    }
+    
+    /**
+     * Used to check whether this move is legal
+     * @param fromWhereX from which column to move a piece
+     * @param fromWhereY from which row to move a piece
+     * @param toWhereX to which column to move a piece
+     * @param toWhereY to which row to move a piece
+     */
+    public void maybeMove(int fromWhereX, int fromWhereY, int toWhereX, int toWhereY) {
         if(board[fromWhereX][fromWhereY] instanceof King) {
             if(Math.abs(fromWhereX-toWhereX) == 2 && fromWhereY == toWhereY) {
                 // Castling
@@ -555,19 +600,12 @@ public class ChessBoard {
                 }
             }
             ((King)(board[fromWhereX][fromWhereY])).notifyOfMove();
-        } else if(board[fromWhereX][fromWhereY] instanceof Pawn && Math.abs(fromWhereY-toWhereY) == 2) {
-            String file = (char) ('a' + fromWhereX) + "", rank = String.valueOf((fromWhereY+fromWhereX)/2);
-            enPassant = file + rank;
+        } else if(toSquare(toWhereX, toWhereY).equals(enPassant)) {
+            board[getColumn(enPassant)][getRow(enPassant)] = null;
         }
         
-        ChessBoard thisCopy = new ChessBoard(this);
         board[toWhereX][toWhereY] = board[fromWhereX][fromWhereY];
         board[fromWhereX][fromWhereY] = null;
-        System.out.println("Moved: " + playerIsWhite);
-        playerIsWhite = !playerIsWhite;
-        mr.moved(thisCopy, this, ChessBoard.toSquare(fromWhereX, fromWhereY), ChessBoard.toSquare(toWhereX, toWhereY));
-        if(checkMated(playerIsWhite)) System.out.println("Checkmate!\n");
-        else if(inCheck(playerIsWhite)) System.out.println("Check!\n");
     }
     
     /**
@@ -604,20 +642,40 @@ public class ChessBoard {
     }
     
     /**
+     * DO NOT USE OFTEN <br/>
+     * Places a piece somewhere
+     * @param ap a piece to place
+     * @param where where to place the piece
+     */
+    public void placePiece(AbstractPiece ap, String where) {
+        placePiece(ap, getColumn(where), getRow(where));
+    }
+    
+    /**
+     * DO NOT USE OFTEN <br/>
+     * Places a piece somewhere
+     * @param ap a piece to place
+     * @param col the column to place the piece in
+     * @param row the row to place the piece in
+     */
+    public void placePiece(AbstractPiece ap, int col, int row) {
+        board[col][row] = ap;
+    }
+    
+    /**
      * Determines whether one side's king is in check
      * @param isWhite whether the side to check is white (PUN INTENDED)
      * @return whether the side is in check
      */
     public boolean inCheck(boolean isWhite) {
-        String kingPos = findKing(isWhite);
         for(int i = 0;i<8;i++) {
             for(int j = 0;j<8;j++) {
                 AbstractPiece ap = getPiece(i, j);//lit dude lit
                 if(ap != null)
-                    if(ap.isWhite != isWhite) 
+                    if(ap.isWhite ^ isWhite)  
                         //if(ap.legalCaptures(this, ChessBoard.toSquare(i, j)).contains(kingPos))
-                        if(ap.isAllLegalMove(this, ChessBoard.toSquare(i, j), kingPos))
-                            return true;
+                        if(ap.isAllLegalMove(this, ChessBoard.toSquare(i, j), kingPos.get(ap.isWhite))) return true;
+                            
             }
         }
         return false;
@@ -629,25 +687,11 @@ public class ChessBoard {
      * @return whether the side is checkmated
      */
     public boolean checkMated(boolean isWhite) {
-        String kingPos = findKing(isWhite);
-        return getPiece(kingPos).legalMoves(this, kingPos).isEmpty() && inCheck(isWhite);
-    }
-    
-    /**
-     * Determines where the king is
-     * @param isWhite which king, white or black
-     * @return the king's position
-     */
-    private String findKing(boolean isWhite) {
-        String kingPos = null;
-        for(int i = 0;i<8;i++) {
-            for(int j = 0;j<8;j++) {
-                AbstractPiece ap = getPiece(i, j);//lit dude lit
-                if(ap instanceof King && ap.isWhite == isWhite) kingPos = ChessBoard.toSquare(i, j);
-            }
+        //return getPiece(kingPos.get(isWhite)).legalMoves(this, kingPos.get(isWhite)).isEmpty() && inCheck(isWhite);
+        for(LinkedList<String> allLegalMove : allLegalMoves.values()) {
+            if(!allLegalMove.isEmpty()) return false;
         }
-        System.out.println(isWhite + "KingPos: " + kingPos);
-        return kingPos;
+        return true;
     }
     
     /**
@@ -753,7 +797,6 @@ public class ChessBoard {
                         promotion = ChessBoard.getColumn(square);
                     } else {
                         movePiece(selected, square);
-                        recalculateMoves();
                         selected = null;
                     }
                 } else {
@@ -769,7 +812,6 @@ public class ChessBoard {
                         promotion = ChessBoard.getColumn(square);
                     } else {
                         movePiece(selected, square);
-                        recalculateMoves();
                         selected = null;
                     }
                 } else selected = null;

@@ -229,43 +229,48 @@ public class MoveRecorder {
                 if(ChessBoard.getRow(toWhere) == 0 || ChessBoard.getRow(toWhere) == 8) {
                     switch(after.getPiece(toWhere).getCharRepresentation()) {
                         case "N":
-                            moves.add(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), KNIGHT));
+                            moves.add(addChecks(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), KNIGHT), after, after.getPiece(toWhere).isWhite));
                             break;
                         case "B":
-                            moves.add(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), BISHOP));
+                            moves.add(addChecks(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), BISHOP), after, after.getPiece(toWhere).isWhite));
                             break;
                         case "R":
-                            moves.add(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), ROOK));
+                            moves.add(addChecks(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), ROOK), after, after.getPiece(toWhere).isWhite));
                             break;
                         case "Q":
-                            moves.add(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), QUEEN));
+                            moves.add(addChecks(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), QUEEN), after, after.getPiece(toWhere).isWhite));
                             break;
                     }
                 } else {
-                    moves.add(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)));
+                    moves.add(addChecks(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), after, after.getPiece(toWhere).isWhite));
                 }
                 break;
             case "K":
                 if(Math.abs(ChessBoard.getColumn(fromWhere)-ChessBoard.getColumn(toWhere)) == 2) {
-                    moves.add(castlingMoveString(ChessBoard.getColumn(fromWhere) < ChessBoard.getColumn(toWhere)));
+                    moves.add(addChecks(castlingMoveString(ChessBoard.getColumn(fromWhere) < ChessBoard.getColumn(toWhere)), after, after.getPiece(toWhere).isWhite));
                 } else {
-                    moves.add(toMoveString(fromWhere, toWhere, KING, !before.isEmptySquare(toWhere)));
+                    moves.add(addChecks(toMoveString(fromWhere, toWhere, KING, !before.isEmptySquare(toWhere)), after, after.getPiece(toWhere).isWhite));
                 }
                 break;
             case "N":
-                moves.add(moveString(before, fromWhere, toWhere, toMove, KNIGHT, !before.isEmptySquare(toWhere)));
+                moves.add(addChecks(moveString(before, fromWhere, toWhere, toMove, KNIGHT, !before.isEmptySquare(toWhere)), after, after.getPiece(toWhere).isWhite));
                 break;
             case "B":
-                moves.add(moveString(before, fromWhere, toWhere, toMove, BISHOP, !before.isEmptySquare(toWhere)));
+                moves.add(addChecks(moveString(before, fromWhere, toWhere, toMove, BISHOP, !before.isEmptySquare(toWhere)), after, after.getPiece(toWhere).isWhite));
                 break;
             case "R":
-                moves.add(moveString(before, fromWhere, toWhere, toMove, ROOK, !before.isEmptySquare(toWhere)));
+                moves.add(addChecks(moveString(before, fromWhere, toWhere, toMove, ROOK, !before.isEmptySquare(toWhere)), after, after.getPiece(toWhere).isWhite));
                 break;
             case "Q":
-                moves.add(moveString(before, fromWhere, toWhere, toMove, QUEEN, !before.isEmptySquare(toWhere)));
+                moves.add(addChecks(moveString(before, fromWhere, toWhere, toMove, QUEEN, !before.isEmptySquare(toWhere)), after, after.getPiece(toWhere).isWhite));
                 break;
             default:
                 throw new IllegalArgumentException("Unknown piece");
+        }
+        if(after.checkMated(true)) {
+            addOutcome(-1);
+        } else if(after.checkMated(false)) {
+            addOutcome(1);
         }
     }
     
@@ -317,6 +322,41 @@ public class MoveRecorder {
             } else {
                 return toMoveString(fromWhere, toWhere, whichPiece, capture);
             }
+        }
+    }
+    
+    /**
+     * Adds the check notation if the side is checked
+     * @param move the current move
+     * @param after the state of the game after the move
+     * @param isWhite whether the moved piece is white
+     * @return the finished move notation
+     */
+    public String addChecks(String move, ChessBoard after, boolean isWhite) {
+        if(after.checkMated(!isWhite)) {
+            return move + "#";
+        } else if(after.inCheck(!isWhite)) {
+            return move + "+";
+        } else return move;
+    }
+    
+    /**
+     * Adds the outcome of the game to the moves
+     * @param outcome the outcome
+     */
+    public void addOutcome(int outcome) {
+        switch(outcome) {
+            case -1:
+                moves.add("0-1");
+                break;
+            case 0:
+                moves.add("1/2-1/2");
+                break;
+            case 1:
+                moves.add("1-0");
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown outcome: " + outcome);
         }
     }
 

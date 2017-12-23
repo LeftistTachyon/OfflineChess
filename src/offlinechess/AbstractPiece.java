@@ -58,9 +58,12 @@ public abstract class AbstractPiece {
         LinkedList<String> allLegal = allLegalMoves(cb, currentPosition);
         LinkedList<String> output = new LinkedList<>();
         for(String s:allLegal) {
-            ChessBoard copy = new ChessBoard(cb);
-            copy.movePiece(currentPosition, s);
-            if(!copy.inCheck(isWhite)) output.add(s);
+            AbstractPiece temp = cb.getPiece(s);
+            cb.maybeMove(currentPosition, s);
+            if(!cb.inCheck(isWhite)) output.add(s);
+            System.out.println(currentPosition + "-" + s + " Checked: " + cb.inCheck(isWhite));
+            cb.maybeMove(s, currentPosition);
+            cb.placePiece(temp, s);
         }
         return output;
     }

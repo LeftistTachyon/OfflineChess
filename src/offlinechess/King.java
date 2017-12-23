@@ -1,7 +1,6 @@
 package offlinechess;
 
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -45,7 +44,22 @@ public class King extends AbstractPiece {
         if(!(cb.getPiece(currentPosition) instanceof King)) throw new IllegalArgumentException("This isn\'t a king!");
         LinkedList<String> output = new LinkedList<>();
         String temp;
-        if(ChessBoard.isValidShift(currentPosition, 1, 0)) {
+        for(int i = -1; i <= 1; i++) {
+            for(int j = -1; j <= 1; j++) {
+                if(i == 0 && j == 0) continue;
+                if(ChessBoard.isValidShift(currentPosition, i, j)) {
+                    temp = ChessBoard.shiftSquare(currentPosition, i, j);
+                    if(ChessBoard.isValidSquare(temp)) {
+                        if(cb.isEmptySquare(temp)) {
+                            output.add(temp);
+                        } else if(cb.getPiece(temp).isWhite ^ isWhite) {
+                            output.add(temp);
+                        }
+                    }
+                }
+            }
+        }
+        /*if(ChessBoard.isValidShift(currentPosition, 1, 0)) {
             temp = ChessBoard.shiftSquare(currentPosition, 1, 0);
             if(ChessBoard.isValidSquare(temp)) {
                 if(cb.isEmptySquare(temp)) {
@@ -124,8 +138,8 @@ public class King extends AbstractPiece {
                     output.add(temp);
                 }
             }
-        }
-        boolean canCastle = false;
+        }*/
+        /*boolean canCastle = false;
         if(!moved) {
             canCastle = true;
             output.add(currentPosition);
@@ -153,6 +167,7 @@ public class King extends AbstractPiece {
                 }
             }
         }
+        // return otherArmy;
         LinkedList<String> difference = difference(otherArmy, output); //lol;
         if(canCastle) {
             if(!difference.contains(currentPosition)) {
@@ -167,7 +182,8 @@ public class King extends AbstractPiece {
             }
         }
         difference.remove(currentPosition);
-        return difference;
+        return difference;*/
+        return output;
     }
     
     /**
