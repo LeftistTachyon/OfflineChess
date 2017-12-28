@@ -10,14 +10,17 @@ Chess meant to be played offline. To be transferred to an online version.
  - [x] Figure out the colors for the board (selection, moved)
 
  - [x] Promotions
- - [ ] En passant
+ - [x] En passant
 
- - [ ] Castling
+ - [x] Castling
 
- - [ ] Speed up rendering of moves (use HashMaps<Square, ArrayList<Moves>>)
+ - [x] Speed up rendering of moves (use HashMaps<Square, ArrayList<Moves>>)
  - [ ] Draw conditions
  - [ ] Making the application more user friendly
 
  - [ ] Saving user data to a file
 
- - [ ] Move to an online version!
+ - [ ] Move to an online version!  
+
+### Other Info
+_Total lines of code:_ 3,111
