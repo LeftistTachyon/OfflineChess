@@ -188,9 +188,10 @@ public class ChessBoard {
      */
     public ChessBoard(ChessBoard cb) {
         this();
-        for (int i = 0; i < cb.board.length; i++) {
+        for(int i = 0; i < cb.board.length; i++) {
             System.arraycopy(cb.board[i], 0, board[i], 0, cb.board[i].length);
         }
+        this.enPassant = cb.enPassant;
     }
     
     /**
@@ -235,6 +236,7 @@ public class ChessBoard {
     private void drawSelection(Graphics g) {
         if(selected == null) return;
         LinkedList<String> moves = allLegalMoves.get(selected);
+        if(moves == null) return;
         Color moveDest = new Color(20, 85, 30, 77);
         g.setColor(moveDest);
         final Point p = ChessPanel.getMouseCoordinates();
@@ -429,8 +431,8 @@ public class ChessBoard {
      * 6 |_<br>
      * 7 |_<br>
      * ___W
-     * @param s
-     * @return 
+     * @param s the square
+     * @return the column / file
      */
     public static int getRow(String s) {
         if(isValidSquare(s)) {
@@ -552,18 +554,24 @@ public class ChessBoard {
     public void movePiece(int fromWhereX, int fromWhereY, int toWhereX, int toWhereY) {
         ChessBoard thisCopy = new ChessBoard(this);
         maybeMove(fromWhereX, fromWhereY, toWhereX, toWhereY);
-        enPassant = null;
-        if(board[toWhereX][toWhereX] instanceof Pawn && Math.abs(fromWhereY-toWhereY) == 2) {
-            String file = (char) ('a' + fromWhereX) + "", rank = String.valueOf((fromWhereY+fromWhereX)/2);
-            enPassant = file + rank;
+        if(board[toWhereX][toWhereY] instanceof King) {
+            ((King)(board[toWhereX][toWhereY])).notifyOfMove();
         }
-        if(board[toWhereX][toWhereY] instanceof King) kingPos.put(playerIsWhite, toSquare(toWhereX, toWhereY));
+        enPassant = null;
+        if(board[toWhereX][toWhereY] instanceof Pawn) {
+            if(Math.abs(fromWhereY-toWhereY) == 2) {
+                String file = (char) ('a' + fromWhereX) + "", rank = String.valueOf(8-((fromWhereY+toWhereY)/2));
+                enPassant = file + rank;
+                System.out.println("enPassant: " + enPassant);
+            }
+        }
         System.out.println("Moved: " + playerIsWhite);
         playerIsWhite = !playerIsWhite;
         recalculateMoves();
         mr.moved(thisCopy, this, ChessBoard.toSquare(fromWhereX, fromWhereY), ChessBoard.toSquare(toWhereX, toWhereY));
         if(checkMated(playerIsWhite)) System.out.println("Checkmate!\n");
         else if(inCheck(playerIsWhite)) System.out.println("Check!\n");
+        else if(stalemated(playerIsWhite)) System.out.println("Stalemate.\n");
     }
     
     /**
@@ -599,13 +607,13 @@ public class ChessBoard {
                     board[0][fromWhereY] = null;
                 }
             }
-            ((King)(board[fromWhereX][fromWhereY])).notifyOfMove();
         } else if(toSquare(toWhereX, toWhereY).equals(enPassant)) {
-            board[getColumn(enPassant)][getRow(enPassant)] = null;
+            board[getColumn(enPassant)][getRow(enPassant)+(fromWhereY-toWhereY)] = null;
         }
         
         board[toWhereX][toWhereY] = board[fromWhereX][fromWhereY];
         board[fromWhereX][fromWhereY] = null;
+        if(board[toWhereX][toWhereY] instanceof King) kingPos.put(playerIsWhite, toSquare(toWhereX, toWhereY));
     }
     
     /**
@@ -642,22 +650,26 @@ public class ChessBoard {
     }
     
     /**
-     * DO NOT USE OFTEN <br/>
+     * <s>DO NOT USE OFTEN <br></s>
      * Places a piece somewhere
      * @param ap a piece to place
      * @param where where to place the piece
+     * @deprecated since it is not needed
      */
+    @Deprecated
     public void placePiece(AbstractPiece ap, String where) {
         placePiece(ap, getColumn(where), getRow(where));
     }
     
     /**
-     * DO NOT USE OFTEN <br/>
+     * <s>DO NOT USE OFTEN <br></s>
      * Places a piece somewhere
      * @param ap a piece to place
      * @param col the column to place the piece in
      * @param row the row to place the piece in
+     * @deprecated since it is not needed
      */
+    @Deprecated
     public void placePiece(AbstractPiece ap, int col, int row) {
         board[col][row] = ap;
     }
@@ -671,11 +683,18 @@ public class ChessBoard {
         for(int i = 0;i<8;i++) {
             for(int j = 0;j<8;j++) {
                 AbstractPiece ap = getPiece(i, j);//lit dude lit
-                if(ap != null)
-                    if(ap.isWhite ^ isWhite)  
+                if(ap != null) {
+                    if(ap.isWhite ^ isWhite) {
                         //if(ap.legalCaptures(this, ChessBoard.toSquare(i, j)).contains(kingPos))
-                        if(ap.isAllLegalMove(this, ChessBoard.toSquare(i, j), kingPos.get(ap.isWhite))) return true;
-                            
+                        // if the current opposite-colored piece can eat the king on the next move
+                        if(ap.isAllLegalMove(this, ChessBoard.toSquare(i, j), kingPos.get(isWhite))) {
+                            if(ap instanceof Queen) {
+                                System.out.println("Can move queen to " + kingPos.get(isWhite));
+                            }
+                            return true;
+                        }
+                    }
+                }
             }
         }
         return false;
@@ -688,10 +707,29 @@ public class ChessBoard {
      */
     public boolean checkMated(boolean isWhite) {
         //return getPiece(kingPos.get(isWhite)).legalMoves(this, kingPos.get(isWhite)).isEmpty() && inCheck(isWhite);
+        /*for(LinkedList<String> allLegalMove : allLegalMoves.values()) {
+            if(!allLegalMove.isEmpty()) return false;
+        }
+        return inCheck(isWhite);*/
+        // return (allLegalMoves.get(kingPos.get(isWhite)).isEmpty())?inCheck(isWhite):false;
+        String king = kingPos.get(isWhite);
+        if(allLegalMoves.get(king) == null) {
+            return inCheck(isWhite);
+        } else if(allLegalMoves.get(king).isEmpty()) {
+            return inCheck(isWhite);
+        } else return false;
+    }
+    
+    /**
+     * Determines whether one side is stalemated
+     * @param isWhite whether the side to check is white
+     * @return whether one side is stalemated
+     */
+    public boolean stalemated(boolean isWhite) {
         for(LinkedList<String> allLegalMove : allLegalMoves.values()) {
             if(!allLegalMove.isEmpty()) return false;
         }
-        return true;
+        return !inCheck(isWhite);
     }
     
     /**
@@ -827,6 +865,28 @@ public class ChessBoard {
     public String getEnPassant() {
         return enPassant;
     }
+
+    /**
+     * Returns the board of AbstractPieces
+     * @return the board of AbstractPieces
+     */
+    public AbstractPiece[][] getBoard() {
+        return board;
+    }
+
+    /**
+     * DO NOT USE OFTEN <br>
+     * Sets this board to a new state
+     * @param board the board to set to
+     */
+    public void setBoard(AbstractPiece[][] board) {
+        this.board = new AbstractPiece[board.length][board[0].length];
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board[i].length; j++) {
+                this.board[i][j] = board[i][j];
+            }
+        }
+    }
     
     /**
      * Prints the current state of the chess board.
@@ -837,7 +897,7 @@ public class ChessBoard {
                 AbstractPiece ap = board[j][i];
                 if(ap == null) {
                     System.out.print(" ");
-                } else System.out.println(ap.getCharRepresentation());
+                } else System.out.print(ap.getCharRepresentation());
             }
             System.out.println();
         }

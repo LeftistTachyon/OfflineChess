@@ -59,130 +59,39 @@ public class King extends AbstractPiece {
                 }
             }
         }
-        /*if(ChessBoard.isValidShift(currentPosition, 1, 0)) {
-            temp = ChessBoard.shiftSquare(currentPosition, 1, 0);
-            if(ChessBoard.isValidSquare(temp)) {
-                if(cb.isEmptySquare(temp)) {
-                    output.add(temp);
-                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                    output.add(temp);
-                }
-            }
-        }
-        if(ChessBoard.isValidShift(currentPosition, 1, 1)) {
-            temp = ChessBoard.shiftSquare(currentPosition, 1, 1);
-            if(ChessBoard.isValidSquare(temp)) {
-                if(cb.isEmptySquare(temp)) {
-                    output.add(temp);
-                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                    output.add(temp);
-                }
-            }
-        }
-        if(ChessBoard.isValidShift(currentPosition, 0, 1)) {
-            temp = ChessBoard.shiftSquare(currentPosition, 0, 1);
-            if(ChessBoard.isValidSquare(temp)) {
-                if(cb.isEmptySquare(temp)) {
-                    output.add(temp);
-                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                    output.add(temp);
-                }
-            }
-        }
-        if(ChessBoard.isValidShift(currentPosition, -1, 1)) {
-            temp = ChessBoard.shiftSquare(currentPosition, -1, 1);
-            if(ChessBoard.isValidSquare(temp)) {
-                if(cb.isEmptySquare(temp)) {
-                    output.add(temp);
-                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                    output.add(temp);
-                }
-            }
-        }
-        if(ChessBoard.isValidShift(currentPosition, -1, 0)) {
-            temp = ChessBoard.shiftSquare(currentPosition, -1, 0);
-            if(ChessBoard.isValidSquare(temp)) {
-                if(cb.isEmptySquare(temp)) {
-                    output.add(temp);
-                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                    output.add(temp);
-                }
-            }
-        }
-        if(ChessBoard.isValidShift(currentPosition, -1, -1)) {
-            temp = ChessBoard.shiftSquare(currentPosition, -1, -1);
-            if(ChessBoard.isValidSquare(temp)) {
-                if(cb.isEmptySquare(temp)) {
-                    output.add(temp);
-                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                    output.add(temp);
-                }
-            }
-        }
-        if(ChessBoard.isValidShift(currentPosition, 0, -1)) {
-            temp = ChessBoard.shiftSquare(currentPosition, 0, -1);
-            if(ChessBoard.isValidSquare(temp)) {
-                if(cb.isEmptySquare(temp)) {
-                    output.add(temp);
-                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                    output.add(temp);
-                }
-            }
-        }
-        if(ChessBoard.isValidShift(currentPosition, 1, -1)) {
-            temp = ChessBoard.shiftSquare(currentPosition, 1, -1);
-            if(ChessBoard.isValidSquare(temp)) {
-                if(cb.isEmptySquare(temp)) {
-                    output.add(temp);
-                } else if(cb.getPiece(temp).isWhite ^ isWhite) {
-                    output.add(temp);
-                }
-            }
-        }*/
-        /*boolean canCastle = false;
+        
+        // CASTLING
         if(!moved) {
-            canCastle = true;
-            output.add(currentPosition);
             // white on 7, black on 0
-            int column = (isWhite)?7:0;
-            // 1, 2, 3, Queenside
-            if(cb.isEmptySquare(column, 1) && cb.isEmptySquare(column, 2) && cb.isEmptySquare(column, 3)) {
-                output.add(ChessBoard.shiftSquare(currentPosition, -2, 0));
-            }
-            // 5, 6, Kingside
-            if(cb.isEmptySquare(column, 5) && cb.isEmptySquare(column, 6)) {
-                output.add(ChessBoard.shiftSquare(currentPosition, 2, 0));
-            }
-        }
-        LinkedList<String> otherArmy = new LinkedList<>();
-        for(int i = 0;i<8;i++) {
-            for(int j = 0;j<8;j++) {
-                AbstractPiece ap = cb.getPiece(i, j);//lit dude lit
-                if(ap != null && (ap.isWhite ^ isWhite)) {
-                    if(ap instanceof King && includeOtherKing) {
-                        addAllWODuplicates(ap.legalCaptures(cb, ChessBoard.toSquare(i, j)), otherArmy);
-                    } else if(!(ap instanceof King)) {
-                        addAllWODuplicates(ap.legalCaptures(cb, ChessBoard.toSquare(i, j)), otherArmy);
+            int row = (isWhite)?7:0;
+            
+            boolean canQ = true, canK = true;
+            for(int i = 0; i < cb.getBoard().length; i++) {
+                for(int j = 0; j < cb.getBoard()[i].length; j++) {
+                    AbstractPiece ap = cb.getPiece(i, j);
+                    if(ap == null) continue;
+                    if((ap.isWhite == isWhite) || (ap instanceof King)) continue;
+                    String fromWhere = ChessBoard.toSquare(i, j);
+                    if(ap.isAllLegalMove(cb, fromWhere, ChessBoard.toSquare(1, row)) || 
+                            ap.isAllLegalMove(cb, fromWhere, ChessBoard.toSquare(2, row)) ||
+                            ap.isAllLegalMove(cb, fromWhere, ChessBoard.toSquare(3, row))) {
+                        canQ = false;
+                    }
+                    if(ap.isAllLegalMove(cb, fromWhere, ChessBoard.toSquare(5, row)) ||
+                            ap.isAllLegalMove(cb, fromWhere, ChessBoard.toSquare(6, row))) {
+                        canK = false;
                     }
                 }
             }
-        }
-        // return otherArmy;
-        LinkedList<String> difference = difference(otherArmy, output); //lol;
-        if(canCastle) {
-            if(!difference.contains(currentPosition)) {
-                difference.remove(ChessBoard.shiftSquare(currentPosition, -2, 0));
-                difference.remove(ChessBoard.shiftSquare(currentPosition, 2, 0));
+            // 1, 2, 3, Queenside
+            if(cb.isEmptySquare(1, row) && cb.isEmptySquare(2, row) && cb.isEmptySquare(3, row) && canQ) {
+                output.add(ChessBoard.shiftSquare(currentPosition, -2, 0));
             }
-            if(!difference.contains(ChessBoard.shiftSquare(currentPosition, 1, 0))) {
-                difference.remove(ChessBoard.shiftSquare(currentPosition, 2, 0));
-            }
-            if(!difference.contains(ChessBoard.shiftSquare(currentPosition, -1, 0))) {
-                difference.remove(ChessBoard.shiftSquare(currentPosition, -2, 0));
+            // 5, 6, Kingside
+            if(cb.isEmptySquare(5, row) && cb.isEmptySquare(6, row) && canK) {
+                output.add(ChessBoard.shiftSquare(currentPosition, 2, 0));
             }
         }
-        difference.remove(currentPosition);
-        return difference;*/
         return output;
     }
     

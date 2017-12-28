@@ -37,10 +37,16 @@ public class MoveRecorder {
      * Represents a king
      */
     public static final int KING = 5;
+    
     /**
      * The collection of moves made in the game
      */
     private ArrayList<String> moves;
+    
+    /**
+     * The outcome of the game
+     */
+    private String outcome = "";
     
     /**
      * Default constructor
@@ -66,7 +72,7 @@ public class MoveRecorder {
     }
     
     /**
-     * Determines a String that denotes a move <br/>
+     * Determines a String that denotes a move <br>
      * Can be used for en passant captures as well
      * @param fromWhere from where the piece is moved
      * @param toWhere to where the piece moved
@@ -95,7 +101,7 @@ public class MoveRecorder {
     }
     
     /**
-     * Determines a String that denotes a move <br/>
+     * Determines a String that denotes a move <br>
      * Used when a move is ambiguous and the file or rank is needed for clarification
      * @param toWhere to where the piece moved
      * @param column which file this piece is moved from
@@ -125,7 +131,7 @@ public class MoveRecorder {
     }
     
     /**
-     * Determines a String that denotes a move <br/>
+     * Determines a String that denotes a move <br>
      * Used when a move is ambiguous and the rank is needed for clarification
      * @param toWhere to where the piece moved
      * @param row which rank this piece is moved from
@@ -153,7 +159,7 @@ public class MoveRecorder {
     }
     
     /**
-     * Determines a String that denotes a move <br/>
+     * Determines a String that denotes a move <br>
      * Used when a move is ambiguous and the rank and file is needed for clarification
      * @param fromWhere from where the piece is moved
      * @param toWhere to where the piece moved
@@ -222,47 +228,47 @@ public class MoveRecorder {
                 ChessBoard.getColumn(toWhere), ChessBoard.getRow(toWhere));*/
         AbstractPiece toMove = before.getPiece(fromWhere);
         if(toMove == null) throw new IllegalArgumentException("Null piece");
-        if(!toMove.isLegalMove(before, fromWhere, toWhere)) throw new IllegalArgumentException("Not a legal move!");
+        //if(!toMove.isLegalMove(before, fromWhere, toWhere)) throw new IllegalArgumentException("Not a legal move!");
         
         switch(toMove.getCharRepresentation()) {
             case "P":
                 if(ChessBoard.getRow(toWhere) == 0 || ChessBoard.getRow(toWhere) == 8) {
                     switch(after.getPiece(toWhere).getCharRepresentation()) {
                         case "N":
-                            moves.add(addChecks(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), KNIGHT), after, after.getPiece(toWhere).isWhite));
+                            moves.add(addChecks(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, isCapture(before, toWhere)), KNIGHT), after, after.getPiece(toWhere).isWhite));
                             break;
                         case "B":
-                            moves.add(addChecks(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), BISHOP), after, after.getPiece(toWhere).isWhite));
+                            moves.add(addChecks(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, isCapture(before, toWhere)), BISHOP), after, after.getPiece(toWhere).isWhite));
                             break;
                         case "R":
-                            moves.add(addChecks(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), ROOK), after, after.getPiece(toWhere).isWhite));
+                            moves.add(addChecks(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, isCapture(before, toWhere)), ROOK), after, after.getPiece(toWhere).isWhite));
                             break;
                         case "Q":
-                            moves.add(addChecks(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), QUEEN), after, after.getPiece(toWhere).isWhite));
+                            moves.add(addChecks(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, isCapture(before, toWhere)), QUEEN), after, after.getPiece(toWhere).isWhite));
                             break;
                     }
                 } else {
-                    moves.add(addChecks(toMoveString(fromWhere, toWhere, PAWN, !before.isEmptySquare(toWhere)), after, after.getPiece(toWhere).isWhite));
+                    moves.add(addChecks(toMoveString(fromWhere, toWhere, PAWN, isCapture(before, toWhere)), after, after.getPiece(toWhere).isWhite));
                 }
                 break;
             case "K":
                 if(Math.abs(ChessBoard.getColumn(fromWhere)-ChessBoard.getColumn(toWhere)) == 2) {
                     moves.add(addChecks(castlingMoveString(ChessBoard.getColumn(fromWhere) < ChessBoard.getColumn(toWhere)), after, after.getPiece(toWhere).isWhite));
                 } else {
-                    moves.add(addChecks(toMoveString(fromWhere, toWhere, KING, !before.isEmptySquare(toWhere)), after, after.getPiece(toWhere).isWhite));
+                    moves.add(addChecks(toMoveString(fromWhere, toWhere, KING, isCapture(before, toWhere)), after, after.getPiece(toWhere).isWhite));
                 }
                 break;
             case "N":
-                moves.add(addChecks(moveString(before, fromWhere, toWhere, toMove, KNIGHT, !before.isEmptySquare(toWhere)), after, after.getPiece(toWhere).isWhite));
+                moves.add(addChecks(moveString(before, fromWhere, toWhere, toMove, KNIGHT, isCapture(before, toWhere)), after, after.getPiece(toWhere).isWhite));
                 break;
             case "B":
-                moves.add(addChecks(moveString(before, fromWhere, toWhere, toMove, BISHOP, !before.isEmptySquare(toWhere)), after, after.getPiece(toWhere).isWhite));
+                moves.add(addChecks(moveString(before, fromWhere, toWhere, toMove, BISHOP, isCapture(before, toWhere)), after, after.getPiece(toWhere).isWhite));
                 break;
             case "R":
-                moves.add(addChecks(moveString(before, fromWhere, toWhere, toMove, ROOK, !before.isEmptySquare(toWhere)), after, after.getPiece(toWhere).isWhite));
+                moves.add(addChecks(moveString(before, fromWhere, toWhere, toMove, ROOK, isCapture(before, toWhere)), after, after.getPiece(toWhere).isWhite));
                 break;
             case "Q":
-                moves.add(addChecks(moveString(before, fromWhere, toWhere, toMove, QUEEN, !before.isEmptySquare(toWhere)), after, after.getPiece(toWhere).isWhite));
+                moves.add(addChecks(moveString(before, fromWhere, toWhere, toMove, QUEEN, isCapture(before, toWhere)), after, after.getPiece(toWhere).isWhite));
                 break;
             default:
                 throw new IllegalArgumentException("Unknown piece");
@@ -290,6 +296,20 @@ public class MoveRecorder {
     }
     
     /**
+     * Determines whether a move is a capture
+     * @param before the state of the game before the move
+     * @param toWhere to where the piece was moved
+     * @return whether a move is a capture
+     */
+    private boolean isCapture(ChessBoard before, String toWhere) {
+        if(before.getEnPassant() == null) {
+            return !before.isEmptySquare(toWhere);
+        } else {
+            return !before.isEmptySquare(toWhere) || before.getEnPassant().equals(toWhere);
+        }
+    }
+    
+    /**
      * Determines the String representing a move
      * @param before the state of the game before the move
      * @param fromWhere from where the piece was moved
@@ -298,7 +318,8 @@ public class MoveRecorder {
      * @return A String that represents the move
      */
     private String moveString(ChessBoard before, String fromWhere, String toWhere, AbstractPiece piece, int whichPiece, boolean capture) {
-       if(!piece.isLegalMove(before, fromWhere, toWhere)) throw new IllegalArgumentException("This isn\'t a legal move");
+        if(!piece.isLegalMove(before, fromWhere, toWhere)) 
+            throw new IllegalArgumentException("This isn\'t a legal move");
         ArrayList<String> allPiece = before.findAll(whichPiece, piece.isWhite);
         boolean needRank = false, needFile = false;
         for(String square:allPiece) {
@@ -347,19 +368,24 @@ public class MoveRecorder {
     public void addOutcome(int outcome) {
         switch(outcome) {
             case -1:
-                moves.add("0-1");
+                this.outcome = "0-1";
                 break;
             case 0:
-                moves.add("1/2-1/2");
+                this.outcome = "1/2-1/2";
                 break;
             case 1:
-                moves.add("1-0");
+                this.outcome = "1-0";
                 break;
             default:
                 throw new IllegalArgumentException("Unknown outcome: " + outcome);
         }
     }
-
+    
+    /**
+     * Creates a String that represents this MoveRecorder. <br>
+     * Essentially creates a PGN of the game
+     * @return a String that represents this MoveRecorder
+     */
     @Override
     public String toString() {
         String output = "";
@@ -369,6 +395,7 @@ public class MoveRecorder {
             }
             output += moves.get(i) + " ";
         }
+        output += outcome;
         return output;
     }
 }

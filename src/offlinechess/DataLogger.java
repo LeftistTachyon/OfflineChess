@@ -73,9 +73,9 @@ public class DataLogger {
     }
     
     /**
-     * 
-     * @param c
-     * @throws IOException 
+     * Appends all of the Objects in the given Collection
+     * @param c the Collection to append
+     * @throws IOException if something goes wrong
      */
     public void appendAll(Collection c) throws IOException {
         if(!closed) {
