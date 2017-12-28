@@ -65,6 +65,11 @@ public class ChessBoard {
     private HashMap<Boolean, String> kingPos;
     
     /**
+     * Controls drawing last move
+     */
+    private String lastMoveFrom = null, lastMoveTo = null;
+    
+    /**
      * The size of the individual chess squares
      */
     public final int SQUARE_SIZE = 60; // change to 50 soon
@@ -211,13 +216,24 @@ public class ChessBoard {
      */
     private void drawCheckers(Graphics g) {
         g.setColor(new Color(240, 217, 181));
-        g.fillRect(x, y, x+480, y+480);
+        g.fillRect(x, y, x+8*SQUARE_SIZE, y+8*SQUARE_SIZE);
         g.setColor(new Color(181, 136, 99));
-        for(int i = x;i<480+x;i+=120) {
-            for(int j = y;j<480+y;j+=120) {
+        for(int i = x;i<8*SQUARE_SIZE+x;i+=120) {
+            for(int j = y;j<8*SQUARE_SIZE+y;j+=120) {
                 g.fillRect(i, j, SQUARE_SIZE, SQUARE_SIZE);
                 g.fillRect(i+SQUARE_SIZE, j+SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
             }
+        }
+        g.setColor(new Color(155, 199, 0, 105));
+        if(lastMoveFrom != null) {
+            g.fillRect(getColumn(lastMoveFrom)*SQUARE_SIZE, 
+                    getRow(lastMoveFrom)*SQUARE_SIZE, 
+                    SQUARE_SIZE, SQUARE_SIZE);
+        }
+        if(lastMoveTo != null) {
+            g.fillRect(getColumn(lastMoveTo)*SQUARE_SIZE, 
+                    getRow(lastMoveTo)*SQUARE_SIZE, 
+                    SQUARE_SIZE, SQUARE_SIZE);
         }
     }
     
@@ -569,6 +585,8 @@ public class ChessBoard {
         playerIsWhite = !playerIsWhite;
         recalculateMoves();
         mr.moved(thisCopy, this, ChessBoard.toSquare(fromWhereX, fromWhereY), ChessBoard.toSquare(toWhereX, toWhereY));
+        lastMoveFrom = toSquare(fromWhereX, fromWhereY);
+        lastMoveTo = toSquare(toWhereX, toWhereY);
         if(checkMated(playerIsWhite)) System.out.println("Checkmate!\n");
         else if(inCheck(playerIsWhite)) System.out.println("Check!\n");
         else if(stalemated(playerIsWhite)) System.out.println("Stalemate.\n");
@@ -650,7 +668,7 @@ public class ChessBoard {
     }
     
     /**
-     * <s>DO NOT USE OFTEN <br></s>
+     * DO NOT USE OFTEN <br>
      * Places a piece somewhere
      * @param ap a piece to place
      * @param where where to place the piece
@@ -662,7 +680,7 @@ public class ChessBoard {
     }
     
     /**
-     * <s>DO NOT USE OFTEN <br></s>
+     * DO NOT USE OFTEN <br>
      * Places a piece somewhere
      * @param ap a piece to place
      * @param col the column to place the piece in
