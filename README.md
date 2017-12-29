@@ -15,7 +15,7 @@ Chess meant to be played offline. To be transferred to an online version.
  - [x] Castling
 
  - [x] Speed up rendering of moves (use HashMaps<Square, ArrayList<Moves>>)
- - [ ] Draw conditions
+ - [ ] Draw conditions (stalemate, 3-fold repetition (use a button), 50-move !pawn move rule, book draws, agreement (online version))
  - [ ] Making the application more user friendly
 
  - [ ] Saving user data to a file
