@@ -663,8 +663,15 @@ public class ChessBoard {
             default:
                 throw new IllegalArgumentException("Unknown piece" + toWhatPiece);
         }
+        playerIsWhite = !playerIsWhite;
         mr.moved(thisCopy, this, fromWhere, toWhere);
         System.out.println("Promoted from " + fromWhere + " to " + toWhere + " to a " + toWhatPiece);
+        recalculateMoves();
+        lastMoveFrom = toSquare(fromWhereX, fromWhereY);
+        lastMoveTo = toSquare(toWhereX, toWhereY);
+        if(checkMated(playerIsWhite)) System.out.println("Checkmate!\n");
+        else if(inCheck(playerIsWhite)) System.out.println("Check!\n");
+        else if(stalemated(playerIsWhite)) System.out.println("Stalemate.\n");
     }
     
     /**
@@ -790,6 +797,54 @@ public class ChessBoard {
             }
         }
         return output;
+    }
+    
+    /**
+     * Refinds both kings.
+     */
+    public void resetKingPos() {
+        String bKing = null, wKing = null;
+        OUTER: for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board[i].length; j++) {
+                if(board[i][j] == null) continue;
+                if(board[i][j] instanceof King) {
+                    if(board[i][j].isWhite) {
+                        if(wKing == null) {
+                            wKing = toSquare(i, j);
+                        } else {
+                            assert false : "There are two white kings?!";
+                        }
+                    } else {
+                        if(bKing == null) {
+                            bKing = toSquare(i, j);
+                        } else {
+                            assert false : "There are two black kings?!";
+                        }
+                    }
+                    if(wKing != null && bKing != null) break OUTER;
+                }
+            }
+        }
+        if(wKing == null) assert false : "Cannot find white king";
+        if(bKing == null) assert false : "Cannot find black king";
+        kingPos.put(true, wKing);
+        kingPos.put(false, bKing);
+    }
+    
+    /**
+     * Refinds only one king.
+     * @param isWhite whether the king to find again is white
+     */
+    public void resetKingPos(boolean isWhite) {
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board[i].length; j++) {
+                if(board[i][j] == null) continue;
+                if(board[i][j] instanceof King && (board[i][j].isWhite == isWhite)) {
+                    kingPos.put(isWhite, toSquare(i, j));
+                    return;
+                }
+            }
+        }
     }
     
     /**

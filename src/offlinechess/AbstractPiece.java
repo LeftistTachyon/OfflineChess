@@ -67,6 +67,7 @@ public abstract class AbstractPiece {
             cb.maybeMove(currentPosition, square);
             if(!cb.inCheck(isWhite)) output.add(square);
             cb.setBoard(initLayout);
+            if(this instanceof King) cb.resetKingPos(isWhite);
         }
         return output;
     }

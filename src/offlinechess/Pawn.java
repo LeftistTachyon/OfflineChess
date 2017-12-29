@@ -26,8 +26,10 @@ public class Pawn extends AbstractPiece {
         if(isWhite) {
             if(row == 0) assert false : "Pawns should have promoted already!";
             if(row == 7) assert false : "Dafuq white pawns shouldn\'t be on the first rank";
-            if(cb.isEmptySquare(column, row - 1)) {
-                output.add(ChessBoard.shiftSquare(currentPosition, 0, -1));
+            if(ChessBoard.isValidSquare(column, row-1)) {
+                if(cb.isEmptySquare(column, row - 1)) {
+                    output.add(ChessBoard.shiftSquare(currentPosition, 0, -1));
+                }
             }
             if(ChessBoard.isValidSquare(column, row - 1) && ChessBoard.isValidSquare(column, row - 2)) {
                 if(row == 6 && cb.isEmptySquare(column, row - 1) && cb.isEmptySquare(column, row - 2)) {
@@ -51,8 +53,10 @@ public class Pawn extends AbstractPiece {
         } else {
             if(row == 7) assert false : "Pawns should have promoted already!";
             if(row == 0) assert false : "Dafuq black pawns shouldn\'t be on the eighth rank";
-            if(cb.isEmptySquare(column, row + 1)) {
-                output.add(ChessBoard.shiftSquare(currentPosition, 0, 1));
+            if(ChessBoard.isValidSquare(column, row+1)) {
+                if(cb.isEmptySquare(column, row + 1)) {
+                    output.add(ChessBoard.shiftSquare(currentPosition, 0, 1));
+                }
             }
             if(ChessBoard.isValidSquare(column, row + 1) && ChessBoard.isValidSquare(column, row + 2)) {
                 if(row == 1 && cb.isEmptySquare(column, row + 1) && cb.isEmptySquare(column, row + 2)) {
