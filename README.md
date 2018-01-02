@@ -16,8 +16,8 @@ Chess meant to be played offline. To be transferred to an online version.
 
  - [x] Speed up rendering of moves (use HashMaps<Square, ArrayList<Moves>>)
  - [x] Stalemate
- - [ ] 50-move rule
- - [ ] Book draws
+ - [x] 50-move rule
+ - [x] Book draws
  - [ ] Making the application more user friendly
 
  - [ ] Saving user data to a file
