@@ -205,6 +205,7 @@ public class ChessBoard {
      */
     public void draw(Graphics g) {
         drawCheckers(g);
+        drawCheck(g);
         drawSelection(g);
         drawPieces(g);
         drawPromotions(g);
@@ -350,6 +351,19 @@ public class ChessBoard {
                     }
                 }
             }
+        }
+    }
+    
+    /**
+     * Draws whether either king is in check
+     * @param g the Graphics to draw on
+     */
+    public void drawCheck(Graphics g) {
+        if(inCheck(true)) {
+            
+        }
+        if(inCheck(false)) {
+            
         }
     }
     
