@@ -215,9 +215,9 @@ public class ChessBoard {
      * @param g Graphics to draw on
      */
     private void drawCheckers(Graphics g) {
-        g.setColor(new Color(240, 217, 181));
-        g.fillRect(x, y, x+8*SQUARE_SIZE, y+8*SQUARE_SIZE);
         g.setColor(new Color(181, 136, 99));
+        g.fillRect(x, y, x+8*SQUARE_SIZE, y+8*SQUARE_SIZE);
+        g.setColor(new Color(240, 217, 181));
         for(int i = x;i<8*SQUARE_SIZE+x;i+=120) {
             for(int j = y;j<8*SQUARE_SIZE+y;j+=120) {
                 g.fillRect(i, j, SQUARE_SIZE, SQUARE_SIZE);
