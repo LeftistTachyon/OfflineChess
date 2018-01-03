@@ -20,7 +20,7 @@ public class Pawn extends AbstractPiece {
     @Override
     public LinkedList<String> allLegalMoves(ChessBoard cb, String currentPosition) {
         if(!ChessBoard.isValidSquare(currentPosition)) throw new IllegalArgumentException("Invalid square");
-        if(!(cb.getPiece(currentPosition) instanceof Pawn)) throw new IllegalArgumentException("This isn\'t a pawn!");
+        if(!(cb.getPiece(currentPosition).getCharRepresentation().equals("P"))) throw new IllegalArgumentException("This isn\'t a pawn!");
         LinkedList<String> output = new LinkedList<>();
         int row = ChessBoard.getRow(currentPosition), column = ChessBoard.getColumn(currentPosition);
         if(isWhite) {
@@ -84,7 +84,7 @@ public class Pawn extends AbstractPiece {
     @Override
     public LinkedList<String> legalCaptures(ChessBoard cb, String currentPosition) {
         if(!ChessBoard.isValidSquare(currentPosition)) throw new IllegalArgumentException("Invalid square");
-        if(!(cb.getPiece(currentPosition) instanceof Pawn)) throw new IllegalArgumentException("This isn\'t a pawn!");
+        if(!(cb.getPiece(currentPosition).getCharRepresentation().equals("P"))) throw new IllegalArgumentException("This isn\'t a pawn!");
         LinkedList<String> output = new LinkedList<>();
         int row = ChessBoard.getRow(currentPosition), column = ChessBoard.getColumn(currentPosition);
         if(isWhite) {

@@ -570,11 +570,11 @@ public class ChessBoard {
     public void movePiece(int fromWhereX, int fromWhereY, int toWhereX, int toWhereY) {
         ChessBoard thisCopy = new ChessBoard(this);
         maybeMove(fromWhereX, fromWhereY, toWhereX, toWhereY);
-        if(board[toWhereX][toWhereY] instanceof King) {
+        if(board[toWhereX][toWhereY].getCharRepresentation().equals("K")) {
             ((King)(board[toWhereX][toWhereY])).notifyOfMove();
         }
         enPassant = null;
-        if(board[toWhereX][toWhereY] instanceof Pawn) {
+        if(board[toWhereX][toWhereY].getCharRepresentation().equals("P")) {
             if(Math.abs(fromWhereY-toWhereY) == 2) {
                 String file = (char) ('a' + fromWhereX) + "", rank = String.valueOf(8-((fromWhereY+toWhereY)/2));
                 enPassant = file + rank;
@@ -588,8 +588,10 @@ public class ChessBoard {
         lastMoveFrom = toSquare(fromWhereX, fromWhereY);
         lastMoveTo = toSquare(toWhereX, toWhereY);
         if(checkMated(playerIsWhite)) System.out.println("Checkmate!\n");
-        else if(inCheck(playerIsWhite)) System.out.println("Check!\n");
-        else if(stalemated(playerIsWhite)) System.out.println("Stalemate.\n");
+        else if(inCheck(playerIsWhite)) {
+            ((King)(getPiece(kingPos.get(playerIsWhite)))).notifyCheck();
+            System.out.println("Check!\n");
+        } else if(isDraw(playerIsWhite)) System.out.println("Draw.\n");
     }
     
     /**
@@ -612,7 +614,7 @@ public class ChessBoard {
      * @param toWhereY to which row to move a piece
      */
     public void maybeMove(int fromWhereX, int fromWhereY, int toWhereX, int toWhereY) {
-        if(board[fromWhereX][fromWhereY] instanceof King) {
+        if(board[fromWhereX][fromWhereY].getCharRepresentation().equals("K")) {
             if(Math.abs(fromWhereX-toWhereX) == 2 && fromWhereY == toWhereY) {
                 // Castling
                 if(fromWhereX < toWhereX) {
@@ -631,7 +633,7 @@ public class ChessBoard {
         
         board[toWhereX][toWhereY] = board[fromWhereX][fromWhereY];
         board[fromWhereX][fromWhereY] = null;
-        if(board[toWhereX][toWhereY] instanceof King) kingPos.put(playerIsWhite, toSquare(toWhereX, toWhereY));
+        if(board[toWhereX][toWhereY].getCharRepresentation().equals("K")) kingPos.put(playerIsWhite, toSquare(toWhereX, toWhereY));
     }
     
     /**
@@ -713,7 +715,7 @@ public class ChessBoard {
                         //if(ap.legalCaptures(this, ChessBoard.toSquare(i, j)).contains(kingPos))
                         // if the current opposite-colored piece can eat the king on the next move
                         if(ap.isAllLegalMove(this, ChessBoard.toSquare(i, j), kingPos.get(isWhite))) {
-                            if(ap instanceof Queen) {
+                            if(ap.getCharRepresentation().equals("Q")) {
                                 System.out.println("Can move queen to " + kingPos.get(isWhite));
                             }
                             return true;
@@ -755,6 +757,86 @@ public class ChessBoard {
             if(!allLegalMove.isEmpty()) return false;
         }
         return !inCheck(isWhite);
+    }
+    
+    /**
+     * Determines whether either side has insufficient material to checkmate
+     * @return whether either side has insufficient material to checkmate
+     */
+    public boolean insufficientMaterial() {
+        HashMap<String, Integer> pieces = new HashMap<>();
+        pieces.put("BW", 0);
+        pieces.put("BB", 0);
+        pieces.put("N", 0);
+        pieces.put("bw", 0);
+        pieces.put("bb", 0);
+        pieces.put("n", 0);
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board[i].length; j++) {
+                if(board[i][j] == null) continue;
+                if(board[i][j].getCharRepresentation().equals("K")) continue;
+                if("QRP".contains(board[i][j].getCharRepresentation())) return false;
+                String rep = board[i][j].getCharRepresentation();
+                if(board[i][j].getCharRepresentation().equals("B")) {
+                    if(isSquareWhite(i, j))
+                        rep += "W";
+                    else
+                        rep += "B";
+                }
+                if(board[i][j].getCharRepresentation().equals("N")) {
+                    String nRep = (board[i][j].isWhite)?"N":"n";
+                    if(pieces.get(nRep) == 1)
+                        return false;
+                }
+                if(!board[i][j].isWhite)
+                    rep = rep.toLowerCase();
+                try {
+                    pieces.put(rep, pieces.get(rep)+1);
+                } catch(NullPointerException npe) {
+                    throw new NullPointerException(npe.getMessage() + ": " + rep);
+                }
+            }
+        }
+        final boolean noBW = pieces.get("BW") == 0, 
+                noBB = pieces.get("BB") == 0, noN = pieces.get("N") == 0;
+        final boolean nobw = pieces.get("bw") == 0, 
+                nobb = pieces.get("bb") == 0, non = pieces.get("n") == 0;
+        final boolean whiteBare = noBW && noBB && noN;
+        final boolean blackBare = nobw && nobb && non;
+        return (whiteBare && blackBare) || 
+                (noN && non && ((noBB && nobb) || (noBW && nobw))) ||
+                (blackBare && noN && (noBW || noBB)) || 
+                (blackBare && noBB && noBW && pieces.get("N") == 1) || 
+                (whiteBare && non && (nobw || nobb)) || 
+                (whiteBare && nobb && nobw && pieces.get("n") == 1);
+    }
+    
+    /**
+     * Determines whether the current state of the game is a draw
+     * @param isWhite the side to check for stalemates
+     * @return whether the game is a draw
+     */
+    public boolean isDraw(boolean isWhite) {
+        return insufficientMaterial() || stalemated(isWhite) || mr.is50MoveDraw();
+    }
+    
+    /**
+     * Determines whether a square is white
+     * @param square the square to check
+     * @return whether the square is white
+     */
+    public static boolean isSquareWhite(String square) {
+        return isSquareWhite(getColumn(square), getRow(square));
+    }
+    
+    /**
+     * Determines whether a square is white
+     * @param col the column of the square to check
+     * @param row the row of the square to check
+     * @return whether the square is white
+     */
+    public static boolean isSquareWhite(int col, int row) {
+        return (col+row)%2==0;
     }
     
     /**
@@ -807,7 +889,7 @@ public class ChessBoard {
         OUTER: for(int i = 0; i < board.length; i++) {
             for(int j = 0; j < board[i].length; j++) {
                 if(board[i][j] == null) continue;
-                if(board[i][j] instanceof King) {
+                if(board[i][j].getCharRepresentation().equals("K")) {
                     if(board[i][j].isWhite) {
                         if(wKing == null) {
                             wKing = toSquare(i, j);
@@ -839,7 +921,7 @@ public class ChessBoard {
         for(int i = 0; i < board.length; i++) {
             for(int j = 0; j < board[i].length; j++) {
                 if(board[i][j] == null) continue;
-                if(board[i][j] instanceof King && (board[i][j].isWhite == isWhite)) {
+                if(board[i][j].getCharRepresentation().equals("K") && (board[i][j].isWhite == isWhite)) {
                     kingPos.put(isWhite, toSquare(i, j));
                     return;
                 }

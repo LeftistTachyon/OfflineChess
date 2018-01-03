@@ -20,7 +20,7 @@ public class Bishop extends AbstractPiece {
     @Override
     public LinkedList<String> allLegalMoves(ChessBoard cb, String currentPosition) {
         if(!ChessBoard.isValidSquare(currentPosition)) throw new IllegalArgumentException("Invalid square");
-        if(!(cb.getPiece(currentPosition) instanceof Bishop)) throw new IllegalArgumentException("This isn\'t a bishop!");
+        if(!(cb.getPiece(currentPosition).getCharRepresentation().equals("B"))) throw new IllegalArgumentException("This isn\'t a bishop!");
         LinkedList<String> output = new LinkedList<>();
         String temp;
         if(ChessBoard.isValidShift(currentPosition, 1, 1)) {

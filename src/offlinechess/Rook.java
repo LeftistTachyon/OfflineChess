@@ -20,7 +20,7 @@ public class Rook extends AbstractPiece {
     @Override
     public LinkedList<String> allLegalMoves(ChessBoard cb, String currentPosition) {
         if(!ChessBoard.isValidSquare(currentPosition)) throw new IllegalArgumentException("Invalid square");
-        if(!(cb.getPiece(currentPosition) instanceof Rook)) throw new IllegalArgumentException("This isn\'t a rook!");
+        if(!(cb.getPiece(currentPosition).getCharRepresentation().equals("R"))) throw new IllegalArgumentException("This isn\'t a rook!");
         LinkedList<String> output = new LinkedList<>();
         String temp;
         if(ChessBoard.isValidShift(currentPosition, 1, 0)) {

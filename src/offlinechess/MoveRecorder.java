@@ -318,7 +318,7 @@ public class MoveRecorder {
      * @return A String that represents the move
      */
     private String moveString(ChessBoard before, String fromWhere, String toWhere, AbstractPiece piece, int whichPiece, boolean capture) {
-        if(!piece.isLegalMove(before, fromWhere, toWhere)) 
+        if(!piece.isAllLegalMove(before, fromWhere, toWhere)) 
             throw new IllegalArgumentException("This isn\'t a legal move");
         ArrayList<String> allPiece = before.findAll(whichPiece, piece.isWhite);
         boolean needRank = false, needFile = false;
@@ -379,6 +379,26 @@ public class MoveRecorder {
             default:
                 throw new IllegalArgumentException("Unknown outcome: " + outcome);
         }
+    }
+    
+    /**
+     * Determines whether 50 moves have been made without a pawn moving.
+     * @return whether it is a draw according to this rule.
+     */
+    public boolean is50MoveDraw() {
+        if(moves.size() < 100) return false;
+        for(int i = moves.size()-1; i <= moves.size()-100; i--) {
+            if(Character.isLowerCase(moves.get(i).charAt(0))) return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Returns how many moves have been played in the game
+     * @return how many moves have been played in the game
+     */
+    public int moves() {
+        return moves.size()/2;
     }
     
     /**

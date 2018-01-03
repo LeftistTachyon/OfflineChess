@@ -20,7 +20,7 @@ public class Queen extends AbstractPiece {
     @Override
     public LinkedList<String> allLegalMoves(ChessBoard cb, String currentPosition) {
         if(!ChessBoard.isValidSquare(currentPosition)) throw new IllegalArgumentException("Invalid square");
-        if(!(cb.getPiece(currentPosition) instanceof Queen)) throw new IllegalArgumentException("This isn\'t a queen!");
+        if(!(cb.getPiece(currentPosition).getCharRepresentation().equals("Q"))) throw new IllegalArgumentException("This isn\'t a queen!");
         LinkedList<String> output = new LinkedList<>();
         String temp;
         if(ChessBoard.isValidShift(currentPosition, 1, 0)) {
