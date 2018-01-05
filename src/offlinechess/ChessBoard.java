@@ -359,6 +359,7 @@ public class ChessBoard {
      * @param g the Graphics to draw on
      */
     public void drawCheck(Graphics g) {
+        Graphics2D g2D = (Graphics2D) g;
         if(inCheck(true)) {
             
         }
