@@ -44,14 +44,6 @@ public abstract class AbstractPiece {
      */
     public abstract LinkedList<String> allLegalMoves(ChessBoard cb, String currentPosition);
     
-    /**
-     * Determines whether a move is legal <br>
-     * However, this method does not check for checks
-     * @param cb
-     * @param fromWhere
-     * @param toWhere
-     * @return 
-     */
     public boolean isAllLegalMove(ChessBoard cb, String fromWhere, String toWhere) {
         return allLegalMoves(cb, fromWhere).contains(toWhere);
     }
@@ -73,9 +65,13 @@ public abstract class AbstractPiece {
         }
         for(String square:allLegal) {
             cb.maybeMove(currentPosition, square);
+            if(getCharRepresentation().equals("P") && 
+                    (ChessBoard.getRow(square) == 0 
+                    || ChessBoard.getRow(square) == 8)) 
+                cb.placePiece(new Queen(isWhite), square);
             if(!cb.inCheck(isWhite)) output.add(square);
             cb.setBoard(initLayout);
-            if(getCharRepresentation().equals("K")) cb.resetKingPos(isWhite);
+            if(this.getCharRepresentation().equals("K")) cb.resetKingPos(isWhite);
         }
         return output;
     }
