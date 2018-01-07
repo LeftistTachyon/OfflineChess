@@ -18,6 +18,9 @@ Chess meant to be played offline. To be transferred to an online version.
  - [x] Stalemate
  - [x] 50-move rule
  - [x] Book draws
+ 
+ - [ ] Draggable pieces
+ 
  - [ ] Making the application more user friendly
 
  - [ ] Saving user data to a file
