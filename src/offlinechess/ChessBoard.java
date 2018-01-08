@@ -657,6 +657,7 @@ public class ChessBoard {
             ((King)(getPiece(kingPos.get(playerIsWhite)))).notifyCheck();
             System.out.println("Check!\n");
         } else if(isDraw(playerIsWhite)) System.out.println("Draw.\n");
+        ChessMain.Timer.end();
     }
     
     /**

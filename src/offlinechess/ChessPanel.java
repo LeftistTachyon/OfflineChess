@@ -77,6 +77,7 @@ public class ChessPanel extends JPanel {
      * @param i what fired this event (See: <code>ChessMouseListener.MOUSE_?</code>)
      */
     public void notify(MouseEvent me, int i) {
+        ChessMain.Timer.start();
         String selected;
         switch(i) {
             case ChessMouseListener.MOUSE_CLICKED:

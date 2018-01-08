@@ -117,4 +117,33 @@ public class ChessMain {
             return name + "|" + Encryption.encrypt(password) + "|" + rating;
         }
     }
+    
+    /**
+     * A class that keeps track of time.
+     */
+    static class Timer {
+        /**
+         * The nano the timer started
+         */
+        private static long start;
+        
+        /**
+         * No instantiation.
+         */
+        private Timer(){}
+        
+        /**
+         * Starts the timer.
+         */
+        public static void start() {
+            start = System.nanoTime();
+        }
+        
+        /**
+         * Stops the timer.
+         */
+        public static void end() {
+            System.out.println(((System.nanoTime()-start)*1.0/1000000000L) + " seconds");
+        }
+    }
 }
