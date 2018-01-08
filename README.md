@@ -10,16 +10,16 @@ Chess meant to be played offline. To be transferred to an online version.
  - [x] Figure out the colors for the board (selection, moved)
 
  - [x] Promotions
- - [x] En passant
+ - [x] En passant (commit 3d2c97e)
 
- - [x] Castling
+ - [x] Castling (commit 3d2c97e)
 
  - [x] Speed up rendering of moves (use HashMaps<Square, ArrayList<Moves>>)
  - [x] Stalemate
  - [x] 50-move rule
  - [x] Book draws
  
- - [ ] Draggable pieces
+ - [x] Draggable pieces (commit eff740f)
  
  - [ ] Making the application more user friendly
 
