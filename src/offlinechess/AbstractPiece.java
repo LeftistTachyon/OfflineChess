@@ -1,10 +1,16 @@
 package offlinechess;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
@@ -44,6 +50,14 @@ public abstract class AbstractPiece {
      */
     public abstract LinkedList<String> allLegalMoves(ChessBoard cb, String currentPosition);
     
+    /**
+      * Determines whether a move is legal <br>
+      * However, this method does not check for checks
+      * @param cb
+      * @param fromWhere
+      * @param toWhere
+      * @return 
+      */
     public boolean isAllLegalMove(ChessBoard cb, String fromWhere, String toWhere) {
         return allLegalMoves(cb, fromWhere).contains(toWhere);
     }
@@ -71,7 +85,7 @@ public abstract class AbstractPiece {
                 cb.placePiece(new Queen(isWhite), square);
             if(!cb.inCheck(isWhite)) output.add(square);
             cb.setBoard(initLayout);
-            if(this.getCharRepresentation().equals("K")) cb.resetKingPos(isWhite);
+            if(getCharRepresentation().equals("K")) cb.resetKingPos(isWhite);
         }
         return output;
     }
@@ -83,6 +97,20 @@ public abstract class AbstractPiece {
      * @return all legal captures
      */
     public abstract LinkedList<String> legalCaptures(ChessBoard cb, String currentPosition);
+    
+    /**
+     * The ghostifier
+     */
+    private static RescaleOp rop;
+    
+    /**
+     * static init
+     */
+    static {
+        float[] scales = { 1f, 1f, 1f, 0.3f };
+        float[] offsets = new float[4];
+        rop = new RescaleOp(scales, offsets, null);
+    }
     
     /**
      * The images for the black and white pieces
@@ -98,6 +126,8 @@ public abstract class AbstractPiece {
     public static void loadImages(URL b, URL w) throws IOException {
         white = ImageIO.read(w);
         black = ImageIO.read(b);
+        whiteGhost = ghostify(white);
+        blackGhost = ghostify(black);
     }
     
     /**
@@ -113,6 +143,36 @@ public abstract class AbstractPiece {
             g.drawImage(white, x, y, width, height, null);
         } else {
             g.drawImage(black, x, y, width, height, null);
+        }
+    }
+    
+    /**
+     * The images for the black and white ghosts
+     */
+    private static BufferedImage blackGhost, whiteGhost;
+    
+    /**
+     * Turns the alpha of the image to 30%
+     * @param bi the BufferedImage to change
+     * @return the changed image
+     */
+    public static BufferedImage ghostify(BufferedImage bi) {
+        return rop.filter(bi, null);
+    }
+    
+    /**
+     * Draws a ghost of this image
+     * @param g the Graphics to draw on
+     * @param x the X coordinate of the image
+     * @param y the Y coordinate of the image
+     * @param width the width of the picture
+     * @param height the height of the picture
+     */
+    public void drawGhost(Graphics g, int x, int y, int width, int height) {
+        if(isWhite) {
+            g.drawImage(whiteGhost, x, y, width, height, null);
+        } else {
+            g.drawImage(blackGhost, x, y, width, height, null);
         }
     }
     

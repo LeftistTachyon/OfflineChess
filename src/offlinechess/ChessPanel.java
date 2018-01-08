@@ -35,11 +35,11 @@ public class ChessPanel extends JPanel {
      */
     public ChessPanel() {
         cml = new ChessMouseListener(this);
+        _this = this;
         cb = new ChessBoard();
         cb.recalculateMoves();
         addMouseListener(cml);
         super.setVisible(true);
-        _this = this;
     }
 
     /**
@@ -77,14 +77,18 @@ public class ChessPanel extends JPanel {
      * @param i what fired this event (See: <code>ChessMouseListener.MOUSE_?</code>)
      */
     public void notify(MouseEvent me, int i) {
+        String selected;
         switch(i) {
             case ChessMouseListener.MOUSE_CLICKED:
-                String selected = ChessBoard.toSquare(me.getX()/60, me.getY()/60);
+                selected = ChessBoard.toSquare(me.getX()/60, me.getY()/60);
                 if(ChessBoard.isValidSquare(selected)) cb.clicked(selected);
                 break;
             case ChessMouseListener.MOUSE_PRESSED:
+                selected = ChessBoard.toSquare(me.getX()/60, me.getY()/60);
+                cb.enableDragging(selected);
                 break;
             case ChessMouseListener.MOUSE_RELEASED:
+                cb.disableDragging();
                 break;
         }
         repaint();
@@ -107,11 +111,11 @@ public class ChessPanel extends JPanel {
             public void run() {
                 while(!stop) {
                     repaint();
-                    try {
-                        Thread.sleep(100);
+                    /*try {
+                        Thread.sleep(1);
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
-                    }
+                    }*/
                 }
                 System.out.println("Thread stopped!");
             }

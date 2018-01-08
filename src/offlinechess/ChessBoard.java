@@ -45,11 +45,15 @@ public class ChessBoard {
     private MoveRecorder mr;
     
     /**
+     * Which column the pawn is to be promoting.<br>
+     * -1 stands for no promotion<br>
      * Controls the promotion dialog
      */
     private int promotion = -1;
     
     /**
+     * The squares open for en passant.<br>
+     * null stands for no open squares<br>
      * Controls en passant
      */
     private String enPassant = null;
@@ -65,9 +69,22 @@ public class ChessBoard {
     private HashMap<Boolean, String> kingPos;
     
     /**
-     * Controls drawing last move
+     * The last move by a piece.<br>
+     * Controls drawing the last move
      */
     private String lastMoveFrom = null, lastMoveTo = null;
+    
+    /**
+     * The piece's square to be dragging from.<br>
+     * Controls dragging pieces
+     */
+    private String draggingFrom = null;
+    
+    /**
+     * The last known non-null point the mouse was at.<br>
+     * Controls dragging pieces
+     */
+    private Point lastPoint;
     
     /**
      * The size of the individual chess squares
@@ -96,6 +113,7 @@ public class ChessBoard {
         allLegalMoves = new HashMap<>();
         x = 0;
         y = 0;
+        lastPoint = ChessPanel.getMouseCoordinates();
     }
     
     /**
@@ -204,10 +222,12 @@ public class ChessBoard {
      * @param g Graphics to draw on
      */
     public void draw(Graphics g) {
+        if(ChessPanel.getMouseCoordinates() != null) lastPoint = ChessPanel.getMouseCoordinates();
         drawCheckers(g);
         drawCheck(g);
         drawSelection(g);
         drawPieces(g);
+        drawDraggedPiece(g);
         drawPromotions(g);
     }
     
@@ -245,14 +265,25 @@ public class ChessBoard {
     private void drawPieces(Graphics g) {
         for(int i = 0;i<board.length*SQUARE_SIZE;i+=SQUARE_SIZE) {
             for(int j = 0;j<board[i/SQUARE_SIZE].length*SQUARE_SIZE;j+=SQUARE_SIZE) {
-                if(board[i/SQUARE_SIZE][j/SQUARE_SIZE] != null) board[i/SQUARE_SIZE][j/SQUARE_SIZE].draw(g, i+5+x, j+5+y, 50, 50);
+                if(board[i/SQUARE_SIZE][j/SQUARE_SIZE] != null) {
+                    if(toSquare(i/SQUARE_SIZE, j/SQUARE_SIZE).equals(draggingFrom)) {
+                        board[i/SQUARE_SIZE][j/SQUARE_SIZE].drawGhost(g, i+5+x, j+5+y, 50, 50);
+                    } else {
+                        board[i/SQUARE_SIZE][j/SQUARE_SIZE].draw(g, i+5+x, j+5+y, 50, 50);
+                    }
+                }
             }
         }
     }
     
     private void drawSelection(Graphics g) {
-        if(selected == null) return;
-        LinkedList<String> moves = allLegalMoves.get(selected);
+        String selection;
+        if(selected == null) {
+            if(draggingFrom == null) {
+                return;
+            } else selection = draggingFrom;
+        } else selection = selected;
+        LinkedList<String> moves = allLegalMoves.get(selection);
         if(moves == null) return;
         Color moveDest = new Color(20, 85, 30, 77);
         g.setColor(moveDest);
@@ -287,9 +318,9 @@ public class ChessBoard {
                 g.fillPolygon(new int[]{four.x, four.x, four.x+TRIANGLE_SIZE}, new int[]{four.y, four.y-TRIANGLE_SIZE, four.y}, 3); // 4
             }
         }
-        Color selection = new Color(20, 85, 30, 128);
-        g.setColor(selection);
-        g.fillRect(ChessBoard.getColumn(selected)*SQUARE_SIZE, ChessBoard.getRow(selected)*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+        Color selectionColor = new Color(20, 85, 30, 128);
+        g.setColor(selectionColor);
+        g.fillRect(ChessBoard.getColumn(selection)*SQUARE_SIZE, ChessBoard.getRow(selection)*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
     }
     
     /**
@@ -358,14 +389,33 @@ public class ChessBoard {
      * Draws whether either king is in check
      * @param g the Graphics to draw on
      */
-    public void drawCheck(Graphics g) {
+    private void drawCheck(Graphics g) {
         Graphics2D g2D = (Graphics2D) g;
+        float[] fractions = new float[]{0.0f, 0.25f, 0.89f, 1.0f};
+        Color[] colors = new Color[]{new Color(255, 0, 0, 1), 
+            new Color(231, 0, 0, 1), new Color(169, 0, 0, 0), 
+            new Color(158, 0, 0, 0)};
         if(inCheck(true)) {
-            
+            String kingAt = kingPos.get(true);
+            g2D.setPaint(new RadialGradientPaint(30 + (getColumn(kingAt)*SQUARE_SIZE), 30 + (getRow(kingAt)*SQUARE_SIZE), SQUARE_SIZE/2, fractions, colors));
+            g2D.fill(new Ellipse2D.Double(getColumn(kingAt)*SQUARE_SIZE, getRow(kingAt)*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE));
         }
         if(inCheck(false)) {
-            
+            String kingAt = kingPos.get(false);
+            g2D.setPaint(new RadialGradientPaint(30 + (getColumn(kingAt)*SQUARE_SIZE), 30 + (getRow(kingAt)*SQUARE_SIZE), SQUARE_SIZE/2, fractions, colors));
+            g2D.fill(new Ellipse2D.Double(getColumn(kingAt)*SQUARE_SIZE, getRow(kingAt)*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE));
         }
+    }
+    
+    /**
+     * Draws the dragged piece
+     * @param g the Graphics to draw on
+     */
+    private void drawDraggedPiece(Graphics g) {
+        if(draggingFrom == null) return;
+        int midX = lastPoint.x - (SQUARE_SIZE/2), 
+                midY = lastPoint.y - (SQUARE_SIZE/2);
+        getPiece(draggingFrom).draw(g, midX, midY, 50, 50);
     }
     
     /**
@@ -1026,6 +1076,28 @@ public class ChessBoard {
             }
         }
         System.out.println("selected: " + selected);
+    }
+    
+    /**
+     * Enables dragging.
+     * @param fromWhere from where the piece is being dragged 
+     */
+    public void enableDragging(String fromWhere) {
+        if(!isEmptySquare(fromWhere)) 
+            if(getPiece(fromWhere).isWhite == playerIsWhite) 
+                draggingFrom = fromWhere;
+    }
+    
+    /**
+     * Disables dragging.
+     */
+    public void disableDragging() {
+        if(draggingFrom == null) return;
+        String dropSquare = toSquare(lastPoint.x/60, lastPoint.y/60);
+        if(getPiece(draggingFrom).isLegalMove(this, draggingFrom, dropSquare)) {
+            movePiece(draggingFrom, dropSquare);
+        }
+        draggingFrom = null;
     }
 
     /**
