@@ -89,17 +89,22 @@ public class ChessBoard {
     /**
      * The size of the individual chess squares
      */
-    public final int SQUARE_SIZE = 60; // change to 50 soon
+    public static final int SQUARE_SIZE = 60; // change to 50 soon
     
     /**
      * The offset to the center needed for a 13-diameter square
      */
-    public final int CENTER_OFFSET = (SQUARE_SIZE-13)/2;
+    public static final int CENTER_OFFSET = (SQUARE_SIZE-13)/2;
     
     /**
      * The sizes of the triangles that surround a piece that can be captured
      */
-    public final int TRIANGLE_SIZE = (int) ((11.0/51)*SQUARE_SIZE);
+    public static final int TRIANGLE_SIZE = (int) ((11.0/51)*SQUARE_SIZE);
+    
+    /**
+     * The size of the text
+     */
+    public static final int TEXT_SIZE = 12;
     
     /**
      * Default constructor.
@@ -247,15 +252,19 @@ public class ChessBoard {
         }
         g.setColor(new Color(155, 199, 0, 105));
         if(lastMoveFrom != null) {
-            g.fillRect(getColumn(lastMoveFrom)*SQUARE_SIZE, 
-                    getRow(lastMoveFrom)*SQUARE_SIZE, 
+            g.fillRect(getColumn(lastMoveFrom)*SQUARE_SIZE+x, 
+                    getRow(lastMoveFrom)*SQUARE_SIZE+y, 
                     SQUARE_SIZE, SQUARE_SIZE);
         }
         if(lastMoveTo != null) {
-            g.fillRect(getColumn(lastMoveTo)*SQUARE_SIZE, 
-                    getRow(lastMoveTo)*SQUARE_SIZE, 
+            g.fillRect(getColumn(lastMoveTo)*SQUARE_SIZE+x, 
+                    getRow(lastMoveTo)*SQUARE_SIZE+y, 
                     SQUARE_SIZE, SQUARE_SIZE);
         }
+        //g.setFont(Font.);
+        /*for(int i = 0;i<8;i++) {
+            
+        }*/
     }
     
     /**
@@ -294,33 +303,39 @@ public class ChessBoard {
                     y1 = ChessBoard.getRow(s);
             
             if(p != null) {
-                if(isEmptySquare(x1, y1) && (p.x >= x1*SQUARE_SIZE && p.x <= x1*SQUARE_SIZE+SQUARE_SIZE) && (p.y >= y1*SQUARE_SIZE && p.y <= y1*SQUARE_SIZE+SQUARE_SIZE)) {
-                    g.fillRect(x1*SQUARE_SIZE, y1*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+                if(isEmptySquare(x1, y1) && 
+                        (p.x >= x+x1*SQUARE_SIZE && p.x <= x+x1*SQUARE_SIZE+SQUARE_SIZE) && 
+                        (p.y >= y+y1*SQUARE_SIZE && p.y <= y+y1*SQUARE_SIZE+SQUARE_SIZE)) {
+                    g.fillRect(x+x1*SQUARE_SIZE, y+y1*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
                     continue;
                 }
             }
             if(isEmptySquare(x1, y1)) {
-                g.fillOval(x1*SQUARE_SIZE+CENTER_OFFSET, y1*SQUARE_SIZE+CENTER_OFFSET, 14, 14);
+                g.fillOval(x+x1*SQUARE_SIZE+CENTER_OFFSET, y+y1*SQUARE_SIZE+CENTER_OFFSET, 14, 14);
             } else {
                 /*
                 1___2
                  | |
                 4---3
                 */
-                Point one = new Point(x1*SQUARE_SIZE, y1*SQUARE_SIZE), 
-                        two = new Point(x1*SQUARE_SIZE + SQUARE_SIZE, y1*SQUARE_SIZE), 
-                        three = new Point(x1*SQUARE_SIZE + SQUARE_SIZE, y1*SQUARE_SIZE + SQUARE_SIZE), 
-                        four = new Point(x1*SQUARE_SIZE, y1*SQUARE_SIZE + SQUARE_SIZE);
+                Point one = new Point(x+x1*SQUARE_SIZE, y+y1*SQUARE_SIZE), 
+                        two = new Point(x+x1*SQUARE_SIZE + SQUARE_SIZE, y+y1*SQUARE_SIZE), 
+                        three = new Point(x+x1*SQUARE_SIZE + SQUARE_SIZE, y+y1*SQUARE_SIZE + SQUARE_SIZE), 
+                        four = new Point(x+x1*SQUARE_SIZE, y+y1*SQUARE_SIZE + SQUARE_SIZE);
                 
-                g.fillPolygon(new int[]{one.x, one.x, one.x+TRIANGLE_SIZE}, new int[]{one.y, one.y+TRIANGLE_SIZE, one.y}, 3); // 1
-                g.fillPolygon(new int[]{two.x, two.x, two.x-TRIANGLE_SIZE}, new int[]{two.y, two.y+TRIANGLE_SIZE, two.y}, 3); // 2
-                g.fillPolygon(new int[]{three.x, three.x, three.x-TRIANGLE_SIZE}, new int[]{three.y, three.y-TRIANGLE_SIZE, three.y}, 3); // 3
-                g.fillPolygon(new int[]{four.x, four.x, four.x+TRIANGLE_SIZE}, new int[]{four.y, four.y-TRIANGLE_SIZE, four.y}, 3); // 4
+                g.fillPolygon(new int[]{one.x, one.x, one.x+TRIANGLE_SIZE}, 
+                        new int[]{one.y, one.y+TRIANGLE_SIZE, one.y}, 3); // 1
+                g.fillPolygon(new int[]{two.x, two.x, two.x-TRIANGLE_SIZE}, 
+                        new int[]{two.y, two.y+TRIANGLE_SIZE, two.y}, 3); // 2
+                g.fillPolygon(new int[]{three.x, three.x, three.x-TRIANGLE_SIZE}, 
+                        new int[]{three.y, three.y-TRIANGLE_SIZE, three.y}, 3); // 3
+                g.fillPolygon(new int[]{four.x, four.x, four.x+TRIANGLE_SIZE}, 
+                        new int[]{four.y, four.y-TRIANGLE_SIZE, four.y}, 3); // 4
             }
         }
         Color selectionColor = new Color(20, 85, 30, 128);
         g.setColor(selectionColor);
-        g.fillRect(ChessBoard.getColumn(selection)*SQUARE_SIZE, ChessBoard.getRow(selection)*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+        g.fillRect(x+ChessBoard.getColumn(selection)*SQUARE_SIZE, y+ChessBoard.getRow(selection)*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
     }
     
     /**
@@ -397,13 +412,13 @@ public class ChessBoard {
             new Color(158, 0, 0, 0)};
         if(inCheck(true)) {
             String kingAt = kingPos.get(true);
-            g2D.setPaint(new RadialGradientPaint(30 + (getColumn(kingAt)*SQUARE_SIZE), 30 + (getRow(kingAt)*SQUARE_SIZE), SQUARE_SIZE/2, fractions, colors));
-            g2D.fill(new Ellipse2D.Double(getColumn(kingAt)*SQUARE_SIZE, getRow(kingAt)*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE));
+            g2D.setPaint(new RadialGradientPaint(30 + (getColumn(kingAt)*SQUARE_SIZE) + x, 30 + (getRow(kingAt)*SQUARE_SIZE) + y, SQUARE_SIZE/2, fractions, colors));
+            g2D.fill(new Ellipse2D.Double(getColumn(kingAt)*SQUARE_SIZE + x, getRow(kingAt)*SQUARE_SIZE + y, SQUARE_SIZE, SQUARE_SIZE));
         }
         if(inCheck(false)) {
             String kingAt = kingPos.get(false);
-            g2D.setPaint(new RadialGradientPaint(30 + (getColumn(kingAt)*SQUARE_SIZE), 30 + (getRow(kingAt)*SQUARE_SIZE), SQUARE_SIZE/2, fractions, colors));
-            g2D.fill(new Ellipse2D.Double(getColumn(kingAt)*SQUARE_SIZE, getRow(kingAt)*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE));
+            g2D.setPaint(new RadialGradientPaint(30 + (getColumn(kingAt)*SQUARE_SIZE) + x, 30 + (getRow(kingAt)*SQUARE_SIZE) + y, SQUARE_SIZE/2, fractions, colors));
+            g2D.fill(new Ellipse2D.Double(getColumn(kingAt)*SQUARE_SIZE + x, getRow(kingAt)*SQUARE_SIZE + y, SQUARE_SIZE, SQUARE_SIZE));
         }
     }
     
@@ -806,9 +821,12 @@ public class ChessBoard {
         return inCheck(isWhite);*/
         // return (allLegalMoves.get(kingPos.get(isWhite)).isEmpty())?inCheck(isWhite):false;
         String king = kingPos.get(isWhite);
-        if(allLegalMoves.get(king) == null) {
+        /*if(allLegalMoves.get(king) == null) {
+            System.out.println("allLegalMoves: null");
             return inCheck(isWhite);
-        } else if(allLegalMoves.get(king).isEmpty()) {
+        } else */if(allLegalMoves.get(king).isEmpty()) {
+            //System.out.println("allLegalMoves: empty");
+            
             return inCheck(isWhite);
         } else return false;
     }
@@ -1094,11 +1112,27 @@ public class ChessBoard {
      */
     public void disableDragging() {
         if(draggingFrom == null) return;
-        String dropSquare = toSquare(lastPoint.x/60, lastPoint.y/60);
+        String dropSquare = toSquare((lastPoint.x-x)/60, (lastPoint.y-y)/60);
         if(getPiece(draggingFrom).isLegalMove(this, draggingFrom, dropSquare)) {
             movePiece(draggingFrom, dropSquare);
         }
         draggingFrom = null;
+    }
+
+    /**
+     * Returns how much the board was transformed in the x-axis
+     * @return how much the board was transformed in the x-axis
+     */
+    public int getX() {
+        return x;
+    }
+
+    /**
+     * Returns how much the board was transformed in the y-axis
+     * @return how much the board was transformed in the y-axis
+     */
+    public int getY() {
+        return y;
     }
 
     /**

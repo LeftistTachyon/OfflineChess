@@ -20,7 +20,7 @@ public class ChessFrame extends JFrame {
     public ChessFrame() {
         super("Offline Chess");
         cp = new ChessPanel();
-        setSize(new Dimension(485, 510));
+        setSize(new Dimension(535, 560));
         super.getContentPane().add(cp);
         super.setResizable(false);
         super.setVisible(true);

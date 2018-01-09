@@ -36,7 +36,7 @@ public class ChessPanel extends JPanel {
     public ChessPanel() {
         cml = new ChessMouseListener(this);
         _this = this;
-        cb = new ChessBoard();
+        cb = new ChessBoard(50, 50);
         cb.recalculateMoves();
         addMouseListener(cml);
         super.setVisible(true);
@@ -81,11 +81,11 @@ public class ChessPanel extends JPanel {
         String selected;
         switch(i) {
             case ChessMouseListener.MOUSE_CLICKED:
-                selected = ChessBoard.toSquare(me.getX()/60, me.getY()/60);
+                selected = ChessBoard.toSquare((me.getX()-cb.getX())/60, (me.getY()-cb.getY())/60);
                 if(ChessBoard.isValidSquare(selected)) cb.clicked(selected);
                 break;
             case ChessMouseListener.MOUSE_PRESSED:
-                selected = ChessBoard.toSquare(me.getX()/60, me.getY()/60);
+                selected = ChessBoard.toSquare((me.getX()-cb.getX())/60, (me.getY()-cb.getY())/60);
                 cb.enableDragging(selected);
                 break;
             case ChessMouseListener.MOUSE_RELEASED:
