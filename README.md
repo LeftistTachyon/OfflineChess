@@ -21,6 +21,8 @@ Chess meant to be played offline. To be transferred to an online version.
  
  - [x] Draggable pieces (commit eff740f)
  
+ - [ ] Be able to transform the board
+ 
  - [ ] Adding file and rank markers
  - [ ] Making the application more user friendly
 
