@@ -287,11 +287,11 @@ public class ChessBoard {
     
     private void drawSelection(Graphics g) {
         String selection;
-        if(selected == null) {
-            if(draggingFrom == null) {
+        if(draggingFrom == null) {
+            if(selected == null) {
                 return;
-            } else selection = draggingFrom;
-        } else selection = selected;
+            } else selection = selected;
+        } else selection = draggingFrom;
         LinkedList<String> moves = allLegalMoves.get(selection);
         if(moves == null) return;
         Color moveDest = new Color(20, 85, 30, 77);
@@ -1092,7 +1092,6 @@ public class ChessBoard {
      * @param fromWhere from where the piece is being dragged 
      */
     public void enableDragging(String fromWhere) {
-        if(!fromWhere.equals(selected)) selected = null;
         if(!isEmptySquare(fromWhere)) 
             if(getPiece(fromWhere).isWhite == playerIsWhite) 
                 draggingFrom = fromWhere;
@@ -1116,6 +1115,7 @@ public class ChessBoard {
                 movePiece(draggingFrom, dropSquare);
             }
         }
+        if(!draggingFrom.equals(selected)) selected = null;
         draggingFrom = null;
         System.out.println("draggingFrom: " + draggingFrom);
         System.out.println("selected: " + selected);
