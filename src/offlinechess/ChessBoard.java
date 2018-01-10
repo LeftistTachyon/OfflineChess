@@ -297,7 +297,7 @@ public class ChessBoard {
         Color moveDest = new Color(20, 85, 30, 77);
         g.setColor(moveDest);
         final Point p = ChessPanel.getMouseCoordinates();
-        System.out.println((p == null)?"null":"(" + p.x + ", " + p.y + ")");
+        //System.out.println((p == null)?"null":"(" + p.x + ", " + p.y + ")");
         for(String s:moves) {
             int x1 = ChessBoard.getColumn(s), 
                     y1 = ChessBoard.getRow(s);
@@ -370,13 +370,13 @@ public class ChessBoard {
                     }
                 }
             } else {
-                Point mouse = new Point(ChessPanel.getMouseCoordinates().x/60, ChessPanel.getMouseCoordinates().y/60);
+                Point mouse = new Point((ChessPanel.getMouseCoordinates().x-x)/60, (ChessPanel.getMouseCoordinates().y-y)/60);
                 if(playerIsWhite) {
                     for(int i = 0; i <= 3; i++) {
                         if(mouse.x == promotion && mouse.y == i) {
                             gd.setPaint(new RadialGradientPaint(30 + (promotion*SQUARE_SIZE)+x, 30 + (SQUARE_SIZE * i)+y, 52, new float[]{0F, 1.0F}, new Color[]{inside, outsideH}));
                             gd.fill(new Rectangle2D.Double(promotion*SQUARE_SIZE+x, SQUARE_SIZE * i+y, SQUARE_SIZE, SQUARE_SIZE));
-                            gd.drawImage(promotions[i], SQUARE_SIZE*promotion+5, SQUARE_SIZE*i+5, 50, 50, null);
+                            gd.drawImage(promotions[i], SQUARE_SIZE*promotion+5+x, SQUARE_SIZE*i+5+y, 50, 50, null);
                         } else {
                             gd.setPaint(new RadialGradientPaint(30 + (promotion*SQUARE_SIZE)+x, 30 + (SQUARE_SIZE * i)+y, 57, new float[]{0F, 1.0F}, new Color[]{inside, outsideNH}));
                             gd.fill(new Ellipse2D.Double(promotion*SQUARE_SIZE+x, SQUARE_SIZE * i+y, SQUARE_SIZE, SQUARE_SIZE));
@@ -388,7 +388,7 @@ public class ChessBoard {
                         if(mouse.x == promotion && mouse.y == i) {
                             gd.setPaint(new RadialGradientPaint(30 + (promotion*SQUARE_SIZE)+x, 30 + (SQUARE_SIZE * i)+y, 52, new float[]{0F, 1.0F}, new Color[]{inside, outsideH}));
                             gd.fill(new Rectangle2D.Double(promotion*SQUARE_SIZE+x, SQUARE_SIZE * i+y, SQUARE_SIZE, SQUARE_SIZE));
-                            gd.drawImage(promotions[i], SQUARE_SIZE*promotion+5, SQUARE_SIZE*i+5, 50, 50, null);
+                            gd.drawImage(promotions[i], SQUARE_SIZE*promotion+5+x, SQUARE_SIZE*i+5+y, 50, 50, null);
                         } else {
                             gd.setPaint(new RadialGradientPaint(30 + (promotion*SQUARE_SIZE)+x, 30 + (SQUARE_SIZE * i)+y, 57, new float[]{0F, 1.0F}, new Color[]{inside, outsideNH}));
                             gd.fill(new Ellipse2D.Double(promotion*SQUARE_SIZE+x, SQUARE_SIZE * i+y, SQUARE_SIZE, SQUARE_SIZE));
@@ -724,6 +724,8 @@ public class ChessBoard {
      * @param toWhatPiece to what piece to promote to
      */
     public void promotePiece(String fromWhere, String toWhere, int toWhatPiece) {
+        if(!getPiece(fromWhere).getCharRepresentation().equals("P")) 
+            assert false : "Cannot promote a non-pawn";
         boolean isWhite = getPiece(fromWhere).isWhite;
         ChessBoard thisCopy = new ChessBoard(this);
         int fromWhereX = getColumn(fromWhere), fromWhereY = getRow(fromWhere);
@@ -796,9 +798,6 @@ public class ChessBoard {
                         //if(ap.legalCaptures(this, ChessBoard.toSquare(i, j)).contains(kingPos))
                         // if the current opposite-colored piece can eat the king on the next move
                         if(ap.isAllLegalMove(this, ChessBoard.toSquare(i, j), kingPos.get(isWhite))) {
-                            if(ap.getCharRepresentation().equals("Q")) {
-                                System.out.println("Can move queen to " + kingPos.get(isWhite));
-                            }
                             return true;
                         }
                     }
@@ -814,28 +813,9 @@ public class ChessBoard {
      * @return whether the side is checkmated
      */
     public boolean checkMated(boolean isWhite) {
-        //return getPiece(kingPos.get(isWhite)).legalMoves(this, kingPos.get(isWhite)).isEmpty() && inCheck(isWhite);
-        /*for(LinkedList<String> allLegalMove : allLegalMoves.values()) {
-            if(!allLegalMove.isEmpty()) return false;
-        }
-        return inCheck(isWhite);*/
-        // return (allLegalMoves.get(kingPos.get(isWhite)).isEmpty())?inCheck(isWhite):false;
-        String king = kingPos.get(isWhite);
-        /*if(allLegalMoves.get(king) == null) {
-            System.out.println("allLegalMoves: null");
-            return inCheck(isWhite);
-        } else */
-        if(allLegalMoves.get(king) == null && 
-                inCheck(isWhite)) {
-            for(int i = 0;i<8;i++) {
-                for(int j = 0;j<8;j++) {
-                    if(board[i][j] == null) continue;
-                    if(board[i][j].isWhite == isWhite) {
-                        if(!board[i][j].legalMoves(this, enPassant).isEmpty()) {
-                            return false;
-                        }
-                    }
-                }
+        if(inCheck(isWhite)) {
+            for(String s : allLegalMoves.keySet()) {
+                if(!allLegalMoves.get(s).isEmpty()) return false;
             }
             return true;
         } else return false;
@@ -1080,7 +1060,7 @@ public class ChessBoard {
         } else {
             if(!isEmptySquare(square)) {
                 if(getPiece(selected).isLegalMove(this, selected, square)) {
-                    if(getPiece(selected).getCharRepresentation().equals("P") && (ChessBoard.getRow(square) == 0 || ChessBoard.getRow(square) == 8)) {
+                    if(getPiece(selected).getCharRepresentation().equals("P") && (ChessBoard.getRow(square) == 0 || ChessBoard.getRow(square) == 7)) {
                         promotion = ChessBoard.getColumn(square);
                     } else {
                         movePiece(selected, square);
@@ -1095,7 +1075,7 @@ public class ChessBoard {
                 }
             } else {
                 if(getPiece(selected).isLegalMove(this, selected, square)) {
-                    if(getPiece(selected).getCharRepresentation().equals("P") && (ChessBoard.getRow(square) == 0 || ChessBoard.getRow(square) == 8)) {
+                    if(getPiece(selected).getCharRepresentation().equals("P") && (ChessBoard.getRow(square) == 0 || ChessBoard.getRow(square) == 7)) {
                         promotion = ChessBoard.getColumn(square);
                     } else {
                         movePiece(selected, square);
@@ -1112,9 +1092,12 @@ public class ChessBoard {
      * @param fromWhere from where the piece is being dragged 
      */
     public void enableDragging(String fromWhere) {
+        if(!fromWhere.equals(selected)) selected = null;
         if(!isEmptySquare(fromWhere)) 
             if(getPiece(fromWhere).isWhite == playerIsWhite) 
                 draggingFrom = fromWhere;
+        System.out.println("draggingFrom: " + draggingFrom);
+        System.out.println("selected: " + selected);
     }
     
     /**
@@ -1123,10 +1106,19 @@ public class ChessBoard {
     public void disableDragging() {
         if(draggingFrom == null) return;
         String dropSquare = toSquare((lastPoint.x-x)/60, (lastPoint.y-y)/60);
-        if(getPiece(draggingFrom).isLegalMove(this, draggingFrom, dropSquare)) {
+        /*if(getPiece(draggingFrom).isLegalMove(this, draggingFrom, dropSquare)) {
             movePiece(draggingFrom, dropSquare);
+        }*/
+        if(getPiece(draggingFrom).isLegalMove(this, draggingFrom, dropSquare)) {
+            if(getPiece(draggingFrom).getCharRepresentation().equals("P") && (ChessBoard.getRow(dropSquare) == 0 || ChessBoard.getRow(dropSquare) == 7)) {
+                promotion = ChessBoard.getColumn(dropSquare);
+            } else {
+                movePiece(draggingFrom, dropSquare);
+            }
         }
         draggingFrom = null;
+        System.out.println("draggingFrom: " + draggingFrom);
+        System.out.println("selected: " + selected);
     }
 
     /**
