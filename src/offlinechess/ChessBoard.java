@@ -87,6 +87,12 @@ public class ChessBoard {
     private Point lastPoint;
     
     /**
+     * The square a pawn is promoting from<br>
+     * Controls promotion
+     */
+    private String promotingFrom = null;
+    
+    /**
      * The size of the individual chess squares
      */
     public static final int SQUARE_SIZE = 60; // change to 50 soon
@@ -338,12 +344,20 @@ public class ChessBoard {
         g.fillRect(x+ChessBoard.getColumn(selection)*SQUARE_SIZE, y+ChessBoard.getRow(selection)*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
     }
     
+    int cnt = 1;
     /**
      * Draws the promotion choice box
      * @param g the Graphics to draw on
      */
     private void drawPromotions(Graphics g) {
         if(promotion != -1) {
+            if(cnt % 100 == 0) {
+                System.out.println("selected: " + selected);
+                System.out.println("draggingFrom: " + draggingFrom);
+                System.out.println("promotingFrom: " + promotingFrom);
+                System.out.println("promotion: " + promotion);
+                cnt = 1;
+            } else cnt++;
             g.setColor(new Color(250, 250, 250, (int) (255*0.7)));
             g.fillRect(x, y, (8*SQUARE_SIZE)+x, (8*SQUARE_SIZE)+y);
             Graphics2D gd = (Graphics2D)g;
@@ -1008,7 +1022,7 @@ public class ChessBoard {
      * @param square where the board has been clicked
      */
     public void clicked(String square) {
-        if(selected == null) {
+        if(selected == null && promotion == -1) {
             if(!isEmptySquare(square) && (getPiece(square).isWhite == playerIsWhite)) {
                 selected = square;
             }
@@ -1023,35 +1037,35 @@ public class ChessBoard {
                      */
                     switch(ChessBoard.getRow(square)) {
                         case 0:
-                            promotePiece(selected, square, MoveRecorder.QUEEN);
+                            promotePiece(promotingFrom, square, MoveRecorder.QUEEN);
                             break;
                         case 1:
-                            promotePiece(selected, square, MoveRecorder.ROOK);
+                            promotePiece(promotingFrom, square, MoveRecorder.ROOK);
                             break;
                         case 2:
-                            promotePiece(selected, square, MoveRecorder.BISHOP);
+                            promotePiece(promotingFrom, square, MoveRecorder.BISHOP);
                             break;
                         case 3:
-                            promotePiece(selected, square, MoveRecorder.KNIGHT);
+                            promotePiece(promotingFrom, square, MoveRecorder.KNIGHT);
                             break;
                     }
                 } else {
                     switch(ChessBoard.getRow(square)) {
                         case 7:
-                            promotePiece(selected, square, MoveRecorder.QUEEN);
+                            promotePiece(promotingFrom, square, MoveRecorder.QUEEN);
                             break;
                         case 6:
-                            promotePiece(selected, square, MoveRecorder.ROOK);
+                            promotePiece(promotingFrom, square, MoveRecorder.ROOK);
                             break;
                         case 5:
-                            promotePiece(selected, square, MoveRecorder.BISHOP);
+                            promotePiece(promotingFrom, square, MoveRecorder.BISHOP);
                             break;
                         case 4:
-                            promotePiece(selected, square, MoveRecorder.KNIGHT);
+                            promotePiece(promotingFrom, square, MoveRecorder.KNIGHT);
                             break;
                     }
                 }
-                selected = null;
+                promotingFrom = null;
                 promotion = -1;
                 recalculateMoves();
             }
@@ -1062,6 +1076,7 @@ public class ChessBoard {
                 if(getPiece(selected).isLegalMove(this, selected, square)) {
                     if(getPiece(selected).getCharRepresentation().equals("P") && (ChessBoard.getRow(square) == 0 || ChessBoard.getRow(square) == 7)) {
                         promotion = ChessBoard.getColumn(square);
+                        promotingFrom = selected;
                     } else {
                         movePiece(selected, square);
                         selected = null;
@@ -1077,6 +1092,7 @@ public class ChessBoard {
                 if(getPiece(selected).isLegalMove(this, selected, square)) {
                     if(getPiece(selected).getCharRepresentation().equals("P") && (ChessBoard.getRow(square) == 0 || ChessBoard.getRow(square) == 7)) {
                         promotion = ChessBoard.getColumn(square);
+                        promotingFrom = selected;
                     } else {
                         movePiece(selected, square);
                         selected = null;
@@ -1111,6 +1127,7 @@ public class ChessBoard {
         if(getPiece(draggingFrom).isLegalMove(this, draggingFrom, dropSquare)) {
             if(getPiece(draggingFrom).getCharRepresentation().equals("P") && (ChessBoard.getRow(dropSquare) == 0 || ChessBoard.getRow(dropSquare) == 7)) {
                 promotion = ChessBoard.getColumn(dropSquare);
+                promotingFrom = draggingFrom;
             } else {
                 movePiece(draggingFrom, dropSquare);
             }
