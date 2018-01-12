@@ -274,6 +274,12 @@ public class King extends AbstractPiece {
      */
     public void notifyOfMove() {
         moved = true;
+    }
+    
+    /**
+     * Notifies the King that it is no longer in check
+     */
+    public void notifyNoCheck() {
         inCheck = false;
     }
 

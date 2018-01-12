@@ -147,4 +147,16 @@ public class Encryption {
     private static char decodeChar(int i) {
         return order.charAt(i);
     }
+    
+    /**
+     * Determines whether a String is encryptable
+     * @param s the String the check
+     * @return whether the String is encryptable
+     */
+    public static boolean writableEncryptable(String s) {
+        for(char c:s.toCharArray()) {
+            if(!order.contains(c + "")) return false;
+        }
+        return true;
+    }
 }

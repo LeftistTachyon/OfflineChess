@@ -36,7 +36,7 @@ public class ChessPanel extends JPanel {
     public ChessPanel() {
         cml = new ChessMouseListener(this);
         _this = this;
-        cb = new ChessBoard(50, 50);
+        cb = new ChessBoard();
         cb.recalculateMoves();
         addMouseListener(cml);
         super.setVisible(true);
