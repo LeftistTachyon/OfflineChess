@@ -233,7 +233,9 @@ public class ChessBoard {
      * @param g Graphics to draw on
      */
     public void draw(Graphics g) {
-        if(ChessPanel.getMouseCoordinates() != null) lastPoint = ChessPanel.getMouseCoordinates();
+        Point temp = ChessPanel.getMouseCoordinates();
+        if(temp != null) 
+            lastPoint = temp;
         drawCheckers(g);
         drawCheck(g);
         drawSelection(g);
@@ -480,18 +482,20 @@ public class ChessBoard {
      */
     private void drawCheck(Graphics g) {
         Graphics2D g2D = (Graphics2D) g;
-        float[] fractions = new float[]{0.0f, 0.25f, 0.89f, 1.0f};
-        Color[] colors = new Color[]{new Color(255, 0, 0, 1), 
-            new Color(231, 0, 0, 1), new Color(169, 0, 0, 0), 
-            new Color(158, 0, 0, 0)};
+        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        float[] fractions = new float[]{ 0.0f, 0.25f, 0.89f, 1.0f };
+        Color[] colors = new Color[]{
+            new Color(255, 0, 0, 255), new Color(231, 0, 0, 150), 
+            new Color(169, 0, 0, 80), new Color(158, 0, 0, 40)
+        };
         if(inCheck(playerIsWhite)) {
             String kingAt = kingPos.get(playerIsWhite);
-            int col = getColumn(kingAt), row = getRow(kingAt);
+            int col = getColumn(kingAt), row = getRow(kingAt); // Works
             g2D.setPaint(
                     new RadialGradientPaint(
                             30 + (col*SQUARE_SIZE) + x, 
                             30 + (row*SQUARE_SIZE) + y, 
-                            SQUARE_SIZE, fractions, colors
+                            SQUARE_SIZE/2, fractions, colors
                     )
             );
             g2D.fill(
@@ -509,7 +513,7 @@ public class ChessBoard {
      * @param g the Graphics to draw on
      */
     private void drawDraggedPiece(Graphics g) {
-        if(draggingFrom == null) return;
+        if(draggingFrom == null/* || lastPoint == null*/) return;
         int midX = lastPoint.x - (SQUARE_SIZE/2), 
                 midY = lastPoint.y - (SQUARE_SIZE/2);
         getPiece(draggingFrom).draw(g, midX, midY, 50, 50);
