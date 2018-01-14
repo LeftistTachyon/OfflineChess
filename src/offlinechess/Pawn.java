@@ -1,6 +1,11 @@
 package offlinechess;
 
-import java.awt.Graphics;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -118,70 +123,127 @@ public class Pawn extends AbstractPiece {
     }
     
     /**
-     * The images for the black and white pieces
+     * The shape of black and white pawns
      */
-    private static BufferedImage black, white;
+    private static GeneralPath pawnGP;
     
-    /**
-     * Loads the images for this piece
-     * @param b the black image
-     * @param w the white image
-     * @throws IOException if something goes wrong
-     */
-    public static void loadImages(URL b, URL w) throws IOException {
-        white = ImageIO.read(w);
-        black = ImageIO.read(b);
-        whiteGhost = ghostify(white);
-        blackGhost = ghostify(black);
+    static {
+        pawnGP = new GeneralPath();
+        // M 22.5 9
+        pawnGP.moveTo(22.5, 9);
+        // c -2.21 0 -4 1.79 -4 4
+        pawnGP.curveTo(20.29, 9, 
+                18.5, 10.79, 
+                18.5, 13);
+        // c 0 .89 .29 1.71 .78 2.38
+        pawnGP.curveTo(18.5, 13.89, 
+                18.79, 14.71, 
+                19.28, 15.38);
+        // C 17.33 16.5 16 18.59 16 21
+        pawnGP.curveTo(17.33, 16.5, 
+                16, 18.59, 
+                16, 21);
+        // c 0 2.03 .94 3.84 2.41 5.03
+        pawnGP.curveTo(16, 23.03, 
+                16.94, 24.84, 
+                18.41, 26.03);
+        // c -3 1.06 -7.41 5.55 -7.41 13.47
+        pawnGP.curveTo(15.41, 27.09, 
+                11, 31.58, 
+                11, 39.5);
+        // h 23
+        pawnGP.lineTo(34, 39.5);
+        // c 0 -7.92 -4.41 -12.41 -7.41 -13.47
+        pawnGP.curveTo(34, 31.58, 
+                29.59, 27.09, 
+                26.59, 26.03);
+        // c 1.47 -1.19 2.41 -3 2.41 -5.03
+        pawnGP.curveTo(28.06, 24.84, 
+                29, 23.03, 
+                29, 21);
+        // c 0 -2.41 -1.33 -4.5 -3.28 -5.62
+        pawnGP.curveTo(29, 18.59, 
+                27.67, 16.5, 
+                25.72, 15.38);
+        // c .49 -.67 .78 -1.49 .78 -2.38
+        pawnGP.curveTo(26.21, 14.71, 
+                26.5, 13.89, 
+                26.5, 13);
+        // c 0 -2.21 -1.79 -4 -4 -4
+        pawnGP.curveTo(26.5, 10.79, 
+                24.71, 9, 
+                22.5, 9);
+        // z
+        pawnGP.closePath();
     }
     
     /**
      * Draws this piece
-     * @param g the Graphics to draw on
+     * @param g2D the Graphics2D to draw on
      * @param x the X coordinate of the image
      * @param y the Y coordinate of the image
      * @param width the width of the picture
      * @param height the height of the picture
      */
     @Override
-    public void draw(Graphics g, int x, int y, int width, int height) {
+    public void draw(Graphics2D g2D, int x, int y, int width, int height) {
+        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        double xStretch = width/45.0, yStretch = height/45.0;
+        g2D.setStroke(new BasicStroke((float) (1.5*((xStretch + yStretch)/2)), 
+                BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        GeneralPath gp = new GeneralPath(pawnGP);
+        gp.transform(new AffineTransform(xStretch, 0, 0, yStretch, x, y));
         if(isWhite) {
-            g.drawImage(white, x, y, width, height, null);
+            //g2D.drawImage(white, x, y, width, height, null);
+            g2D.setPaint(Color.WHITE);
+            g2D.fill(gp);
+            g2D.setPaint(Color.BLACK);
+            g2D.draw(gp);
         } else {
-            g.drawImage(black, x, y, width, height, null);
+            g2D.setPaint(Color.BLACK);
+            g2D.fill(gp);
+            g2D.draw(gp);
         }
     }
-    /**
-     * The images for the black and white ghosts
-     */
-    private static BufferedImage blackGhost, whiteGhost;
     
     /**
      * Draws a ghost of this image
-     * @param g the Graphics to draw on
+     * @param g2D the Graphics2D to draw on
      * @param x the X coordinate of the image
      * @param y the Y coordinate of the image
      * @param width the width of the picture
      * @param height the height of the picture
      */
     @Override
-    public void drawGhost(Graphics g, int x, int y, int width, int height) {
+    public void drawGhost(Graphics2D g2D, int x, int y, int width, int height) {
+        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        double xStretch = width/45.0, yStretch = height/45.0;
+        g2D.setStroke(new BasicStroke((float) (1.5*((xStretch + yStretch)/2)), 
+                BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        GeneralPath gp = new GeneralPath(pawnGP);
+        gp.transform(new AffineTransform(xStretch, 0, 0, yStretch, x, y));
+        
         if(isWhite) {
-            g.drawImage(whiteGhost, x, y, width, height, null);
+            g2D.setPaint(new Color(1.0f, 1.0f, 1.0f, 0.3f));
+            g2D.fill(gp);
+            g2D.setPaint(new Color(0.0f, 0.0f, 0.0f, 0.3f));
+            g2D.draw(gp);
         } else {
-            g.drawImage(blackGhost, x, y, width, height, null);
+            g2D.setPaint(new Color(0.0f, 0.0f, 0.0f, 0.3f));
+            g2D.fill(gp);
+            g2D.draw(gp);
         }
     }
-    
-    /**
-     * Gets this piece's image that is white or black
-     * @param isWhite whether the image should be white or black
-     * @return the image that represents this piece
-     */
-    public static BufferedImage getImage(boolean isWhite) {
-        return (isWhite)?white:black;
-    }
 
+    /**
+     * Gets this piece's GeneralPath that is white or black
+     * @param isWhite whether the GeneralPath should be white or black
+     * @return the GeneralPath that represents this piece
+     */
+    public static GeneralPath getGeneralPath(boolean isWhite) {
+        return pawnGP;
+    }
+    
     @Override
     public String getCharRepresentation() {
         return "P";

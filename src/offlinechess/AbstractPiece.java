@@ -1,6 +1,8 @@
 package offlinechess;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.io.IOException;
@@ -127,17 +129,18 @@ public abstract class AbstractPiece {
     
     /**
      * Draws this piece
-     * @param g the Graphics to draw on
+     * @param g2D the Graphics2D to draw on
      * @param x the X coordinate of the image
      * @param y the Y coordinate of the image
      * @param width the width of the picture
      * @param height the height of the picture
      */
-    public void draw(Graphics g, int x, int y, int width, int height) {
+    public void draw(Graphics2D g2D, int x, int y, int width, int height) {
+        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         if(isWhite) {
-            g.drawImage(white, x, y, width, height, null);
+            g2D.drawImage(white, x, y, width, height, null);
         } else {
-            g.drawImage(black, x, y, width, height, null);
+            g2D.drawImage(black, x, y, width, height, null);
         }
     }
     
@@ -147,7 +150,7 @@ public abstract class AbstractPiece {
     private static BufferedImage blackGhost, whiteGhost;
     
     /**
-     * Turns the alpha of the image to 30%
+     * Turns the alpha of the image to 30%.
      * @param bi the BufferedImage to change
      * @return the changed image
      */
@@ -157,17 +160,18 @@ public abstract class AbstractPiece {
     
     /**
      * Draws a ghost of this image
-     * @param g the Graphics to draw on
+     * @param g2D the Graphics2D to draw on
      * @param x the X coordinate of the image
      * @param y the Y coordinate of the image
      * @param width the width of the picture
      * @param height the height of the picture
      */
-    public void drawGhost(Graphics g, int x, int y, int width, int height) {
+    public void drawGhost(Graphics2D g2D, int x, int y, int width, int height) {
+        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         if(isWhite) {
-            g.drawImage(whiteGhost, x, y, width, height, null);
+            g2D.drawImage(whiteGhost, x, y, width, height, null);
         } else {
-            g.drawImage(blackGhost, x, y, width, height, null);
+            g2D.drawImage(blackGhost, x, y, width, height, null);
         }
     }
     
