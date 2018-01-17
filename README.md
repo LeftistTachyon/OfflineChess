@@ -2,6 +2,9 @@
 
 Chess meant to be played offline. To be transferred to an online version.  
 
+### _Note:_  
+As of 1/17/2018, I will be temporarily be focusing on a chess engine for now.  
+
 
 ## TODO
 
