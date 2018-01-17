@@ -34,4 +34,4 @@ As of 1/17/2018, I will be temporarily be focusing on a chess engine for now.
  - [ ] Move to an online version!  
 
 ### Other Info
-_Total lines of code:_ 3,111
+_Total lines of code:_ 3,807
