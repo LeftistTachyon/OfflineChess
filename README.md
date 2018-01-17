@@ -23,7 +23,7 @@ Chess meant to be played offline. To be transferred to an online version.
  
  - [x] Be able to transform the board (issue #6)
  
- - [ ] Adding file and rank markers
+ - [x] Adding file and rank markers
  - [ ] Making the application more user friendly
 
  - [ ] Saving user data to a file
