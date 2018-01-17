@@ -92,7 +92,7 @@ public class ChessPanel extends JPanel {
                         (me.getX()-cb.getX())/ChessBoard.SQUARE_SIZE, 
                         (me.getY()-cb.getY())/ChessBoard.SQUARE_SIZE
                 );
-                cb.enableDragging(selected);
+                if(ChessBoard.isValidSquare(selected)) cb.enableDragging(selected);
                 break;
             case ChessMouseListener.MOUSE_RELEASED:
                 cb.disableDragging();

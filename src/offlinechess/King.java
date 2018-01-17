@@ -1,8 +1,6 @@
 package offlinechess;
 
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -221,22 +219,20 @@ public class King extends AbstractPiece {
     
     /**
      * Draws this piece
-     * @param g2D the Graphics2D to draw on
+     * @param g the Graphics to draw on
      * @param x the X coordinate of the image
      * @param y the Y coordinate of the image
      * @param width the width of the picture
      * @param height the height of the picture
      */
     @Override
-    public void draw(Graphics2D g2D, int x, int y, int width, int height) {
-        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    public void draw(Graphics g, int x, int y, int width, int height) {
         if(isWhite) {
-            g2D.drawImage(white, x, y, width, height, null);
+            g.drawImage(white, x, y, width, height, null);
         } else {
-            g2D.drawImage(black, x, y, width, height, null);
+            g.drawImage(black, x, y, width, height, null);
         }
     }
-    
     /**
      * The images for the black and white ghosts
      */
@@ -244,19 +240,18 @@ public class King extends AbstractPiece {
     
     /**
      * Draws a ghost of this image
-     * @param g2D the Graphics2D to draw on
+     * @param g the Graphics to draw on
      * @param x the X coordinate of the image
      * @param y the Y coordinate of the image
      * @param width the width of the picture
      * @param height the height of the picture
      */
     @Override
-    public void drawGhost(Graphics2D g2D, int x, int y, int width, int height) {
-        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    public void drawGhost(Graphics g, int x, int y, int width, int height) {
         if(isWhite) {
-            g2D.drawImage(whiteGhost, x, y, width, height, null);
+            g.drawImage(whiteGhost, x, y, width, height, null);
         } else {
-            g2D.drawImage(blackGhost, x, y, width, height, null);
+            g.drawImage(blackGhost, x, y, width, height, null);
         }
     }
     

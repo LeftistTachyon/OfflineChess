@@ -1,6 +1,7 @@
 package offlinechess;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -95,10 +96,10 @@ public class ChessBoard {
     /**
      * The size of the individual chess squares
      */
-    public static final int SQUARE_SIZE = 64; // change to 50 soon
+    public static final int SQUARE_SIZE = 64; // change to 64 soon
     
     /**
-     * The offset to the center needed for a 13-diameter square
+     * The offset to the center needed for a 13-diameter circle
      */
     public static final int CENTER_OFFSET = (SQUARE_SIZE-13)/2;
     
@@ -242,7 +243,6 @@ public class ChessBoard {
         drawPieces(g);
         drawDraggedPiece(g);
         drawPromotions(g);
-        //(new Pawn(true)).draw((Graphics2D) g, x, y, 150, 150);
     }
     
     /**
@@ -253,8 +253,8 @@ public class ChessBoard {
         g.setColor(new Color(181, 136, 99));
         g.fillRect(x, y, x+8*SQUARE_SIZE, y+8*SQUARE_SIZE);
         g.setColor(new Color(240, 217, 181));
-        for(int i = x;i<8*SQUARE_SIZE+x;i+=2*SQUARE_SIZE) {
-            for(int j = y;j<8*SQUARE_SIZE+y;j+=2*SQUARE_SIZE) {
+        for(int i = x;i<8*SQUARE_SIZE+x;i+=SQUARE_SIZE*2) {
+            for(int j = y;j<8*SQUARE_SIZE+y;j+=SQUARE_SIZE*2) {
                 g.fillRect(i, j, SQUARE_SIZE, SQUARE_SIZE);
                 g.fillRect(i+SQUARE_SIZE, j+SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
             }
@@ -270,35 +270,36 @@ public class ChessBoard {
                     getRow(lastMoveTo)*SQUARE_SIZE+y, 
                     SQUARE_SIZE, SQUARE_SIZE);
         }
-        //g.setFont(Font.);
-        /*for(int i = 0;i<8;i++) {
-            
-        }*/
+        Graphics2D g2D = (Graphics2D) g;
+        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2D.setPaint(Color.BLACK);
+        g2D.setFont(new Font("Century Gothic", 0, 12)); // NOI18N
+        for(int i = 0;i<8;i++) {
+            g2D.drawString((char)('a' + i) + "", 
+                    SQUARE_SIZE*i+(SQUARE_SIZE/2)-3, SQUARE_SIZE*8+12);
+            g2D.drawString((8-i) + "", SQUARE_SIZE*8+3, 
+                    SQUARE_SIZE*i+(SQUARE_SIZE/2)+6);
+        }
     }
     
     /**
      * Draws the pieces on the board.
-     * @param g the Graphics to draw on
+     * @param g Graphics to draw on
      */
     private void drawPieces(Graphics g) {
-        Graphics2D g2D = (Graphics2D) g;
         for(int i = 0;i<board.length*SQUARE_SIZE;i+=SQUARE_SIZE) {
             for(int j = 0;j<board[i/SQUARE_SIZE].length*SQUARE_SIZE;j+=SQUARE_SIZE) {
                 if(board[i/SQUARE_SIZE][j/SQUARE_SIZE] != null) {
                     if(toSquare(i/SQUARE_SIZE, j/SQUARE_SIZE).equals(draggingFrom)) {
-                        board[i/SQUARE_SIZE][j/SQUARE_SIZE].drawGhost(g2D, i+x, j+y, SQUARE_SIZE, SQUARE_SIZE);
+                        board[i/SQUARE_SIZE][j/SQUARE_SIZE].drawGhost(g, i+7+x, j+7+y, 50, 50);
                     } else {
-                        board[i/SQUARE_SIZE][j/SQUARE_SIZE].draw(g2D, i+x, j+y, SQUARE_SIZE, SQUARE_SIZE);
+                        board[i/SQUARE_SIZE][j/SQUARE_SIZE].draw(g, i+7+x, j+7+y, 50, 50);
                     }
                 }
             }
         }
     }
     
-    /**
-     * Draws the squares where the selected piece can go
-     * @param g the Graphics to draw on
-     */
     private void drawSelection(Graphics g) {
         String selection;
         if(draggingFrom == null) {
@@ -360,8 +361,8 @@ public class ChessBoard {
         if(promotion != -1) {
             g.setColor(new Color(250, 250, 250, (int) (255*0.7)));
             g.fillRect(x, y, (8*SQUARE_SIZE)+x, (8*SQUARE_SIZE)+y);
-            Graphics2D g2D = (Graphics2D)g;
-            g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            Graphics2D gd = (Graphics2D)g;
+            gd.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             Color inside = new Color(176, 176, 176);
             Color outsideNH = new Color(128, 128, 128);
             Color outsideH = new Color(216, 80, 0);
@@ -372,51 +373,15 @@ public class ChessBoard {
             if(ChessPanel.getMouseCoordinates() == null) {
                 if(playerIsWhite) {
                     for(int i = 0; i <= 3; i++) {
-                        g2D.setPaint(
-                                new RadialGradientPaint(
-                                        (SQUARE_SIZE/2) + (promotion*SQUARE_SIZE)+x, 
-                                        (SQUARE_SIZE/2) + (SQUARE_SIZE * i)+y, 57, 
-                                        new float[]{0F, 1.0F}, 
-                                        new Color[]{inside, outsideNH}
-                                )
-                        );
-                        g2D.fill(
-                                new Ellipse2D.Double(
-                                        promotion*SQUARE_SIZE+x, 
-                                        SQUARE_SIZE * i+y, 
-                                        SQUARE_SIZE, SQUARE_SIZE
-                                )
-                        );
-                        g2D.drawImage(
-                                promotions[i], 
-                                (SQUARE_SIZE*promotion)+(SQUARE_SIZE/10)+x, 
-                                (SQUARE_SIZE*i)+(SQUARE_SIZE/10)+y, 
-                                (SQUARE_SIZE*4)/5, (SQUARE_SIZE*4)/5, null
-                        );
+                        gd.setPaint(new RadialGradientPaint(30 + (promotion*SQUARE_SIZE)+x, 30 + (SQUARE_SIZE * i)+y, 57, new float[]{0F, 1.0F}, new Color[]{inside, outsideNH}));
+                        gd.fill(new Ellipse2D.Double(promotion*SQUARE_SIZE+x, SQUARE_SIZE * i+y, SQUARE_SIZE, SQUARE_SIZE));
+                        gd.drawImage(promotions[i], (SQUARE_SIZE*promotion)+(SQUARE_SIZE/10)+x, (SQUARE_SIZE*i)+(SQUARE_SIZE/10)+y, (SQUARE_SIZE*4)/5, (SQUARE_SIZE*4)/5, null);
                     }
                 } else {
                     for(int i = 8; i >= 5; i--) {
-                        g2D.setPaint(
-                                new RadialGradientPaint(
-                                        (SQUARE_SIZE/2) + (promotion*SQUARE_SIZE)+x, 
-                                        (SQUARE_SIZE/2) + (SQUARE_SIZE * i)+y, 57, 
-                                        new float[]{0F, 1.0F}, 
-                                        new Color[]{inside, outsideNH}
-                                )
-                        );
-                        g2D.fill(
-                                new Ellipse2D.Double(
-                                        promotion*SQUARE_SIZE+x, 
-                                        SQUARE_SIZE * i+y, 
-                                        SQUARE_SIZE, SQUARE_SIZE
-                                )
-                        );
-                        g2D.drawImage(
-                                promotions[i], 
-                                (SQUARE_SIZE*promotion)+(SQUARE_SIZE/10)+x, 
-                                (SQUARE_SIZE*i)+(SQUARE_SIZE/10)+y, 
-                                (SQUARE_SIZE*4)/5, (SQUARE_SIZE*4)/5, null
-                        );
+                        gd.setPaint(new RadialGradientPaint(30 + (promotion*SQUARE_SIZE)+x, 30 + (SQUARE_SIZE * i)+y, 57, new float[]{0F, 1.0F}, new Color[]{inside, outsideNH}));
+                        gd.fill(new Ellipse2D.Double(promotion*SQUARE_SIZE+x, SQUARE_SIZE * i+y, SQUARE_SIZE, SQUARE_SIZE));
+                        gd.drawImage(promotions[i], (SQUARE_SIZE*promotion)+(SQUARE_SIZE/10)+x, (SQUARE_SIZE*i)+(SQUARE_SIZE/10)+y, (SQUARE_SIZE*4)/5, (SQUARE_SIZE*4)/5, null);
                     }
                 }
             } else {
@@ -424,42 +389,42 @@ public class ChessBoard {
                 if(playerIsWhite) {
                     for(int i = 0; i <= 3; i++) {
                         if(mouse.x == promotion && mouse.y == i) {
-                            g2D.setPaint(
+                            gd.setPaint(
                                     new RadialGradientPaint(
-                                            (SQUARE_SIZE/2) + (promotion*SQUARE_SIZE)+x, 
-                                            (SQUARE_SIZE/2) + (SQUARE_SIZE * i)+y, 
+                                            30 + (promotion*SQUARE_SIZE)+x, 
+                                            30 + (SQUARE_SIZE * i)+y, 
                                             52, new float[]{0F, 1.0F}, 
                                             new Color[]{inside, outsideH}
                                     )
                             );
-                            g2D.fill(
+                            gd.fill(
                                     new Rectangle2D.Double(
                                             promotion*SQUARE_SIZE+x, 
                                             SQUARE_SIZE * i+y, 
                                             SQUARE_SIZE, SQUARE_SIZE
                                     )
                             );
-                            g2D.drawImage(
+                            gd.drawImage(
                                     promotions[i], SQUARE_SIZE*promotion+5+x, 
                                     SQUARE_SIZE*i+5+y, 50, 50, null
                             );
                         } else {
-                            g2D.setPaint(
+                            gd.setPaint(
                                     new RadialGradientPaint(
-                                            (SQUARE_SIZE/2) + (promotion*SQUARE_SIZE)+x, 
-                                            (SQUARE_SIZE/2) + (SQUARE_SIZE * i)+y, 57, 
+                                            30 + (promotion*SQUARE_SIZE)+x, 
+                                            30 + (SQUARE_SIZE * i)+y, 57, 
                                             new float[]{0F, 1.0F}, 
                                             new Color[]{inside, outsideNH}
                                     )
                             );
-                            g2D.fill(
+                            gd.fill(
                                     new Ellipse2D.Double(
                                             promotion*SQUARE_SIZE+x, 
                                             SQUARE_SIZE * i+y, 
                                             SQUARE_SIZE, SQUARE_SIZE
                                     )
                             );
-                            g2D.drawImage(
+                            gd.drawImage(
                                     promotions[i], 
                                     (SQUARE_SIZE*promotion)+(SQUARE_SIZE/10)+x, 
                                     (SQUARE_SIZE*i)+(SQUARE_SIZE/10)+y, 
@@ -470,42 +435,42 @@ public class ChessBoard {
                 } else {
                     for(int i = 8; i >= 5; i--) {
                         if(mouse.x == promotion && mouse.y == i) {
-                            g2D.setPaint(
+                            gd.setPaint(
                                     new RadialGradientPaint(
-                                            (SQUARE_SIZE/2) + (promotion*SQUARE_SIZE)+x, 
-                                            (SQUARE_SIZE/2) + (SQUARE_SIZE * i)+y, 52, 
+                                            30 + (promotion*SQUARE_SIZE)+x, 
+                                            30 + (SQUARE_SIZE * i)+y, 52, 
                                             new float[]{0F, 1.0F}, 
                                             new Color[]{inside, outsideH}
                                     )
                             );
-                            g2D.fill(
+                            gd.fill(
                                     new Rectangle2D.Double(
                                             promotion*SQUARE_SIZE+x, 
                                             SQUARE_SIZE * i+y, 
                                             SQUARE_SIZE, SQUARE_SIZE
                                     )
                             );
-                            g2D.drawImage(
+                            gd.drawImage(
                                     promotions[i], SQUARE_SIZE*promotion+5+x, 
                                     SQUARE_SIZE*i+5+y, 50, 50, null
                             );
                         } else {
-                            g2D.setPaint(
+                            gd.setPaint(
                                     new RadialGradientPaint(
-                                            (SQUARE_SIZE/2) + (promotion*SQUARE_SIZE)+x, 
-                                            (SQUARE_SIZE/2) + (SQUARE_SIZE * i)+y, 57, 
+                                            30 + (promotion*SQUARE_SIZE)+x, 
+                                            30 + (SQUARE_SIZE * i)+y, 57, 
                                             new float[]{0F, 1.0F}, 
                                             new Color[]{inside, outsideNH}
                                     )
                             );
-                            g2D.fill(
+                            gd.fill(
                                     new Ellipse2D.Double(
                                             promotion*SQUARE_SIZE+x, 
                                             SQUARE_SIZE * i+y, SQUARE_SIZE, 
                                             SQUARE_SIZE
                                     )
                             );
-                            g2D.drawImage(
+                            gd.drawImage(
                                     promotions[i], 
                                     (SQUARE_SIZE*promotion)+(SQUARE_SIZE/10)+x, 
                                     (SQUARE_SIZE*i)+(SQUARE_SIZE/10)+y, 
@@ -527,17 +492,17 @@ public class ChessBoard {
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         float[] fractions = new float[]{ 0.0f, 0.25f, 0.89f, 1.0f };
         Color[] colors = new Color[]{
-            new Color(255, 0, 0, 255), new Color(231, 0, 0, 150), 
-            new Color(169, 0, 0, 80), new Color(158, 0, 0, 40)
+            new Color(255, 0, 0, 255), new Color(231, 0, 0, 255), 
+            new Color(169, 0, 0, 0), new Color(158, 0, 0, 0)
         };
         if(inCheck(playerIsWhite)) {
             String kingAt = kingPos.get(playerIsWhite);
             int col = getColumn(kingAt), row = getRow(kingAt); // Works
             g2D.setPaint(
                     new RadialGradientPaint(
-                            (SQUARE_SIZE/2) + (col*SQUARE_SIZE) + x, 
-                            (SQUARE_SIZE/2) + (row*SQUARE_SIZE) + y, 
-                            SQUARE_SIZE/2, fractions, colors
+                            30 + (col*SQUARE_SIZE) + x, 
+                            30 + (row*SQUARE_SIZE) + y, 
+                            SQUARE_SIZE*7/12, fractions, colors
                     )
             );
             g2D.fill(
@@ -558,7 +523,7 @@ public class ChessBoard {
         if(draggingFrom == null/* || lastPoint == null*/) return;
         int midX = lastPoint.x - (SQUARE_SIZE/2), 
                 midY = lastPoint.y - (SQUARE_SIZE/2);
-        getPiece(draggingFrom).draw((Graphics2D) g, midX, midY, SQUARE_SIZE, SQUARE_SIZE);
+        getPiece(draggingFrom).draw(g, midX, midY, 50, 50);
     }
     
     /**
@@ -611,7 +576,10 @@ public class ChessBoard {
      */
     public static boolean isValidSquare(String s) {
         if(s.length() == 2) {
-            return Character.isLowerCase(s.charAt(0)) && Character.isDigit(s.charAt(1));
+            int col = s.charAt(0)-'a', 
+                    row = 8 - Integer.parseInt(s.charAt(1) + "");
+            return Character.isLowerCase(s.charAt(0)) && 
+                    Character.isDigit(s.charAt(1)) && isValidSquare(col, row);
         } else return false;
     }
     
@@ -1234,7 +1202,7 @@ public class ChessBoard {
      */
     public void disableDragging() {
         if(draggingFrom == null) return;
-        String dropSquare = toSquare((lastPoint.x-x)/60, (lastPoint.y-y)/60);
+        String dropSquare = toSquare((lastPoint.x-x)/SQUARE_SIZE, (lastPoint.y-y)/SQUARE_SIZE);
         /*if(getPiece(draggingFrom).isLegalMove(this, draggingFrom, dropSquare)) {
             movePiece(draggingFrom, dropSquare);
         }*/
