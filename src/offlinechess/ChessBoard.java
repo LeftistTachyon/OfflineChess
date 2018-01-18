@@ -94,6 +94,12 @@ public class ChessBoard {
     private String promotingFrom = null;
     
     /**
+     * Counts how many times a position repeats<br>
+     * Controls threefold repetition
+     */
+    private HashMap<String, Integer> positions;
+    
+    /**
      * The size of the individual chess squares
      */
     public static final int SQUARE_SIZE = 64; // change to 64 soon
@@ -761,6 +767,7 @@ public class ChessBoard {
         System.out.println("Moved: " + playerIsWhite);
         playerIsWhite = !playerIsWhite;
         recalculateMoves();
+        updatePos(miniFEN());
         mr.moved(thisCopy, this, ChessBoard.toSquare(fromWhereX, fromWhereY), ChessBoard.toSquare(toWhereX, toWhereY));
         lastMoveFrom = toSquare(fromWhereX, fromWhereY);
         lastMoveTo = toSquare(toWhereX, toWhereY);
@@ -989,6 +996,30 @@ public class ChessBoard {
      */
     public boolean isDraw(boolean isWhite) {
         return insufficientMaterial() || stalemated(isWhite) || mr.is50MoveDraw();
+    }
+    
+    /**
+     * Determines whether there is threefold repetition
+     * @return whether there is threefold repetition
+     */
+    public boolean threeFoldRep() {
+        for(int value : positions.values()) {
+            if(value >= 3)
+                return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Updates positions
+     * @param pos the position to update with
+     */
+    private void updatePos(String pos) {
+        if(positions.containsKey(pos)) {
+            positions.put(pos, positions.get(pos)+1);
+        } else {
+            positions.put(pos, 1);
+        }
     }
     
     /**
@@ -1284,5 +1315,33 @@ public class ChessBoard {
      */
     public void printMoves() {
         System.out.println(mr.toString());
+    }
+    
+    /**
+     * Returns a miniature of this chess board
+     * @return a miniature of this chess board
+     */
+    public String miniFEN() {
+        String output = "";
+        for(AbstractPiece[] col : board) {
+            int blanks = 0;
+            for(AbstractPiece piece : col) {
+                if(piece == null) {
+                    blanks++;
+                } else {
+                    if(blanks != 0) {
+                        output += blanks;
+                    }
+                    blanks = 0;
+                    String rep = piece.getCharRepresentation();
+                    if(piece.isWhite) 
+                        output += rep.toUpperCase(); 
+                    else 
+                        output += rep.toLowerCase();
+                }
+            }
+            output += "/";
+        }
+        return output;
     }
 }
