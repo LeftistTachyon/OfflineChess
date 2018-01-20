@@ -57,7 +57,10 @@ public class ChessPanel extends JPanel {
      */
     @Override
     public void paint(Graphics g) {
-        drawBackground(g, Color.WHITE);
+        drawBackground((Graphics2D) g, 
+                new GradientPaint(0, 0, new Color(215, 215, 215), 0, 
+                        getHeight(), new Color(238, 238, 238))
+        );
         cb.draw(g);
     }
     
@@ -69,6 +72,16 @@ public class ChessPanel extends JPanel {
     private void drawBackground(Graphics g, Color c) {
         g.setColor(c);
         g.fillRect(0, 0, getWidth(), getHeight());
+    }
+    
+    /**
+     * Paints the background a solid color
+     * @param g2D the Graphics2D to draw on
+     * @param p The paint to paint the background
+     */
+    private void drawBackground(Graphics2D g2D, Paint p) {
+        g2D.setPaint(p);
+        g2D.fillRect(0, 0, getWidth(), getHeight());
     }
     
     /**
