@@ -28,7 +28,7 @@ Chess meant to be played offline. To be transferred to an online version.
 
  - [ ] Making the application more user friendly
 
- - [?] Saving user data to a file
+ - [ ] Saving user data to a file
 
  - [ ] Move to an online version!  
 
