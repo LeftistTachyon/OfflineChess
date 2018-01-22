@@ -23,8 +23,6 @@ Chess meant to be played offline. To be transferred to an online version.
  - [x] Be able to transform the board (issue #6)
  
  - [x] Adding file and rank markers
-  
-**_NOTE:_** The SimpleUI goes as far as this. To find all features, go to the Master branch.  
 
  - [ ] Making the application more user friendly
 
