@@ -1,4 +1,4 @@
-package offlinechess;
+package chessai;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -76,7 +76,7 @@ public abstract class AbstractPiece {
             cb.maybeMove(currentPosition, square);
             if(getCharRepresentation().equals("P") && 
                     (ChessBoard.getRow(square) == 0 
-                    || ChessBoard.getRow(square) == 7)) 
+                    || ChessBoard.getRow(square) == 8)) 
                 cb.placePiece(new Queen(isWhite), square);
             if(!cb.inCheck(isWhite)) output.add(square);
             cb.setBoard(initLayout);

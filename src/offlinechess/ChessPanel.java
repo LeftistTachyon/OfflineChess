@@ -1,7 +1,6 @@
-package offlinechess;
+package chessai;
 
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 
 /**
@@ -16,16 +15,6 @@ public class ChessPanel extends JPanel {
     private ChessBoard cb;
     
     /**
-     * The mouse listener
-     */
-    private ChessMouseListener cml;
-    
-    /**
-     * A reference to the most recent ChessPanel created
-     */
-    private static ChessPanel _this;
-    
-    /**
      * When to stop the game
      */
     private volatile boolean stop = false;
@@ -34,11 +23,8 @@ public class ChessPanel extends JPanel {
      * Default constructor
      */
     public ChessPanel() {
-        cml = new ChessMouseListener(this);
-        _this = this;
         cb = new ChessBoard();
         cb.recalculateMoves();
-        addMouseListener(cml);
         super.setVisible(true);
     }
 
@@ -57,11 +43,7 @@ public class ChessPanel extends JPanel {
      */
     @Override
     public void paint(Graphics g) {
-        drawBackground((Graphics2D) g, 
-                new GradientPaint(0, 0, new Color(215, 215, 215), 0, 
-                        getHeight(), new Color(238, 238, 238))
-        );
-        cb.draw(g);
+        drawBackground(g, Color.WHITE);
     }
     
     /**
@@ -72,48 +54,6 @@ public class ChessPanel extends JPanel {
     private void drawBackground(Graphics g, Color c) {
         g.setColor(c);
         g.fillRect(0, 0, getWidth(), getHeight());
-    }
-    
-    /**
-     * Paints the background a solid color
-     * @param g2D the Graphics2D to draw on
-     * @param p The paint to paint the background
-     */
-    private void drawBackground(Graphics2D g2D, Paint p) {
-        g2D.setPaint(p);
-        g2D.fillRect(0, 0, getWidth(), getHeight());
-    }
-    
-    /**
-     * Notifies this of a MouseEvent
-     * @param me the MouseEvent
-     * @param i what fired this event (See: <code>ChessMouseListener.MOUSE_?</code>)
-     */
-    public void notify(MouseEvent me, int i) {
-        ChessMain.Timer.start();
-        String selected;
-        switch(i) {
-            case ChessMouseListener.MOUSE_CLICKED:
-                selected = cb.toSquareFromPos(me.getX(), me.getY());
-                if(ChessBoard.isValidSquare(selected)) cb.clicked(selected);
-                break;
-            case ChessMouseListener.MOUSE_PRESSED:
-                selected = cb.toSquareFromPos(me.getX(), me.getY());
-                if(ChessBoard.isValidSquare(selected)) cb.enableDragging(selected);
-                break;
-            case ChessMouseListener.MOUSE_RELEASED:
-                cb.disableDragging();
-                break;
-        }
-        repaint();
-    }
-    
-    /**
-     * Determines where the mouse currently is
-     * @return A point representing the mouse's position
-     */
-    public static Point getMouseCoordinates() {
-        return _this.getMousePosition();
     }
     
     /**
