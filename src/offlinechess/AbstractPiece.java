@@ -76,7 +76,7 @@ public abstract class AbstractPiece {
             cb.maybeMove(currentPosition, square);
             if(getCharRepresentation().equals("P") && 
                     (ChessBoard.getRow(square) == 0 
-                    || ChessBoard.getRow(square) == 8)) 
+                    || ChessBoard.getRow(square) == 7)) 
                 cb.placePiece(new Queen(isWhite), square);
             if(!cb.inCheck(isWhite)) output.add(square);
             cb.setBoard(initLayout);
