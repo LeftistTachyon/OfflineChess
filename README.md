@@ -1,10 +1,6 @@
 # OfflineChess
 
-Chess meant to be played offline. To be transferred to an online version.  
-
-### _Note:_  
-As of 1/17/2018, I will be temporarily be focusing on a chess engine for now.  
-
+Chess meant to be played offline. To be transferred to an online version. 
 
 ## TODO
 
@@ -27,9 +23,12 @@ As of 1/17/2018, I will be temporarily be focusing on a chess engine for now.
  - [x] Be able to transform the board (issue #6)
  
  - [x] Adding file and rank markers
+  
+**_NOTE:_** The SimpleUI goes as far as this. To find all features, go to the Master branch.  
+
  - [ ] Making the application more user friendly
 
- - [ ] Saving user data to a file
+ - [?] Saving user data to a file
 
  - [ ] Move to an online version!  
 
