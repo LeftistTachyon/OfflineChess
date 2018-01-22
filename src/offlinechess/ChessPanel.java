@@ -94,17 +94,11 @@ public class ChessPanel extends JPanel {
         String selected;
         switch(i) {
             case ChessMouseListener.MOUSE_CLICKED:
-                selected = ChessBoard.toSquare(
-                        (me.getX()-cb.getX())/ChessBoard.SQUARE_SIZE, 
-                        (me.getY()-cb.getY())/ChessBoard.SQUARE_SIZE
-                );
+                selected = cb.toSquareFromPos(me.getX(), me.getY());
                 if(ChessBoard.isValidSquare(selected)) cb.clicked(selected);
                 break;
             case ChessMouseListener.MOUSE_PRESSED:
-                selected = ChessBoard.toSquare(
-                        (me.getX()-cb.getX())/ChessBoard.SQUARE_SIZE, 
-                        (me.getY()-cb.getY())/ChessBoard.SQUARE_SIZE
-                );
+                selected = cb.toSquareFromPos(me.getX(), me.getY());
                 if(ChessBoard.isValidSquare(selected)) cb.enableDragging(selected);
                 break;
             case ChessMouseListener.MOUSE_RELEASED:
