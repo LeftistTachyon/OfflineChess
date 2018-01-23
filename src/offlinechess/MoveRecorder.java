@@ -1,4 +1,4 @@
-package chessai;
+package offlinechess;
 
 import java.util.ArrayList;
 
@@ -232,7 +232,7 @@ public class MoveRecorder {
         
         switch(toMove.getCharRepresentation()) {
             case "P":
-                if(ChessBoard.getRow(toWhere) == 0 || ChessBoard.getRow(toWhere) == 8) {
+                if(ChessBoard.getRow(toWhere) == 0 || ChessBoard.getRow(toWhere) == 7) {
                     switch(after.getPiece(toWhere).getCharRepresentation()) {
                         case "N":
                             moves.add(addChecks(promotionMoveString(toMoveString(fromWhere, toWhere, PAWN, isCapture(before, toWhere)), KNIGHT), after, after.getPiece(toWhere).isWhite));

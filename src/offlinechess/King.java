@@ -1,4 +1,4 @@
-package chessai;
+package offlinechess;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
