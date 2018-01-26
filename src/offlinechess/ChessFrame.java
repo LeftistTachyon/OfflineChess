@@ -1,25 +1,7 @@
 package offlinechess;
 
 import java.awt.EventQueue;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.JToggleButton;
-import javax.swing.LayoutStyle;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 
 /**
  * A Frame for the application
@@ -572,6 +554,10 @@ public class ChessFrame extends JFrame {
         pack();
     }// </editor-fold>                        
 
+    /**
+     * 
+     * @param evt 
+     */
     private void flipBoardButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                
         // TODO add your handling code here:
     }                                               
@@ -593,8 +579,10 @@ public class ChessFrame extends JFrame {
     }                                             
     
     /**
+     * Runs this ChessFrame and creates a new instance
+     * @return A ChessFrame
      */
-    public static void run() {
+    public static ChessFrame run() {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -620,6 +608,8 @@ public class ChessFrame extends JFrame {
             output.setResizable(false);
             output.setVisible(true);
         });
+        
+        return output;
     }
     
     // Variables declaration - do not modify                     
