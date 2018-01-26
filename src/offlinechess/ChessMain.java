@@ -17,7 +17,7 @@ public class ChessMain {
      * @param args the command line arguments
      * @throws java.io.IOException stuff happens with the file
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         //System.out.println(Encryption.writableEncrypt("nargles", "Leftist_Tachyon"));
         ChessFrame cf = new ChessFrame();
         Scanner input = new Scanner(new File("src/userdata/users.cpd"));
@@ -27,6 +27,7 @@ public class ChessMain {
             String[] data = input.nextLine().split(Pattern.quote("|"));
             users.add(new User(data[0], Encryption.decrypt(data[1]), Integer.parseInt(data[2])));
         }
+        Thread.sleep(1000);
         while(cf.isVisible()) {
             dl.appendAll(users);
         }
