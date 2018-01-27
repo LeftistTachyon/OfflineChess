@@ -26,6 +26,7 @@ public class ChessFrame extends JFrame {
      */
     public void stop() {
         System.out.println("STOP!");
+        chessPanel.stop();
     }
     
     /** This method is called from within the constructor to
@@ -552,6 +553,8 @@ public class ChessFrame extends JFrame {
         );
 
         pack();
+        
+        chessPanel.start();
     }// </editor-fold>                        
 
     /**

@@ -267,7 +267,7 @@ public class ChessBoard {
      */
     private void drawCheckers(Graphics2D g2D) {
         g2D.setColor(new Color(181, 136, 99));
-        g2D.fillRect(x, y, x+8*SQUARE_SIZE, y+8*SQUARE_SIZE);
+        g2D.fillRect(x, y, 8*SQUARE_SIZE, 8*SQUARE_SIZE);
         g2D.setColor(new Color(240, 217, 181));
         for(int i = x;i<8*SQUARE_SIZE+x;i+=SQUARE_SIZE*2) {
             for(int j = y;j<8*SQUARE_SIZE+y;j+=SQUARE_SIZE*2) {
@@ -304,16 +304,18 @@ public class ChessBoard {
         if(fromPerspective) {
             for (int i = 0; i < 8; i++) {
                 g2D.drawString((char) ('a' + i) + "",
-                        SQUARE_SIZE * i + (SQUARE_SIZE / 2) - 3, SQUARE_SIZE * 8 + 12);
-                g2D.drawString((8 - i) + "", SQUARE_SIZE * 8 + 3,
-                        SQUARE_SIZE * i + (SQUARE_SIZE / 2) + 6);
+                        SQUARE_SIZE * i + (SQUARE_SIZE / 2) - 3 + x, 
+                        SQUARE_SIZE * 8 + 12 + y);
+                g2D.drawString((8 - i) + "", SQUARE_SIZE * 8 + 3 + x,
+                        SQUARE_SIZE * i + (SQUARE_SIZE / 2) + 6 + y);
             }
         } else {
             for (int i = 0; i < 8; i++) {
                 g2D.drawString((char) ('a' + 7 - i) + "",
-                        SQUARE_SIZE * i + (SQUARE_SIZE / 2) - 3, SQUARE_SIZE * 8 + 12);
-                g2D.drawString((i + 1) + "", SQUARE_SIZE * 8 + 3,
-                        SQUARE_SIZE * i + (SQUARE_SIZE / 2) + 6);
+                        SQUARE_SIZE * i + (SQUARE_SIZE / 2) - 3 + x, 
+                        SQUARE_SIZE * 8 + 12 + y);
+                g2D.drawString((i + 1) + "", SQUARE_SIZE * 8 + 3 + x,
+                        SQUARE_SIZE * i + (SQUARE_SIZE / 2) + 6 + y);
             }
         }
     }
@@ -1289,19 +1291,21 @@ public class ChessBoard {
     
     /**
      * Disables dragging.
+     * @param toWhere to where the piece is being dragged 
      */
-    public void disableDragging() {
+    public void disableDragging(String toWhere) {
         if(draggingFrom == null) return;
-        String dropSquare = toPerspectiveSquare((lastPoint.x-x)/SQUARE_SIZE, (lastPoint.y-y)/SQUARE_SIZE);
+        System.out.println("(" + lastPoint.x + ", " + lastPoint.y + ")");
+        System.out.println(draggingFrom + " -> " + toWhere);
         /*if(getPiece(draggingFrom).isLegalMove(this, draggingFrom, dropSquare)) {
             movePiece(draggingFrom, dropSquare);
         }*/
-        if(getPiece(draggingFrom).isLegalMove(this, draggingFrom, dropSquare)) {
-            if(getPiece(draggingFrom).getCharRepresentation().equals("P") && (ChessBoard.getRow(dropSquare) == 0 || ChessBoard.getRow(dropSquare) == 7)) {
-                promotion = ChessBoard.getColumn(dropSquare);
+        if(getPiece(draggingFrom).isLegalMove(this, draggingFrom, toWhere)) {
+            if(getPiece(draggingFrom).getCharRepresentation().equals("P") && (ChessBoard.getRow(toWhere) == 0 || ChessBoard.getRow(toWhere) == 7)) {
+                promotion = ChessBoard.getColumn(toWhere);
                 promotingFrom = draggingFrom;
             } else {
-                movePiece(draggingFrom, dropSquare);
+                movePiece(draggingFrom, toWhere);
             }
         }
         if(!draggingFrom.equals(selected)) selected = null;
