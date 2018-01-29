@@ -144,4 +144,11 @@ public class ChessPanel extends JPanel {
         stop = true;
         cb.printMoves();
     }
+    
+    /**
+     * Flips the ChessBoard.
+     */
+    public void flipBoard() {
+        cb.flipBoard();
+    }
 }

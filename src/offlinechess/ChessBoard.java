@@ -1393,6 +1393,13 @@ public class ChessBoard {
         String output = toSquare(7-x, 7-y);
         return (isValidSquare(output))? output : null;
     }
+    
+    /**
+     * Flips this ChessBoard.
+     */
+    public void flipBoard() {
+        fromPerspective = !fromPerspective;
+    }
 
     /**
      * DO NOT USE OFTEN <br>

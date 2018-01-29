@@ -16,6 +16,7 @@ public class ChessMain {
      * The Main Method
      * @param args the command line arguments
      * @throws java.io.IOException stuff happens with the file
+     * @throws java.lang.InterruptedException if interrupted
      */
     public static void main(String[] args) throws IOException, InterruptedException {
         //System.out.println(Encryption.writableEncrypt("nargles", "Leftist_Tachyon"));
