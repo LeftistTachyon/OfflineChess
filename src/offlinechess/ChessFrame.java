@@ -57,9 +57,9 @@ public class ChessFrame extends JFrame {
         gameHistoryPane = new JScrollPane();
         scrollContentPane = new JPanel();
         gameOutcomePanel = new JPanel();
-        outcomeLabel4 = new JLabel();
-        whyWinLabel4 = new JLabel();
-        whoWinsLabel4 = new JLabel();
+        outcomeLabel = new JLabel();
+        whyWinLabel = new JLabel();
+        whoWinsLabel = new JLabel();
         textAreaWrapPane = new JScrollPane();
         moveTextArea = new JTextArea();
         jSeparator6 = new JSeparator();
@@ -165,35 +165,35 @@ public class ChessFrame extends JFrame {
         gameHistoryPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         gameHistoryPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        outcomeLabel4.setFont(new Font("Verdana", 1, 12)); // NOI18N
-        outcomeLabel4.setHorizontalAlignment(SwingConstants.CENTER);
-        outcomeLabel4.setText("1-0");
+        outcomeLabel.setFont(new Font("Verdana", 1, 12)); // NOI18N
+        outcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        outcomeLabel.setText("1-0");
 
-        whyWinLabel4.setFont(new Font("Verdana", 2, 10)); // NOI18N
-        whyWinLabel4.setHorizontalAlignment(SwingConstants.CENTER);
-        whyWinLabel4.setText("Time out");
+        whyWinLabel.setFont(new Font("Verdana", 2, 10)); // NOI18N
+        whyWinLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        whyWinLabel.setText("Time out");
 
-        whoWinsLabel4.setFont(new Font("Verdana", 2, 10)); // NOI18N
-        whoWinsLabel4.setHorizontalAlignment(SwingConstants.CENTER);
-        whoWinsLabel4.setText("White is victorious");
+        whoWinsLabel.setFont(new Font("Verdana", 2, 10)); // NOI18N
+        whoWinsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        whoWinsLabel.setText("White is victorious");
 
         GroupLayout gameOutcomePanelLayout = new GroupLayout(gameOutcomePanel);
         gameOutcomePanel.setLayout(gameOutcomePanelLayout);
         gameOutcomePanelLayout.setHorizontalGroup(
             gameOutcomePanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addComponent(whoWinsLabel4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(whyWinLabel4, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(outcomeLabel4, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(whoWinsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(whyWinLabel, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(outcomeLabel, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         gameOutcomePanelLayout.setVerticalGroup(
             gameOutcomePanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(gameOutcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(outcomeLabel4)
+                .addComponent(outcomeLabel)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(whyWinLabel4)
+                .addComponent(whyWinLabel)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(whoWinsLabel4)
+                .addComponent(whoWinsLabel)
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -642,52 +642,193 @@ public class ChessFrame extends JFrame {
     
     //<editor-fold defaultstate="collapsed" desc="Variables">
     // Variables declaration - do not modify
+    /**
+     * The JPanel with black's advantage.
+     */
     private JPanel blackAdvantagePane;
+    /**
+     * Black's name.
+     */
     private JLabel blackName;
+    /**
+     * Black's status.
+     */
     private JPanel blackStatusPanel;
+    /**
+     * A JCheckBox that toggles the chat.
+     */
     private JCheckBox chatCheckBox;
+    /**
+     * A JTextPane with the chat history.
+     */
     private JTextPane chatHistoryPane;
+    /**
+     * A JPanel that contains the chat UI.
+     */
     private JPanel chatPanel;
+    /**
+     * A JTextField where you type up your chat.
+     */
     private JTextField chatTextField;
+    /**
+     * The ChessPanel.
+     */
     private ChessPanel chessPanel;
+    /**
+     * The first control button.
+     */
     private JButton firstButton;
+    /**
+     * A button that controls flipping the board.
+     */
     private JToggleButton flipBoardButton;
+    /**
+     * A JScrollPane with the game history.
+     */
     private JScrollPane gameHistoryPane;
+    /**
+     * The game info.
+     */
     private JLabel gameInfo;
+    /**
+     * A JPanel that contains the game's outcome.
+     */
     private JPanel gameOutcomePanel;
+    /**
+     * The game's result.
+     */
     private JLabel gameResult;
+    /**
+     * A JPanel that contains information about the game.
+     */
     private JPanel infoPanel;
+    /**
+     * A JSeparator.
+     */
     private JSeparator jSeparator1;
+    /**
+     * A JSeparator.
+     */
     private JSeparator jSeparator2;
+    /**
+     * A JSeparator.
+     */
     private JSeparator jSeparator3;
+    /**
+     * A JSeparator.
+     */
     private JSeparator jSeparator4;
+    /**
+     * A JSeparator.
+     */
     private JSeparator jSeparator5;
+    /**
+     * A JSeparator.
+     */
     private JSeparator jSeparator6;
+    /**
+     * A JSeparator.
+     */
     private JSeparator jSeparator7;
+    /**
+     * A JSeparator.
+     */
     private JSeparator jSeparator8;
+    /**
+     * A JSeparator in the middle of the infoPanel.
+     */
     private JSeparator middleSeparator;
+    /**
+     * A JTextArea that contains the moves.
+     */
     private JTextArea moveTextArea;
+    /**
+     * A JButton that starts a new game.
+     */
     private JButton newGameButton;
-    private JLabel outcomeLabel4;
+    /**
+     * The game's outcome.
+     */
+    private JLabel outcomeLabel;
+    /**
+     * Playing status.
+     */
     private JLabel playingStatus;
+    /**
+     * A JButton that starts a rematch.
+     */
     private JButton rematchButton;
+    /**
+     * A JPanel that is the content pane of a scroll pane.
+     */
     private JPanel scrollContentPane;
+    /**
+     * The second control button.
+     */
     private JButton secondButton;
+    /**
+     * The side panel.
+     */
     private JPanel sidePanel;
+    /**
+     * A JLabel with an icon denoting the type of game.
+     */
     private JLabel speedPictureLabel;
+    /**
+     * A JScrollPane that wraps a text area.
+     */
     private JScrollPane textAreaWrapPane;
+    /**
+     * A JScrollPane that wraps a text pane.
+     */
     private JScrollPane textPaneWrapScrollPane;
+    /**
+     * Your opponent's name.
+     */
     private JLabel theirName;
+    /**
+     * Your opponent's time.
+     */
     private JLabel theirTime;
+    /**
+     * The third control button.
+     */
     private JButton thirdButton;
+    /**
+     * The title.
+     */
     private JLabel title;
+    /**
+     * The JPanel with white's advantage.
+     */
     private JPanel whiteAdvantagePane;
+    /**
+     * White's name.
+     */
     private JLabel whiteName;
+    /**
+     * A JPanel that differentiates who is who.
+     */
     private JPanel whiteOrBlackPanel;
+    /**
+     * White's status.
+     */
     private JPanel whiteStatusPanel;
-    private JLabel whoWinsLabel4;
-    private JLabel whyWinLabel4;
+    /**
+     * A JLabel that states who won the game.
+     */
+    private JLabel whoWinsLabel;
+    /**
+     * A JLabel that contains why the person won.
+     */
+    private JLabel whyWinLabel;
+    /**
+     * Your name.
+     */
     private JLabel yourName;
+    /**
+     * Your time.
+     */
     private JLabel yourTime;
     // End of variables declaration
     //</editor-fold>
