@@ -15,11 +15,6 @@ public class ChessFrame extends JFrame {
      */
     public ChessFrame() {
         initComponents();
-        /*setSize(new Dimension(535, 560));
-        super.getContentPane().add(cp);
-        super.setResizable(false);
-        super.setVisible(true);
-        super.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);*/
     }
     
     /**
