@@ -146,9 +146,10 @@ public class ChessPanel extends JPanel {
     }
     
     /**
-     * Flips the ChessBoard.
+     * Returns this ChessPanel's ChessBoard
+     * @return this ChessPanel's ChessBoard
      */
-    public void flipBoard() {
-        cb.flipBoard();
+    public ChessBoard getChessBoard() {
+        return cb;
     }
 }

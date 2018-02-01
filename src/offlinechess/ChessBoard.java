@@ -82,6 +82,12 @@ public class ChessBoard {
     private String draggingFrom = null;
     
     /**
+     * The piece's square to be dragging from.<br>
+     * Controls playing around with pieces
+     */
+    private String fakeDraggingFrom = null;
+    
+    /**
      * The last known non-null point the mouse was at.<br>
      * Controls dragging pieces
      */
@@ -100,9 +106,17 @@ public class ChessBoard {
     private HashMap<String, Integer> positions;
     
     /**
-     * From which perspective the board is to be drawn
+     * From which perspective the board is to be drawn.
      */
-    private boolean fromPerspective = false;
+    private boolean fromPerspective = true;
+    
+    /**
+     * Which side this player can move pieces for.<br>
+     * 0 == WHITE<br>
+     * 1 == BLACK<br>
+     * 2 == BOTH
+     */
+    private int manipulable = 1;
     
     /**
      * The size of the individual chess squares
@@ -123,6 +137,21 @@ public class ChessBoard {
      * The size of the text
      */
     public static final int TEXT_SIZE = 12;
+    
+    /**
+     * A number which represents White is manipulable.
+     */
+    public static final int WHITE_MANIPULABLE = 0;
+    
+    /**
+     * A number which represents Black is manipulable.
+     */
+    public static final int BLACK_MANIPULABLE = 1;
+    
+    /**
+     * A number which represents both sides is manipulable.
+     */
+    public static final int BOTH_MANIPULABLE = 2;
     
     /**
      * Default constructor.
@@ -328,7 +357,7 @@ public class ChessBoard {
         for (int i = 0; i < board.length; ++i) {
             for (int j = 0; j < board[i].length; ++j) {
                 if (board[i][j] != null) {
-                    if (toSquare(i, j).equals(draggingFrom)) {
+                    if (toSquare(i, j).equals(draggingFrom) || toSquare(i, j).equals(fakeDraggingFrom)) {
                         if(fromPerspective) {
                             board[i][j].drawGhost(g2D, (i * SQUARE_SIZE) + 7 + x, 
                                     (j * SQUARE_SIZE) + 7 + y, 50, 50);
@@ -586,10 +615,16 @@ public class ChessBoard {
      * @param g2D the Graphics2D to draw on
      */
     private void drawDraggedPiece(Graphics2D g2D) {
-        if(draggingFrom == null/* || lastPoint == null*/) return;
-        int midX = lastPoint.x - (SQUARE_SIZE/2), 
+        if(fakeDraggingFrom != null) {
+            int midX = lastPoint.x - (SQUARE_SIZE/2), 
                 midY = lastPoint.y - (SQUARE_SIZE/2);
-        getPiece(draggingFrom).draw(g2D, midX, midY, 50, 50);
+            getPiece(fakeDraggingFrom).draw(g2D, midX, midY, 50, 50);
+        }
+        if(draggingFrom != null) {
+            int midX = lastPoint.x - (SQUARE_SIZE/2), 
+                midY = lastPoint.y - (SQUARE_SIZE/2);
+            getPiece(draggingFrom).draw(g2D, midX, midY, 50, 50);
+        }
     }
     
     /**
@@ -641,6 +676,7 @@ public class ChessBoard {
      * @return whether the square is valid
      */
     public static boolean isValidSquare(String s) {
+        if(s == null) return false;
         if(s.length() == 2) {
             int col = s.charAt(0)-'a', 
                     row = 8 - Integer.parseInt(s.charAt(1) + "");
@@ -1197,7 +1233,8 @@ public class ChessBoard {
      */
     public void clicked(String square) {
         if(selected == null && promotion == -1) {
-            if(!isEmptySquare(square) && (getPiece(square).isWhite == playerIsWhite)) {
+            if(!isEmptySquare(square) && (getPiece(square).isWhite == playerIsWhite) && 
+                    ((playerIsWhite && manipulable == 0) || (!playerIsWhite && manipulable == 1) || manipulable == 2)) {
                 selected = square;
             }
         } else if(promotion != -1) {
@@ -1284,8 +1321,12 @@ public class ChessBoard {
      */
     public void enableDragging(String fromWhere) {
         if(!isEmptySquare(fromWhere)) 
-            if(getPiece(fromWhere).isWhite == playerIsWhite) 
+            if(getPiece(fromWhere).isWhite == playerIsWhite && 
+                    ((playerIsWhite && manipulable == 0) || 
+                    (!playerIsWhite && manipulable == 1) || manipulable == 2)) 
                 draggingFrom = fromWhere;
+            else 
+                fakeDraggingFrom = fromWhere;
         System.out.println("selected: " + selected);
     }
     
@@ -1294,6 +1335,10 @@ public class ChessBoard {
      * @param toWhere to where the piece is being dragged 
      */
     public void disableDragging(String toWhere) {
+        if(fakeDraggingFrom != null) {
+            fakeDraggingFrom = null;
+            return;
+        }
         if(draggingFrom == null) return;
         System.out.println("(" + lastPoint.x + ", " + lastPoint.y + ")");
         System.out.println(draggingFrom + " -> " + toWhere);
@@ -1399,6 +1444,32 @@ public class ChessBoard {
      */
     public void flipBoard() {
         fromPerspective = !fromPerspective;
+    }
+    
+    /**
+     * Sets the perspective
+     * @param perspective the perspective to set to
+     */
+    public void setPerspective(boolean perspective) {
+        fromPerspective = perspective;
+    }
+    
+    /**
+     * Sets the perspective in a standard sort of way
+     * @param isWhite what to change the perspective to
+     */
+    public void setStandardPerspective(boolean isWhite) {
+        fromPerspective = isWhite;
+        manipulable = (isWhite)?WHITE_MANIPULABLE:BLACK_MANIPULABLE;
+    }
+
+    /**
+     * Determines which side's pieces are manipulable.<br>
+     * Useful for figuring out which side is the player's side
+     * @return which side's pieces are manipulable
+     */
+    public int getManipulable() {
+        return manipulable;
     }
 
     /**

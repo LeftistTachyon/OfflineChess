@@ -34,7 +34,7 @@ public class ChessFrame extends JFrame {
      * initialize the form.
      * WARNING: Do NOT modify this code. (Unless you're Jed.)
      */
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    // <editor-fold defaultstate="collapsed" desc="Initialization Code">                          
     private void initComponents() {
 
         chessPanel = new ChessPanel();
@@ -161,6 +161,7 @@ public class ChessFrame extends JFrame {
 
         newGameButton.setFont(new Font("Verdana", 0, 11)); // NOI18N
         newGameButton.setText("New Opponent");
+        newGameButton.addActionListener(this::newOpponentButtonPressed);
 
         gameHistoryPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         gameHistoryPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -473,11 +474,13 @@ public class ChessFrame extends JFrame {
 
         chatHistoryPane.setBackground(new Color(240, 240, 240));
         chatHistoryPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        chatHistoryPane.setEditable(false);
         textPaneWrapScrollPane.setViewportView(chatHistoryPane);
 
         chatTextField.setBackground(new Color(234, 234, 227));
-        chatTextField.setText("  Login to chat");
+        chatTextField.setText("Login to chat");
         chatTextField.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        chatTextField.addActionListener(this::chatFieldSubmitted);
 
         jSeparator8.setBackground(new Color(203, 203, 203));
         jSeparator8.setForeground(new Color(203, 203, 203));
@@ -563,7 +566,7 @@ public class ChessFrame extends JFrame {
      * @param evt the ActionEvent that triggered this event
      */
     private void flipBoard(ActionEvent evt) {
-        chessPanel.flipBoard();
+        chessPanel.getChessBoard().flipBoard();
     }
 
     /**
@@ -572,6 +575,7 @@ public class ChessFrame extends JFrame {
      */
     private void firstButtonPressed(ActionEvent evt) {
         // TODO add your handling code here:
+        System.out.println("First button pressed");
     }
 
     /**
@@ -580,6 +584,7 @@ public class ChessFrame extends JFrame {
      */
     private void secondButtonPressed(ActionEvent evt) {
         // TODO add your handling code here:
+        System.out.println("Second button pressed");
     }
 
     /**
@@ -588,6 +593,7 @@ public class ChessFrame extends JFrame {
      */
     private void thirdButtonPressed(ActionEvent evt) {
         // TODO add your handling code here:
+        System.out.println("Third button pressed");
     }
 
     /**
@@ -596,6 +602,7 @@ public class ChessFrame extends JFrame {
      */
     private void rematchButtonPressed(ActionEvent evt) {
         // TODO add your handling code here:
+        System.out.println("Rematch!");
     }
     
     /**
@@ -604,6 +611,42 @@ public class ChessFrame extends JFrame {
      */
     private void chatToggled(ActionEvent evt) {
         // TODO add your handling code here:
+        String status = (chatCheckBox.isSelected())?"enabled":"disabled";
+        System.out.println("The chat is " + status);
+    }
+    
+    /**
+     * Notifies the server to find a new game for this person
+     * @param evt the ActionEvent that triggered this event
+     */
+    private void newOpponentButtonPressed(ActionEvent evt) {
+        // TODO add your handling code here:
+        System.out.println("New Opponent!");
+    }
+    
+    /**
+     * Notifies the server of a chat message
+     * @param evt the ActionEvent that triggered this event
+     */
+    private void chatFieldSubmitted(ActionEvent evt) {
+        // TODO add your handling code here:
+        String add;
+        switch(chessPanel.getChessBoard().getManipulable()) {
+            case ChessBoard.WHITE_MANIPULABLE:
+                add = "(White): ";
+                break;
+            case ChessBoard.BLACK_MANIPULABLE:
+                add = "(Black): ";
+                break;
+            case ChessBoard.BOTH_MANIPULABLE:
+                add = "(?): ";
+                break;
+            default:
+                return;
+        }
+        chatHistoryPane.setText(chatHistoryPane.getText() + (add + chatTextField.getText()) + "\n");
+        System.out.println(add + chatTextField.getText());
+        chatTextField.setText("");
     }
     
     /**
