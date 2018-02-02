@@ -28,7 +28,6 @@ public class ChessMain {
             String[] data = input.nextLine().split(Pattern.quote("|"));
             users.add(new User(data[0], Encryption.decrypt(data[1]), Integer.parseInt(data[2])));
         }
-        Thread.sleep(1000);
         while(cf.isVisible()) {
             dl.appendAll(users);
         }

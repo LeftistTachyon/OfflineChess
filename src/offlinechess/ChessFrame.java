@@ -608,6 +608,7 @@ public class ChessFrame extends JFrame {
         // TODO add your handling code here:
         String status = (chatCheckBox.isSelected())?"enabled":"disabled";
         System.out.println("The chat is " + status);
+        chatTextField.setEditable(chatCheckBox.isSelected());
     }
     
     /**
@@ -617,6 +618,14 @@ public class ChessFrame extends JFrame {
     private void newOpponentButtonPressed(ActionEvent evt) {
         // TODO add your handling code here:
         System.out.println("New Opponent!");
+    }
+
+    /**
+     * Returns this instance's ChessPanel
+     * @return this instance's ChessPanel
+     */
+    public ChessPanel getChessPanel() {
+        return chessPanel;
     }
     
     /**
