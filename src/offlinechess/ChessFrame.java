@@ -2,6 +2,10 @@ package offlinechess;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 /**
@@ -82,6 +86,14 @@ public class ChessFrame extends JFrame {
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Offline Chess");
+        try {
+            ArrayList<Image> images = new ArrayList<>();
+            BufferedImage bi = ImageIO.read(getClass().getResource("../images/favicon.png"));
+            images.add(new ImageIcon(bi).getImage());
+            setIconImages(images);
+        } catch (IOException ioe) {
+            System.err.println("Favicon not accessible");
+        }
 
         chessPanel.setBackground(new Color(200, 200, 200));
         chessPanel.setPreferredSize(new Dimension(535, 560));
