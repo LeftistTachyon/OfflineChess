@@ -88,7 +88,11 @@ public class ChessFrame extends JFrame {
         setTitle("Offline Chess");
         try {
             ArrayList<Image> images = new ArrayList<>();
-            BufferedImage bi = ImageIO.read(getClass().getResource("../images/favicon.png"));
+            BufferedImage bi = ImageIO.read(getClass().getResource("../images/favicon_10.png"));
+            images.add(new ImageIcon(bi).getImage());
+            bi = ImageIO.read(getClass().getResource("../images/favicon_24.png"));
+            images.add(new ImageIcon(bi).getImage());
+            bi = ImageIO.read(getClass().getResource("../images/favicon_45.png"));
             images.add(new ImageIcon(bi).getImage());
             setIconImages(images);
         } catch (IOException ioe) {
@@ -663,6 +667,20 @@ public class ChessFrame extends JFrame {
         chatHistoryPane.setText(chatHistoryPane.getText() + (add + chatTextField.getText()) + "\n");
         System.out.println(add + chatTextField.getText());
         chatTextField.setText("");
+    }
+    
+    /**
+     * Redraws the screen to accommodate the current player.
+     */
+    private void setActivePlayer() {
+        boolean isYou = getChessPanel().getChessBoard().getPerspective() == getChessPanel().getChessBoard().getCurrentPlayer();
+        if(isYou) {
+            yourTime.setBackground(new Color(255, 240, 118));
+            theirTime.setBackground(getBackground());
+        } else {
+            yourTime.setBackground(getBackground());
+            theirTime.setBackground(new Color(255, 240, 118));
+        }
     }
     
     /**

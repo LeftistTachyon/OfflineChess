@@ -1398,6 +1398,14 @@ public class ChessBoard {
     }
     
     /**
+     * Returns the current player
+     * @return the current player
+     */
+    public boolean getCurrentPlayer() {
+        return playerIsWhite;
+    }
+    
+    /**
      * Determines the square being referenced from a position
      * @param xPos the x-position of the mouse
      * @param yPos the y-position of the mouse
