@@ -672,15 +672,51 @@ public class ChessFrame extends JFrame {
     /**
      * Redraws the screen to accommodate the current player.
      */
-    private void setActivePlayer() {
-        boolean isYou = getChessPanel().getChessBoard().getPerspective() == getChessPanel().getChessBoard().getCurrentPlayer();
-        if(isYou) {
-            yourTime.setBackground(new Color(255, 240, 118));
-            theirTime.setBackground(getBackground());
-        } else {
-            yourTime.setBackground(getBackground());
-            theirTime.setBackground(new Color(255, 240, 118));
+    public void setActivePlayer() {
+        ChessBoard temp = getChessPanel().getChessBoard();
+        yourTime.setOpaque(true);
+        theirTime.setOpaque(true);
+        switch(temp.getManipulable()) {
+            case ChessBoard.BLACK_MANIPULABLE:
+                if(temp.getCurrentPlayer()) {
+                    yourTime.setBackground(getBackground());
+                    theirTime.setBackground(new Color(255, 240, 118));
+                } else {
+                    yourTime.setBackground(new Color(255, 240, 118));
+                    theirTime.setBackground(getBackground());
+                }
+                break;
+            case ChessBoard.WHITE_MANIPULABLE:
+                if(temp.getCurrentPlayer()) {
+                    yourTime.setBackground(new Color(255, 240, 118));
+                    theirTime.setBackground(getBackground());
+                } else {
+                    yourTime.setBackground(getBackground());
+                    theirTime.setBackground(new Color(255, 240, 118));
+                }
+                break;
+            case ChessBoard.BOTH_MANIPULABLE:
+                yourTime.setBackground(getBackground());
+                theirTime.setBackground(getBackground());
+                break;
         }
+        /*if(temp.getPerspective()) {
+            if(temp.getCurrentPlayer()) {
+                yourTime.setBackground(new Color(255, 240, 118));
+                theirTime.setBackground(getBackground());
+            } else {
+                yourTime.setBackground(getBackground());
+                theirTime.setBackground(new Color(255, 240, 118));
+            }
+        } else {
+            if(temp.getCurrentPlayer()) {
+                yourTime.setBackground(getBackground());
+                theirTime.setBackground(new Color(255, 240, 118));
+            } else {
+                yourTime.setBackground(new Color(255, 240, 118));
+                theirTime.setBackground(getBackground());
+            }
+        }*/
     }
     
     /**

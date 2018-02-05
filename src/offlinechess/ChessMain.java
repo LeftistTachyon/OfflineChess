@@ -30,6 +30,7 @@ public class ChessMain {
         }
         while(cf.isVisible()) {
             dl.appendAll(users);
+            cf.setActivePlayer();
         }
         cf.stop();
         dl.appendAll(users);
