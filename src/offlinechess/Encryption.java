@@ -1,5 +1,6 @@
-package offlinechess;
+package encryptor;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -8,7 +9,7 @@ import java.util.LinkedList;
  */
 public class Encryption {
     
-    private static final String order = "rdNslE8M1zneT_BGiSLDghyWR3OZXbJ.50PoqmUItf2k4YwK6axHpvAcFj-9CuQV"; // 64 chars
+    private static final String order = "rdNslE8M1zneT BGiSLDghyWR3OZXbJ.50PoqmUItf2k4YwK6axHpvAcFj-9CuQV"; // 64 chars
 
     /**
      * Private constructor.
@@ -62,11 +63,17 @@ public class Encryption {
     public static String writableEncrypt(String plaintext, String key) {
         int[] ints = encodeString(plaintext); // Right
         int keyNum = key.hashCode()%64; // Right
+        HashMap<Integer, Character> pairs = new HashMap<>();
         for(int i = 0;i<ints.length;i++) {
+            if(ints[i] == -1) {
+                pairs.put(i, plaintext.charAt(i));
+            }
             ints[i]--;
-            ints[i] ^= keyNum+1;
+            keyNum %= 64;
+            ints[i] ^= keyNum;
+            keyNum++;
         } // Right
-        return decodeString(ints); // ??
+        return decodeString(ints, pairs); // ??
     }
     
     /**
@@ -78,11 +85,17 @@ public class Encryption {
     public static String writeableDecrypt(String ciphertext, String key) {
         int[] ints = encodeString(ciphertext); // Right
         int keyNum = key.hashCode()%64; // Right
+        HashMap<Integer, Character> pairs = new HashMap<>();
         for(int i = 0;i<ints.length;i++) {
-            ints[i] ^= keyNum+1;
+            if(ints[i] == -1) {
+                pairs.put(i, ciphertext.charAt(i));
+            }
+            keyNum %= 64;
+            ints[i] ^= keyNum;
+            keyNum++;
             ints[i]++;
         } // Right
-        return decodeString(ints); // ??
+        return decodeString(ints, pairs); // ??
     }
     
     /**
@@ -113,13 +126,16 @@ public class Encryption {
     /**
      * Converts an int[] to a String
      * @param ii the int[] to convert
+     * @param pairs the pairs to add back
      * @return a converted String
      */
-    private static String decodeString(int[] ii) {
+    private static String decodeString(int[] ii, HashMap<Integer, Character> pairs) {
         String output = "";
         for(int i = 0;i<ii.length;i++) {
             char c;
-            if(ii[i] < 0) {
+            if(pairs.containsKey(i)) {
+                c = pairs.get(i);
+            } else if(ii[i] < 0) {
                 output += "\'";
                 c = decodeChar(-ii[i]);
             } else {
@@ -146,6 +162,17 @@ public class Encryption {
      */
     private static char decodeChar(int i) {
         return order.charAt(i);
+    }
+    
+    /**
+     * Sets the idx character of s to c
+     * @param s the String to change
+     * @param c the character to set it to
+     * @param idx the index of the string to change
+     * @return the new string
+     */
+    private static String setChar(String s, char c, int idx) {
+        return s.substring(0, idx) + c + s.substring(idx + 1);
     }
     
     /**
