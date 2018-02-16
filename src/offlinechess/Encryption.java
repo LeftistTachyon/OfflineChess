@@ -1,4 +1,4 @@
-package encryptor;
+package offlinechess;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -162,17 +162,6 @@ public class Encryption {
      */
     private static char decodeChar(int i) {
         return order.charAt(i);
-    }
-    
-    /**
-     * Sets the idx character of s to c
-     * @param s the String to change
-     * @param c the character to set it to
-     * @param idx the index of the string to change
-     * @return the new string
-     */
-    private static String setChar(String s, char c, int idx) {
-        return s.substring(0, idx) + c + s.substring(idx + 1);
     }
     
     /**
